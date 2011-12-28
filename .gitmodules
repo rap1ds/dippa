@@ -1,0 +1,3 @@
+[submodule "node-github"]
+	path = node-github
+	url = git://github.com/ajaxorg/node-github.git
