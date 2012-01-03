@@ -1,0 +1,10 @@
+{
+    "name" : "dippa",
+    "version" : "0.0.1",
+    "description" : "Dippa editor",
+    "author": "Mikko Koski",
+    "dependencies": {
+        "oauth": "0.9.5",
+        "github": "0.0.7"
+    }
+}
