@@ -137,14 +137,23 @@ github.getUserApi().addKey('dippa', 'ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAvY3AZBs
 });
 */
 
-var command = require('./modules/commandline').command;
+var commandline = require('./modules/commandline');
+var Command = require('./modules/commandline').Command;
 
-var mkdir = command('mkdir ../dippa_repo');
-mkdir.when()
-var touch1 = command('touch README1', '../dippa_repo');
-var touch2 = command('touch README2', '../dippa_repo');
+var mkdir = new Command('mkdir ../dippa_repo');
+var init = new Command('git init', '../dippa_repo');
+var config = new Command('git config user.email mikko.koski@aalto.fi', '../dippa_repo');
+var touch = new Command('touch README', '../dippa_repo');
+var add = new Command('git add README', '../dippa_repo');
+var commit = new Command('git commit -m first commit', '../dippa_repo');
+var remote = new Command('git remote add origin git@github.com:rap1ds-testing/dippa.git', '../dippa_repo');
+var push = new Command('git push -u origin master', '../dippa_repo');
 
-
+debugger;
+commandline.runAll([mkdir, init, config, touch, add, commit, remote, push]).then(function() {
+    console.log('Done');
+    debugger;
+})
 
 /*
 var mkdir = spawn("mkdir", ['../dippa_repo']);

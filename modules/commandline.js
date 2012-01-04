@@ -20,6 +20,7 @@ var CommandLine = {
         });
         spawnOperation.stdout.on('data', function (data) {
             output = data.toString('utf-8');
+            console.log(output);
         });
 
         spawnOperation.stderr.on('data', function (data) {
