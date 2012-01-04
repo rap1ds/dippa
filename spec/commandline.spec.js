@@ -43,6 +43,17 @@ describe('CommandLine', function() {
 
             expect(splitted.cmd).toEqual('ssh');
             expect(splitted.args).toEqual([]);
+        });
+
+        it('should not split arguments if the whitespace is escaped', function() {
+            var splitted = CommandLine._splitCmd("git commit -a -m 'A%%commit%%message%%whit%%white%%spaces'");
+
+            expect(splitted.cmd).toEqual('git');
+            expect(splitted.args).toEqual(['commit', '-a', '-m', '\'A commit message whit white spaces\'']);
+        });
+
+        it('should not split arguments if they are inside double quotes', function() {
+
         })
     });
 

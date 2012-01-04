@@ -8,7 +8,13 @@ var CommandLine = {
     _splitCmd: function(cmd) {
         var cmdParts = cmd.split(' ');
 
-        return {cmd: cmdParts.shift(), args: cmdParts};
+        var command = cmdParts.shift();
+
+        for(var i = 0; i < cmdParts.length; i++) {
+            cmdParts[i] = cmdParts[i].replace(/%%/g, ' ');
+        }
+
+        return {cmd: command, args: cmdParts};
     },
 
     _run: function(promise, cmd, args, workingDir) {
