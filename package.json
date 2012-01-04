@@ -5,6 +5,7 @@
     "author": "Mikko Koski",
     "dependencies": {
         "oauth": "0.9.5",
-        "github": "0.0.7"
+        "github": "0.0.7",
+        "node-promise": ""
     }
 }

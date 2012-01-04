@@ -137,6 +137,16 @@ github.getUserApi().addKey('dippa', 'ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAvY3AZBs
 });
 */
 
+var command = require('./modules/commandline').command;
+
+var mkdir = command('mkdir ../dippa_repo');
+mkdir.when()
+var touch1 = command('touch README1', '../dippa_repo');
+var touch2 = command('touch README2', '../dippa_repo');
+
+
+
+/*
 var mkdir = spawn("mkdir", ['../dippa_repo']);
 mkdir.on('exit', function() {
     debugger;
@@ -180,5 +190,6 @@ mkdir.on('exit', function() {
     });
 });
 // });
+*/
 
 app.listen(4000);
