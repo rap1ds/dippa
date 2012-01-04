@@ -58,9 +58,9 @@ app.post('/save', function(req, res){
         var commitMessage = "Update";
         console.log(commitMessage);
 
-        var add = new Command('git add .');
-        var commit = new Command('git commit --all --message="' + commitMessage + '"');
-        var push = new Command('git push');
+        var add = new Command('git add .', '../dippa_repo');
+        var commit = new Command('git commit --all --message="' + commitMessage + '"', '../dippa_repo');
+        var push = new Command('git push', '../dippa_repo');
 
         commandline.runAll([add, commit, push]).then(function() {
             console.log('Commit ok');
