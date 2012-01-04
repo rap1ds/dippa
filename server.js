@@ -57,7 +57,7 @@ app.post('/save', function(req, res){
 
         var commitMessage = "Update";
         console.log(commitMessage);
-
+        debugger;
         var add = new Command('git add .', '../dippa_repo');
         var commit = new Command('git commit --all --message="' + commitMessage + '"', '../dippa_repo');
         var push = new Command('git push', '../dippa_repo');
