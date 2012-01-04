@@ -20,12 +20,12 @@ var CommandLine = {
     _run: function(promise, cmd, args, workingDir) {
         var spawnOperation = spawn(cmd, args, workingDir);
 
-        var output;
+        var output = "";
         spawnOperation.on('exit', function() {
             promise.resolve(output);
         });
         spawnOperation.stdout.on('data', function (data) {
-            output = data.toString('utf-8');
+            output += data.toString('utf-8');
             console.log(output);
         });
 
