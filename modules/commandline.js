@@ -18,19 +18,17 @@ var CommandLine = {
     },
 
     _run: function(promise, cmd, args, workingDir) {
-        var spawnOperation = spawn(cmd, args, workingDir);
+        var spawnOperation = spawn(cmd, args, {cwd: workingDir});
 
-        var output = "";
         spawnOperation.on('exit', function() {
-            promise.resolve(output);
+            promise.resolve();
         });
         spawnOperation.stdout.on('data', function (data) {
-            output += data.toString('utf-8');
-            console.log(output);
+            console.log('STDOUT: ' + data.toString('utf-8'));
         });
 
         spawnOperation.stderr.on('data', function (data) {
-            promise.reject(data);
+            console.log('STDERR: ' + data.toString('utf-8'));
         });
     },
 

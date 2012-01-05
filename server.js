@@ -19,7 +19,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 
 app.get('/load', function(req, res){
-    fs.readFile('../dippa_repo/dippa.tex', function(err, data) {
+    fs.readFile('repositories/PPBqWA9/dippa.tex', function(err, data) {
         if(err) {
             throw err;
         }
@@ -28,44 +28,48 @@ app.get('/load', function(req, res){
 });
 
 app.post('/save', function(req, res){
-    var texFile = '../dippa_repo/dippa.tex'
+    var texFile = 'repositories/PPBqWA9/dippa.tex'
 
     fs.writeFile(texFile, req.body.value, function (err) {
         if (err) {
             throw err;
         }
 
-        // "/usr/texbin/pdflatex" -synctex=1 -interaction=nonstopmode %.tex
+        var preview = false;
+        var github = false;
 
-        /*
-        var pdflatex = spawn("/usr/texbin/pdflatex", ['-synctex=1', '-interaction=nonstopmode', '-output-directory=public', 'dippa.tex']);
+        var tryComplete = function() {
+            if(preview === false || github === false) {
+                return;
+            }
 
-        var output = "";
+            console.log('Kaikki ok!');
 
-        pdflatex.stdout.on('data', function (data) {
-            output += data;
+            res.send("ok");
+        }
+
+        var previewCommand = new Command('/usr/texbin/pdflatex -synctex=1 -interaction=nonstopmode dippa.tex', 'repositories/PPBqWA9/');
+        var copy = new Command('cp repositories/PPBqWA9/dippa.pdf public/PPBqWA9.pdf');
+
+        commandline.runAll([previewCommand, copy]).then(function() {
+            console.log('Preview ok');
+            preview = true;
+            tryComplete();
         });
-
-        pdflatex.stderr.on('data', function (data) {
-            output += "ERROR: " + data;
-        });
-
-        pdflatex.on('exit', function(code) {
-            res.send(output);
-        });
-        */
 
         var commitMessage = "Update";
         console.log(commitMessage);
-        debugger;
-        var add = new Command('git add .', '../dippa_repo');
-        var commit = new Command('git commit --all --message="' + commitMessage + '"', '../dippa_repo');
-        var push = new Command('git push', '../dippa_repo');
+
+        var add = new Command('git add .', 'repositories/PPBqWA9/');
+        var commit = new Command('git commit --all --message="' + commitMessage + '"', 'repositories/PPBqWA9/');
+        var pull = new Command('git pull', 'repositories/PPBqWA9/');
+        var push = new Command('git push', 'repositories/PPBqWA9/');
 
         commandline.runAll([add, commit, push]).then(function() {
             console.log('Commit ok');
-        })
-
+            github = true;
+            tryComplete();
+        });
     });
 });
 

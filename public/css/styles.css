@@ -1,0 +1,43 @@
+#center_wrapper_outer {
+    position: relative;
+    margin: auto;
+    width: 800px;
+    height: 100%
+}
+
+#center_wrapper_inner {
+    position: absolute;
+    top: 35px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+
+#editor {
+    height: 100%;
+    border: 1px solid #ddd;
+}
+
+#toolbar {
+    position: absolute;
+    top: 0px;
+    height: 35px;
+    left: 0px;
+    right: 0px;
+    background-color: rgb(250, 250, 250);
+    border-bottom: 1px solid #ccc;
+}
+
+body, html {
+    height: 100%;
+}
+
+#save_button {
+    margin: 6px 40px 6px 0px;
+    float: right;
+}
+
+#preview_button {
+    margin: 6px 10px 6px 0px;
+    float: right;
+}

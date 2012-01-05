@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  27 DEC 2011 22:28
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  4 JAN 2012 22:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -280,8 +280,7 @@ LaTeX Info: Redefining \cite on input line 694.
 (/usr/local/texlive/2011/texmf-dist/tex/latex/sectsty/sectsty.sty
 Package: sectsty 2002/02/25 v2.0.2 Commands to change all sectional heading sty
 les
-)
-(public/dippa.aux)
+) (./dippa.aux)
 \openout1 = `dippa.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 20.
@@ -358,25 +357,25 @@ No file dippa.bbl.
 
 Package natbib Warning: There were undefined citations.
 
-[5] (public/dippa.aux) ) 
+[5] (./dippa.aux) ) 
 Here is how much of TeX's memory you used:
- 1449 strings out of 493633
- 16382 string characters out of 3143378
+ 1448 strings out of 493633
+ 16337 string characters out of 3143378
  70570 words of memory out of 3000000
  4770 multiletter control sequences out of 15000+200000
  14070 words of font info for 33 fonts, out of 3000000 for 9000
  831 hyphenation exceptions out of 8191
  24i,6n,24p,1094b,197s stack positions out of 5000i,500n,10000p,200000b,50000s
-{/usr/local/texlive/2011/texmf-dist/fonts/enc/dvips/cm-
-super/cm-super-t1.enc}</usr/local/texlive/2011/texmf-dist/fonts/type1/public/am
-sfonts/cm/cmsy10.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-
-super/sfbx1200.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-su
-per/sfrm0900.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-supe
-r/sfrm1000.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/
-sfrm1200.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sf
-rm2074.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfsx
-1200.pfb>
-Output written on public/dippa.pdf (5 pages, 102311 bytes).
+{/usr/local/texlive/2011/texmf-dist/fonts/enc/dvips/cm-super
+/cm-super-t1.enc}</usr/local/texlive/2011/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmsy10.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super
+/sfbx1200.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/s
+frm0900.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfr
+m1000.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1
+200.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm207
+4.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfsx1200.
+pfb>
+Output written on dippa.pdf (5 pages, 101075 bytes).
 PDF statistics:
  49 PDF objects out of 1000 (max. 8388607)
  34 compressed objects within 1 object stream

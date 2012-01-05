@@ -6,6 +6,7 @@
     "dependencies": {
         "oauth": "0.9.5",
         "github": "0.0.7",
-        "node-promise": ""
+        "node-promise": "",
+        "shortid": "1.0.5"
     }
 }
