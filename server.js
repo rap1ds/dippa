@@ -12,11 +12,39 @@ var Command = require('./modules/commandline').Command;
 var express = require('express')
     , app = express.createServer()
     , fs = require('fs')
-    , spawn = require('child_process').spawn;
+    , path = require('path')
+    , spawn = require('child_process').spawn
+    , Github = require('./modules/github');
 
 app.use(express.bodyParser());
 app.use(express.static(__dirname + '/public'));
 app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+
+var REPOSITORY_DIR = "./repositories/";
+
+app.post('/create', function(req, res){
+    debugger;
+    var repoInfo = Github.parseRepositoryUrl(req.body.repo);
+
+    if(!repoInfo) {
+        // Send error message
+        res.send('Error');
+        return;
+    }
+
+    var repoDir = path.resolve(REPOSITORY_DIR, repoInfo.owner, repoInfo.name);
+
+    var mkdir = new Command('mkdir -p ' + repoDir);
+    var init = new Command('git init', repoDir);
+    var config = new Command('git config user.email mikko.koski@aalto.fi', repoDir);
+    var touch = new Command('touch dippa.tex', repoDir);
+    var add = new Command('git add dippa.tex', repoDir);
+    var commit = new Command('git commit -m FirstCommit', repoDir);
+    var remote = new Command('git remote add origin git@github.com:' + repoInfo.owner + '/' + repoInfo.name + '.git', repoDir);
+    var push = new Command('git push -u origin master', repoDir);
+
+    console.log('All commands created but not yet run');
+});
 
 app.get('/load', function(req, res){
     fs.readFile('repositories/PPBqWA9/dippa.tex', function(err, data) {
