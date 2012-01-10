@@ -41,3 +41,7 @@ body, html {
     margin: 6px 10px 6px 0px;
     float: right;
 }
+
+.editor_buttons {
+    display: none;
+}

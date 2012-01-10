@@ -1,3 +1,4 @@
+(function() {
 var Github = {
 
     /**
@@ -45,4 +46,10 @@ var Github = {
 
 }
 
-module.exports = Github;
+if(this && this.Dippa) {
+    this.Dippa.Github = Github;
+} else {
+    module.exports = Github;
+}
+
+})();

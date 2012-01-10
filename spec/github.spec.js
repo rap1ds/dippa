@@ -1,4 +1,4 @@
-var Github = require('../modules/github');
+var Github = require('../public/scripts/github.js');
 
 describe('Github', function() {
 

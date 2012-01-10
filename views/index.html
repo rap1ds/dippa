@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Bootstrap, from Twitter</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+</head>
+
+<body>
+
+<div class="topbar">
+    <div class="fill">
+        <div class="container">
+            <a class="brand" href="/">Dippa editor</a>
+            <!--
+            <ul class="nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            -->
+            <button id="save_button" class="btn danger editor_buttons" data-loading-text="saving document...">Save</button>
+            <button id="preview_button" class="btn info editor_buttons">Preview</button>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="height: 100%">
+
+    <div id="hero" class="hero-unit" style="display: none; margin-top: 60px;">
+        <h1>Hello, this is Dippa Editor!</h1>
+        <p>With Dippa Editor, you can create professional looking academic white papers. Dippa editor uses LaTeX for laying out your document, but don't worry, using LaTeX has never been this easy! With the web-based editor you can skip all the installing steps of LaTeX!</p>
+        <p><a id="create_dippa" class="btn primary large">Create a new Dippa &raquo;</a></p>
+
+        <div id="github_instructions" style="display: none">
+            <div id="step1" class="step active">
+                <h2><span style="font-size: 35px;">1.</span> Create a free Github account</h2>
+                <p>
+                    <a id="step1_done" class="btn success" style="float: right">Done</a>
+                    If you don't already have one, <a href="https://github.com/signup/free">sign up here.</a>
+                </p>
+            </div>
+
+            <div id="step2" class="step inactive">
+                <h2><span style="font-size: 35px;">2.</span> Create a new Github repository</h2>
+                <p>Log in and create a new empty repository. <a href="https://github.com/repositories/new">You can do it here.</a>
+                    <a id="step2_done" class="btn success" style="float: right">Done</a>
+                    <br />When your done, copy-paste your repository URL here:
+                    <br />
+                <form>
+                    <div class="clearfix" id="repository_url_container">
+                        <input id="repository_url" style="width: 400px;" />
+                    </div>
+                </form>
+                </p>
+            </div>
+
+            <div id="step3" class="step inactive">
+                <h2><span style="font-size: 35px;">3.</span> Add user "dippa" as a collaborator to the repository</h2>
+                <p>
+                    <a id="step3_done" class="btn success" style="float: right">Done</a>
+                    Go to the admin section of your repository. <a id="repo_admin_link" href="" target="_blank">You find the admin section here.</a> Type "dippa" to the input field and click add.
+                </p>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div id="editor_container" style="display: none; width: 900px; height: 100%; position: relative">
+        <div style="position: absolute; top: 60px; bottom: 20px; left: 0; right: 0">
+            <div id="editor" style="width: 900px; height: 100%"></div>
+        </div>
+    </div>
+
+</div> <!-- /container -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="src/ace-unmin.js" type="text/javascript" charset="utf-8"></script>
+<script src="src/mode-latex.js" type="text/javascript" charset="utf-8"></script>
+<script>
+
+    window.Dippa = {};
+
+    $(function() {
+
+        function loadId(id) {
+            var editor = ace.edit("editor");
+
+            $('.editor_buttons').fadeIn('slow');
+
+            editor.setShowPrintMargin(false);
+
+            $('#save_button').click(function() {
+                var $saveButton = $(this);
+
+                $saveButton.button('loading');
+                var value = JSON.stringify({value: editor.getSession().getValue()});
+
+                $.ajax({
+                    type: "POST",
+                    url: '/save/' + id,
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: value,
+                    processData: false,
+                    complete: function(response) {
+                        $saveButton.button('reset');
+                    }
+                });
+            });
+
+            $('#preview_button').click(function() {
+                window.location = "preview/" + id + '.pdf';
+            });
+
+            $.ajax({
+                url: '/load/' +id,
+                success: function(content) {
+                    var session = editor.getSession();
+
+                    session.setValue(content);
+                    var LatexMode = require("ace/mode/latex").Mode;
+                    session.setMode(new LatexMode());
+
+                    session.setUseWrapMode(true);
+                }
+            });
+        }
+
+        var id = window.location.pathname.split('/')[1];
+
+        if(!id) {
+
+            var repoInfo;
+
+            $('#hero').show();
+
+            console.log('IDNULL');
+
+            $('#create_dippa').click(function() {
+                console.log('Dippa create clicked');
+                $('#github_instructions').slideDown();
+            });
+
+            function activate(el) {
+                console.log('activate', el);
+                el.animate({opacity: 1});
+                el.find('p').slideDown();
+            }
+
+            function inactivate(el) {
+                console.log('inactivate', el);
+                el.animate({opacity: 0.25});
+                el.find('p').slideUp();
+            }
+
+            $('#step1_done').click(function() {
+                inactivate($('#step1'));
+                activate($('#step2'));
+            });
+            $('#step2_done').click(function() {
+                debugger;
+                var repoUrl = $('#repository_url').val();
+                repoInfo = Dippa.Github.parseRepositoryUrl(repoUrl);
+
+                if(!repoInfo) {
+                    $('#repository_url_container').addClass('error');
+                    return;
+                }
+
+                $('#repository_url_container').removeClass('error');
+                $('#repository_url_container').addClass('success');
+
+                inactivate($('#step2'));
+                activate($('#step3'));
+
+                $('#repo_admin_link').attr('href', 'https://github.com/' + repoInfo.owner + '/' + repoInfo.name + '/admin/collaboration')
+
+            });
+            $('#step3_done').click(function() {
+                $('#github_instructions').slideUp(function() {
+                    var oldOffset = $('#hero').offset();
+                    var $temp = $('#hero').clone().appendTo('body');
+                    $temp.css('position', 'absolute')
+                            .css('left', oldOffset.left)
+                            .css('width', '820px')
+                            .css('top', oldOffset.top)
+                            .css('marginTop', 0)
+                            .css('zIndex', 1000);
+                    $('#hero').hide();
+
+                    $temp.animate({
+                        left: '-940'
+                    }, function() {
+                        debugger;
+
+                        var requestContent = {
+                            repo: repoInfo
+                        };
+
+                        $.ajax({
+                            url: '/create',
+                            type: 'POST',
+                            dataType: 'json',
+                            contentType: 'application/json',
+                            data: JSON.stringify(requestContent),
+                            success: function(id) {
+                                debugger;
+                                var stateObj = {};
+                                history.pushState(stateObj, "", id);
+
+                                $('#editor_container').show('slow', function() {
+                                    loadId(id);
+                                });
+                            },
+                            error: function(err) {
+                                debugger;
+                            },
+                            complete: function(resp) {
+                                debugger;
+                                var id = resp.responseText;
+                                var stateObj = {};
+                                history.pushState(stateObj, "", id);
+
+                                $('#editor_container').show('slow', function() {
+                                    loadId(id);
+                                });
+                            }
+                        });
+                    });
+                });
+            });
+
+            $('#step2').css('opacity', 0.25).find('p').hide();
+            $('#step3').css('opacity', 0.25).find('p').hide();;
+
+        } else {
+            loadId(id);
+            $('#editor_container').show();
+        }
+    });
+
+</script>
+<script src="scripts/github.js"></script>
+<script src="scripts/bootstrap-buttons.js"></script>
+
+</body>
+</html>
