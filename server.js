@@ -150,7 +150,7 @@ app.post('/save/:id', function(req, res){
             res.send("ok");
         }
 
-        var previewCommand = new Command('/usr/texbin/pdflatex -synctex=1 -interaction=nonstopmode dippa.tex', repoDir);
+        var previewCommand = new Command('pdflatex -synctex=1 -interaction=nonstopmode dippa.tex', repoDir);
         var copy = new Command('cp ' + repoDir + 'dippa.pdf public/preview/' + id + '.pdf');
 
         commandline.runAll([previewCommand, copy]).then(function() {
