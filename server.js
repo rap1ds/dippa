@@ -95,16 +95,17 @@ app.post('/create', function(req, res){
     var mkdir = new Command('mkdir -p ' + repoDir);
     var init = new Command('git init', repoDir);
     var config = new Command('git config user.email mikko.koski@aalto.fi', repoDir);
+    var remote = new Command('git remote add origin ssh://dippa.github.com/' + owner + '/' + name + '.git', repoDir);
+    var pull = new Command('git pull')
     var cp = new Command('cp ../../template.tex ./dippa.tex', repoDir);
     // var touch = new Command('touch dippa.tex', repoDir);
     var add = new Command('git add dippa.tex', repoDir);
     var commit = new Command('git commit -m FirstCommit', repoDir);
-    var remote = new Command('git remote add origin ssh://dippa.github.com/' + owner + '/' + name + '.git', repoDir);
     var push = new Command('git push -u origin master', repoDir);
 
     console.log('All commands created but not yet run');
 
-    commandline.runAll([mkdir, init, config, cp, add, commit, remote, push]).then(function() {
+    commandline.runAll([mkdir, init, config, remote, pull, cp, add, commit, push]).then(function() {
         console.log('Done');
 
         Mongo.createNew(id, owner, name, email).then(function() {
