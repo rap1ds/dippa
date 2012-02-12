@@ -100,11 +100,12 @@ app.post('/create', function(req, res){
     var add = new Command('git add dippa.tex', repoDir);
     var commit = new Command('git commit -m FirstCommit', repoDir);
     var remote = new Command('git remote add origin ssh://dippa.github.com/' + owner + '/' + name + '.git', repoDir);
+    var pull = new Command('git pull');
     var push = new Command('git push -u origin master', repoDir);
 
     console.log('All commands created but not yet run');
 
-    commandline.runAll([mkdir, init, config, cp, add, commit, remote, push]).then(function() {
+    commandline.runAll([mkdir, init, config, cp, add, commit, remote, pull, push]).then(function() {
         console.log('Done');
 
         Mongo.createNew(id, owner, name, email).then(function() {

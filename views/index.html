@@ -146,7 +146,8 @@
             });
         }
 
-        var id = window.location.pathname.split('/')[1];
+        var splittedPath = window.location.pathname.split('/');
+        var id = splittedPath.pop();
 
         if(!id) {
 
