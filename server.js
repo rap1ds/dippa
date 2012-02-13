@@ -45,8 +45,8 @@ var REPOSITORY_DIR = "./repositories/";
 
 Mongo.init();
 
-Mongo.createNew("123456", "mikko", "koski", "mikko.koski@invalid.fi").then(function() { });
-Mongo.createNew("123457", "mikko2", "koski", "mikko.koski@invalid.fi").then(function() { });
+// Mongo.createNew("123456", "mikko", "koski", "mikko.koski@invalid.fi").then(function() { });
+// Mongo.createNew("123457", "mikko2", "koski", "mikko.koski@invalid.fi").then(function() { });
 
 /*
  Mongo.createNew("1234567", "mikko", "koski", "mkos").then(function() {
@@ -76,6 +76,47 @@ Mongo.createNew("123457", "mikko2", "koski", "mikko.koski@invalid.fi").then(func
  });
  */
 
+function create(id, owner, name, email, existingRepo, success, error) {
+    var repoDir = path.resolve(REPOSITORY_DIR, id);
+
+    var mkdir = new Command('mkdir -p ' + repoDir);
+    var init = new Command('git init', repoDir);
+    var config = new Command('git config user.email mikko.koski@aalto.fi');
+    var remote = new Command('git remote add origin ssh://dippa.github.com/' + owner + '/' + name + '.git', repoDir);
+    var pull = new Command('git pull');
+    var cp = new Command('cp ../../template.tex ./dippa.tex', repoDir);
+    // var touch = new Command('touch dippa.tex', repoDir);
+    var add = new Command('git add dippa.tex', repoDir);
+    var commit = new Command('git commit -m FirstCommit', repoDir);
+    var push = new Command('git push -u origin master', repoDir);
+
+    var clone = new Command('git clone ssh://dippa.github.com/' + owner + '/' + name + '.git');
+
+    console.log('All commands created but not yet run');
+
+    var commandsToRun;
+
+    if(existingRepo) {
+        console.log('Creating existing repo');
+        var rm = new Command('rm -rf repositories/1234');
+        var mv = new Command('mv ' + name + ' repositories/1234');
+        commandsToRun = [clone, rm, mv, cp, add, commit, push];
+    } else {
+        console.log('Creating fresh new repo');
+        commandsToRun = [mkdir, init, config, remote, pull, cp, add, commit, push];
+    }
+
+    commandline.runAll(commandsToRun).then(function() {
+        console.log('Done');
+
+        Mongo.createNew(id, owner, name, email).then(function() {
+            success(id);
+        }, function(error) {
+            error(error);
+        });
+    });
+}
+
 app.post('/create', function(req, res){
     // var repoInfo = Github.parseRepositoryUrl(req.body.repo);
     var owner = req.body.repo.owner;
@@ -90,28 +131,10 @@ app.post('/create', function(req, res){
         return;
     }
 
-    var repoDir = path.resolve(REPOSITORY_DIR, id);
-
-    var mkdir = new Command('mkdir -p ' + repoDir);
-    var init = new Command('git init', repoDir);
-    var config = new Command('git config user.email mikko.koski@aalto.fi', repoDir);
-    var remote = new Command('git remote add origin ssh://dippa.github.com/' + owner + '/' + name + '.git', repoDir);
-    var pull = new Command('git pull')
-    var cp = new Command('cp ../../template.tex ./dippa.tex', repoDir);
-    // var touch = new Command('touch dippa.tex', repoDir);
-    var add = new Command('git add dippa.tex', repoDir);
-    var commit = new Command('git commit -m FirstCommit', repoDir);
-    var push = new Command('git push -u origin master', repoDir);
-
-    console.log('All commands created but not yet run');
-    commandline.runAll([mkdir, init, config, remote, pull, cp, add, commit, push]).then(function() {
-        console.log('Done');
-
-        Mongo.createNew(id, owner, name, email).then(function() {
-            res.send(id);
-        }, function(error) {
-            res.send(error);
-        })
+    create(id, owner, name, email, false, function(id) {
+        res.send(id);
+    }, function(error) {
+        res.send(error);
     });
 });
 
@@ -224,5 +247,13 @@ app.get('/', function(req, res, next) {
  debugger;
  });
  */
+
+/*
+create("1234", "rap1ds-testing", "new20", "", true, function(id) {
+    console.log('Created test dippa new20')
+}, function(error) {
+    console.log(error)
+});
+*/
 
 app.listen(5555);

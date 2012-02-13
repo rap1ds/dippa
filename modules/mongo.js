@@ -18,9 +18,11 @@ var Mongo = {
         mongoose.model('Dippa', Dippa);
         this.Dippa = mongoose.model('Dippa');
 
+        /*
         this.Dippa.remove({}, function() {
             console.log('All removed!');
         });
+        */
     },
 
     createNew: function(shortId, owner, name, email) {

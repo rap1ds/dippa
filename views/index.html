@@ -36,7 +36,7 @@
             </ul>
             -->
             <button id="save_button" class="btn danger editor_buttons" data-loading-text="saving document...">Save</button>
-            <button id="preview_button" class="btn info editor_buttons">Preview</button>
+            <button id="preview_button" class="btn info editor_buttons" data-loading-text="Preview">Preview</button>
         </div>
     </div>
 </div>
@@ -100,6 +100,24 @@
 
     window.Dippa = {};
 
+    var changed = false;
+
+    window.onbeforeunload = function (e) {
+        if(!changed) {
+            return;
+        }
+
+        e = e || window.event;
+
+        // For IE and Firefox prior to version 4
+        if (e) {
+            e.returnValue = 'You have unsaved changes.';
+        }
+
+        // For Safari
+        return 'You have unsaved changes.';
+    };
+
     $(function() {
 
         function loadId(id) {
@@ -111,8 +129,10 @@
 
             $('#save_button').click(function() {
                 var $saveButton = $(this);
+                var $previewButton = $('#preview_button');
 
                 $saveButton.button('loading');
+                $previewButton.button('loading');
                 var value = JSON.stringify({value: editor.getSession().getValue()});
 
                 $.ajax({
@@ -124,6 +144,8 @@
                     processData: false,
                     complete: function(response) {
                         $saveButton.button('reset');
+                        $previewButton.button('reset');
+                        changed = false;
                     }
                 });
             });
@@ -142,6 +164,10 @@
                     session.setMode(new LatexMode());
 
                     session.setUseWrapMode(true);
+
+                    session.on('change', function() {
+                        changed = true;
+                    });
                 }
             });
         }
