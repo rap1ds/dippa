@@ -137,7 +137,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: '/save/' + id,
+                    url: 'save/' + id,
                     dataType: 'json',
                     contentType: 'application/json',
                     data: value,
@@ -155,7 +155,7 @@
             });
 
             $.ajax({
-                url: '/load/' +id,
+                url: 'load/' +id,
                 success: function(content) {
                     var session = editor.getSession();
 
@@ -245,7 +245,7 @@
                         };
 
                         $.ajax({
-                            url: '/create',
+                            url: 'create',
                             type: 'POST',
                             dataType: 'json',
                             contentType: 'application/json',
