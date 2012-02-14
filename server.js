@@ -21,6 +21,10 @@ var express = require('express'),
     Mongo = require('./modules/mongo'),
     jqtpl = require("jqtpl");
 
+var p = require('node-promise');
+var when = p.when;
+var Promise = p.Promise;
+
 app.use(express.bodyParser());
 app.use(express.static(__dirname + '/public'));
 app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
@@ -111,60 +115,112 @@ app.get('/load/:id', function(req, res){
     console.log('Loading id ' + id);
     var id = req.params.id;
 
-    fs.readFile(REPOSITORY_DIR + '/' + id + '/dippa.tex', function(err, data) {
+    var response = {};
+
+    var documentRead = new Promise();
+    var referencesRead = new Promise();
+
+    var allRead = p.all(documentRead, referencesRead);
+
+    documentRead.then(function(fileContent) {
+        console.log('Promise resolved');
+    });
+
+    referencesRead.then(function() {
+        console.log('References resolved');
+    });
+
+    allRead.then(function(results) {
+        console.log('All read');
+        response.documentContent = results[0];
+        response.referencesContent = results[1];
+        res.send(JSON.stringify(response));
+    });
+
+    console.log('Starting to read data');
+
+    fs.readFile(REPOSITORY_DIR + '/' + id + '/dippa.tex', 'UTF-8', function(err, data) {
         if(err) {
             throw err;
         }
-        res.send(data);
+
+        console.log('Document reading done');
+        documentRead.resolve(data);
+    });
+
+    fs.readFile(REPOSITORY_DIR + '/' + id + '/ref.bib', 'UTF-8', function(err, data) {
+        if(err) {
+            throw err;
+        }
+
+        console.log('References reading done');
+        referencesRead.resolve(data);
     });
 });
 
 app.post('/save/:id', function(req, res){
     var id = req.params.id;
     var repoDir = 'repositories/' + id + '/';
-    var texFile = repoDir + 'dippa.tex'
+    var texFile = repoDir + 'dippa.tex';
+    var refFile = repoDir + 'ref.bib';
 
-    fs.writeFile(texFile, req.body.value, function (err) {
+    var docContent = req.body.documentContent;
+    var refContent = req.body.referencesContent;
+    console.log('Saving docContent', refContent);
+
+    var docWritten = new Promise();
+    var refWritten = new Promise();
+    var allWritten = p.all([docWritten, refWritten]);
+
+    fs.writeFile(texFile, docContent, function (err) {
         if (err) {
             throw err;
         }
 
-        var preview = false;
-        var github = false;
+        docWritten.resolve();
+    });
 
-        var tryComplete = function() {
-            if(preview === false || github === false) {
-                return;
-            }
-
-            console.log('Kaikki ok!');
-
-            res.send("ok");
+    fs.writeFile(refFile, refContent, function (err) {
+        if (err) {
+            throw err;
         }
 
-        
-        var previewCommand = new Command('pdflatex -synctex=1 -interaction=nonstopmode dippa.tex', repoDir);
+        refWritten.resolve();
+    });
+
+    allWritten.then(function() {
+
+        var previewPromise = new Promise();
+        var pushPromise = new Promise();
+
+        previewPromise.then(function() {
+            res.send("ok");
+        });
+
+        var latex1 = new Command('latex dippa', repoDir);
+        var bibtex1 = new Command('bibtex dippa', repoDir);
+        var latex2 = new Command('latex dippa', repoDir);
+        var bibtex2 = new Command('bibtex dippa', repoDir);
+        var pdflatex = new Command('pdflatex dippa', repoDir);
         var copy = new Command('cp ' + repoDir + 'dippa.pdf public/preview/' + id + '.pdf');
 
-        commandline.runAll([previewCommand, copy]).then(function() {
-            console.log('Preview ok');
-            preview = true;
-            tryComplete();
+        commandline.runAll([latex1, bibtex1, latex2, bibtex2, pdflatex, copy]).then(function() {
+            previewPromise.resolve();
         });
 
         var commitMessage = "Update";
         console.log(commitMessage);
 
-        var add = new Command('git add .', repoDir);
+        var addtex = new Command('git add dippa.tex', repoDir);
+        var addref = new Command('git add ref.bib', repoDir);
         var commit = new Command('git commit --all --message="' + commitMessage + '"', repoDir);
         var pull = new Command('git pull', repoDir);
         var push = new Command('git push', repoDir);
 
-        commandline.runAll([add, commit, pull, push]).then(function() {
-            console.log('Commit ok');
-            github = true;
-            tryComplete();
+        commandline.runAll([addtex, addref, commit, pull, push]).then(function() {
+            pushPromise.resolve();
         });
+
     });
 });
 
@@ -184,4 +240,8 @@ app.get('/', function(req, res, next) {
     res.render('index.html');
 });
 
-app.listen(5555);
+var port = 5555;
+
+app.listen(port);
+
+console.log('Listening port ' + port);

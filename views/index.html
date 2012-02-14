@@ -28,13 +28,10 @@
     <div class="fill">
         <div class="container">
             <a class="brand" href="/">Dippa editor</a>
-            <!--
             <ul class="nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li id="tab_doc" class="active"><a href="#">Document</a></li>
+                <li id="tab_ref"><a href="#">References</a></li>
             </ul>
-            -->
             <button id="save_button" class="btn danger editor_buttons" data-loading-text="saving document...">Save</button>
             <button id="preview_button" class="btn info editor_buttons" data-loading-text="Preview">Preview</button>
         </div>
@@ -98,197 +95,260 @@
 <script src="src/mode-latex.js" type="text/javascript" charset="utf-8"></script>
 <script>
 
-    window.Dippa = {};
+window.Dippa = {};
 
-    var changed = false;
+var changed = false;
 
-    window.onbeforeunload = function (e) {
-        if(!changed) {
+window.onbeforeunload = function (e) {
+    if(!changed) {
+        return;
+    }
+
+    e = e || window.event;
+
+    // For IE and Firefox prior to version 4
+    if (e) {
+        e.returnValue = 'You have unsaved changes.';
+    }
+
+    // For Safari
+    return 'You have unsaved changes.';
+};
+
+$(function() {
+
+    var docContent, refContent, mode, editor, session, LatexMode;
+
+    function setMode(newMode) {
+        if(mode === newMode) {
             return;
         }
 
-        e = e || window.event;
-
-        // For IE and Firefox prior to version 4
-        if (e) {
-            e.returnValue = 'You have unsaved changes.';
+        if(mode === "doc") {
+            docContent = session.getValue();
         }
 
-        // For Safari
-        return 'You have unsaved changes.';
-    };
+        if(mode === "ref") {
+            refContent = session.getValue();
+        }
 
-    $(function() {
+        if(newMode === "doc") {
+            session.setValue(docContent);
+            session.setMode(new LatexMode());
+            session.setUseWrapMode(true);
+        }
 
-        function loadId(id) {
-            var editor = ace.edit("editor");
+        if(newMode === "ref") {
 
-            $('.editor_buttons').fadeIn('slow');
+            session.setValue(refContent);
+            session.setUseWrapMode(true);
+        }
 
-            editor.setShowPrintMargin(false);
+        mode = newMode;
 
-            $('#save_button').click(function() {
-                var $saveButton = $(this);
-                var $previewButton = $('#preview_button');
+        // FIXME
+        changed = false;
+    }
 
-                $saveButton.button('loading');
-                $previewButton.button('loading');
-                var value = JSON.stringify({value: editor.getSession().getValue()});
+    function loadId(id) {
+        editor = ace.edit("editor");
+        session = editor.getSession();
 
-                $.ajax({
-                    type: "POST",
-                    url: 'save/' + id,
-                    dataType: 'json',
-                    contentType: 'application/json',
-                    data: value,
-                    processData: false,
-                    complete: function(response) {
-                        $saveButton.button('reset');
-                        $previewButton.button('reset');
-                        changed = false;
-                    }
-                });
-            });
+        LatexMode = require("ace/mode/latex").Mode;
 
-            $('#preview_button').click(function() {
-                window.location = "preview/" + id + '.pdf';
-            });
+        session.on('change', function() {
+            changed = true;
+        });
+
+        $('.editor_buttons').fadeIn('slow');
+
+        editor.setShowPrintMargin(false);
+
+        $('#save_button').click(function() {
+            var $saveButton = $(this);
+            var $previewButton = $('#preview_button');
+
+            $saveButton.button('loading');
+            $previewButton.button('loading');
+
+            // Update doc/refContent
+            if(mode === "doc") {
+                docContent = session.getValue();
+            }
+            if(mode === "ref") {
+                refContent = session.getValue();
+            }
+
+            // FIX THIS THIS IS BROKEN!!!
+            var value = JSON.stringify({documentContent: docContent, referencesContent: refContent});
 
             $.ajax({
-                url: 'load/' +id,
-                success: function(content) {
-                    var session = editor.getSession();
-
-                    session.setValue(content);
-                    var LatexMode = require("ace/mode/latex").Mode;
-                    session.setMode(new LatexMode());
-
-                    session.setUseWrapMode(true);
-
-                    session.on('change', function() {
-                        changed = true;
-                    });
+                type: "POST",
+                url: 'save/' + id,
+                dataType: 'json',
+                contentType: 'application/json',
+                data: value,
+                processData: false,
+                complete: function(response) {
+                    $saveButton.button('reset');
+                    $previewButton.button('reset');
+                    changed = false;
                 }
             });
+        });
+
+        $('#preview_button').click(function() {
+            window.open('preview/' + id + '.pdf', '_newtab');
+        });
+
+        $.ajax({
+            url: 'load/' +id,
+            dataType: 'json',
+            success: function(content) {
+                docContent = content.documentContent;
+                refContent = content.referencesContent;
+
+                setMode("doc");
+            }
+        });
+    }
+
+    var splittedPath = window.location.pathname.split('/');
+    var id = splittedPath.pop();
+
+    if(!id) {
+
+        var repoInfo;
+
+        $('#hero').show();
+
+        console.log('IDNULL');
+
+        $('#create_dippa').click(function() {
+            console.log('Dippa create clicked');
+            $('#github_instructions').slideDown();
+        });
+
+        function activate(el) {
+            console.log('activate', el);
+            el.animate({opacity: 1});
+            el.find('p').slideDown();
         }
 
-        var splittedPath = window.location.pathname.split('/');
-        var id = splittedPath.pop();
+        function inactivate(el) {
+            console.log('inactivate', el);
+            el.animate({opacity: 0.25});
+            el.find('p').slideUp();
+        }
 
-        if(!id) {
+        $('#step1_done').click(function() {
+            inactivate($('#step1'));
+            activate($('#step2'));
+        });
+        $('#step2_done').click(function() {
+            debugger;
+            var repoUrl = $('#repository_url').val();
+            repoInfo = Dippa.Github.parseRepositoryUrl(repoUrl);
 
-            var repoInfo;
-
-            $('#hero').show();
-
-            console.log('IDNULL');
-
-            $('#create_dippa').click(function() {
-                console.log('Dippa create clicked');
-                $('#github_instructions').slideDown();
-            });
-
-            function activate(el) {
-                console.log('activate', el);
-                el.animate({opacity: 1});
-                el.find('p').slideDown();
+            if(!repoInfo) {
+                $('#repository_url_container').addClass('error');
+                return;
             }
 
-            function inactivate(el) {
-                console.log('inactivate', el);
-                el.animate({opacity: 0.25});
-                el.find('p').slideUp();
-            }
+            $('#repository_url_container').removeClass('error');
+            $('#repository_url_container').addClass('success');
 
-            $('#step1_done').click(function() {
-                inactivate($('#step1'));
-                activate($('#step2'));
-            });
-            $('#step2_done').click(function() {
-                debugger;
-                var repoUrl = $('#repository_url').val();
-                repoInfo = Dippa.Github.parseRepositoryUrl(repoUrl);
+            inactivate($('#step2'));
+            activate($('#step3'));
 
-                if(!repoInfo) {
-                    $('#repository_url_container').addClass('error');
-                    return;
-                }
+            $('#repo_admin_link').attr('href', 'https://github.com/' + repoInfo.owner + '/' + repoInfo.name + '/admin/collaboration')
 
-                $('#repository_url_container').removeClass('error');
-                $('#repository_url_container').addClass('success');
+        });
+        $('#step3_done').click(function() {
+            $('#github_instructions').slideUp(function() {
+                var oldOffset = $('#hero').offset();
+                var $temp = $('#hero').clone().appendTo('body');
+                $temp.css('position', 'absolute')
+                        .css('left', oldOffset.left)
+                        .css('width', '820px')
+                        .css('top', oldOffset.top)
+                        .css('marginTop', 0)
+                        .css('zIndex', 1000);
+                $('#hero').hide();
 
-                inactivate($('#step2'));
-                activate($('#step3'));
+                $temp.animate({
+                    left: '-940'
+                }, function() {
+                    debugger;
 
-                $('#repo_admin_link').attr('href', 'https://github.com/' + repoInfo.owner + '/' + repoInfo.name + '/admin/collaboration')
+                    var requestContent = {
+                        repo: repoInfo
+                    };
 
-            });
-            $('#step3_done').click(function() {
-                $('#github_instructions').slideUp(function() {
-                    var oldOffset = $('#hero').offset();
-                    var $temp = $('#hero').clone().appendTo('body');
-                    $temp.css('position', 'absolute')
-                            .css('left', oldOffset.left)
-                            .css('width', '820px')
-                            .css('top', oldOffset.top)
-                            .css('marginTop', 0)
-                            .css('zIndex', 1000);
-                    $('#hero').hide();
+                    $.ajax({
+                        url: 'create',
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: JSON.stringify(requestContent),
+                        success: function(id) {
+                            debugger;
+                            var stateObj = {};
+                            history.pushState(stateObj, "", id);
 
-                    $temp.animate({
-                        left: '-940'
-                    }, function() {
-                        debugger;
+                            $('#editor_container').show('slow', function() {
+                                loadId(id);
+                            });
+                        },
+                        error: function(err) {
+                            debugger;
+                        },
+                        complete: function(resp) {
+                            debugger;
+                            var id = resp.responseText;
+                            var stateObj = {};
+                            history.pushState(stateObj, "", id);
 
-                        var requestContent = {
-                            repo: repoInfo
-                        };
-
-                        $.ajax({
-                            url: 'create',
-                            type: 'POST',
-                            dataType: 'json',
-                            contentType: 'application/json',
-                            data: JSON.stringify(requestContent),
-                            success: function(id) {
-                                debugger;
-                                var stateObj = {};
-                                history.pushState(stateObj, "", id);
-
-                                $('#editor_container').show('slow', function() {
-                                    loadId(id);
-                                });
-                            },
-                            error: function(err) {
-                                debugger;
-                            },
-                            complete: function(resp) {
-                                debugger;
-                                var id = resp.responseText;
-                                var stateObj = {};
-                                history.pushState(stateObj, "", id);
-
-                                $('#editor_container').show('slow', function() {
-                                    loadId(id);
-                                });
-                            }
-                        });
+                            $('#editor_container').show('slow', function() {
+                                loadId(id);
+                            });
+                        }
                     });
                 });
             });
+        });
 
-            $('#step2').css('opacity', 0.25).find('p').hide();
-            $('#step3').css('opacity', 0.25).find('p').hide();;
+        $('#step2').css('opacity', 0.25).find('p').hide();
+        $('#step3').css('opacity', 0.25).find('p').hide();;
 
-        } else {
-            loadId(id);
-            $('#editor_container').show();
-        }
+    } else {
+        loadId(id);
+        $('#editor_container').show();
+    }
+
+    var $tab_doc = $('#tab_doc');
+    var $tab_ref = $('#tab_ref');
+
+    $tab_doc.click(function() {
+        $tab_ref.removeClass('active');
+        $tab_doc.addClass('active');
+
+        setMode("doc");
     });
+
+    $tab_ref.click(function() {
+        $tab_doc.removeClass('active');
+        $tab_ref.addClass('active');
+
+        setMode("ref");
+    })
+
+});
 
 </script>
 <script src="scripts/github.js"></script>
 <script src="scripts/bootstrap-buttons.js"></script>
+<script src="scripts/spine/spine.js"></script>
 
 </body>
 </html>
