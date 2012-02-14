@@ -45,37 +45,6 @@ var REPOSITORY_DIR = "./repositories/";
 
 Mongo.init();
 
-// Mongo.createNew("123456", "mikko", "koski", "mikko.koski@invalid.fi").then(function() { });
-// Mongo.createNew("123457", "mikko2", "koski", "mikko.koski@invalid.fi").then(function() { });
-
-/*
- Mongo.createNew("1234567", "mikko", "koski", "mkos").then(function() {
- Mongo.findByEmail("mkos").then(function(emailData) {
- console.log(emailData);
- Mongo.findByShortId("123456").then(function(idData) {
- console.log(idData);
-
- // Create another with the same short id
- Mongo.createNew("1234567", "janne", "jaakko", "jj").then(function() {
- console.log('OK :(')
- }, function(error) {
- console.log('Error, hyvä!');
- console.log(error);
-
- // Create another with the same owner/name
- Mongo.createNew("3333", "mikko", "koski", "mkos").then(function() {
- console.log('OK :(')
- }, function(error) {
- console.log('Error, hyvä!');
- console.log(error);
- // error.code === 11000
- });
- })
- });
- });
- });
- */
-
 function create(id, owner, name, email, existingRepo, success, error) {
     var repoDir = path.resolve(REPOSITORY_DIR, id);
 
@@ -173,6 +142,7 @@ app.post('/save/:id', function(req, res){
             res.send("ok");
         }
 
+        
         var previewCommand = new Command('pdflatex -synctex=1 -interaction=nonstopmode dippa.tex', repoDir);
         var copy = new Command('cp ' + repoDir + 'dippa.pdf public/preview/' + id + '.pdf');
 
@@ -190,7 +160,7 @@ app.post('/save/:id', function(req, res){
         var pull = new Command('git pull', repoDir);
         var push = new Command('git push', repoDir);
 
-        commandline.runAll([add, commit, push]).then(function() {
+        commandline.runAll([add, commit, pull, push]).then(function() {
             console.log('Commit ok');
             github = true;
             tryComplete();
@@ -213,47 +183,5 @@ app.get('/:id', function(req, res, next) {
 app.get('/', function(req, res, next) {
     res.render('index.html');
 });
-
-// var GitHubApi = require("./node_modules/node-github/lib/github").GitHubApi;
-
-// var github = new GitHubApi(true);
-/*
- github.getUserApi().update("rap1ds-testing", {location: "Argentina"}, function(err) {
- console.log("done!");
- });*/
-
-/*
- github.getRepoApi().search('dippa', function() {
- console.log(arguments);
- });
- */
-
-// var repoApi = github.getRepoApi();
-
-/*
-
- var mkdir = new Command('mkdir ../dippa_repo');
- var init = new Command('git init', '../dippa_repo');
- var config = new Command('git config user.email mikko.koski@aalto.fi', '../dippa_repo');
- var touch = new Command('touch README', '../dippa_repo');
- var add = new Command('git add README', '../dippa_repo');
- var commit = new Command('git commit -m first commit', '../dippa_repo');
- var remote = new Command('git remote add origin git@github.com:rap1ds-testing/dippa.git', '../dippa_repo');
- var push = new Command('git push -u origin master', '../dippa_repo');
-
- debugger;
- commandline.runAll([mkdir, init, config, touch, add, commit, remote, push]).then(function() {
- console.log('Done');
- debugger;
- });
- */
-
-/*
-create("1234", "rap1ds-testing", "new20", "", true, function(id) {
-    console.log('Created test dippa new20')
-}, function(error) {
-    console.log(error)
-});
-*/
 
 app.listen(5555);
