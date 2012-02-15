@@ -57,7 +57,8 @@ function create(id, owner, name, email, existingRepo, success, error) {
     var config = new Command('git config user.email mikko.koski@aalto.fi');
     var remote = new Command('git remote add origin ssh://dippa.github.com/' + owner + '/' + name + '.git', repoDir);
     var pull = new Command('git pull');
-    var cp = new Command('cp ../../template.tex ./dippa.tex', repoDir);
+    var cpDoc = new Command('cp ../../template.tex ./dippa.tex', repoDir);
+    var cpRef = new Command('cp ../../template_ref.bib ./ref.bib', repoDir);
     // var touch = new Command('touch dippa.tex', repoDir);
     var add = new Command('git add dippa.tex', repoDir);
     var commit = new Command('git commit -m FirstCommit', repoDir);
@@ -73,10 +74,10 @@ function create(id, owner, name, email, existingRepo, success, error) {
         console.log('Creating existing repo');
         var rm = new Command('rm -rf repositories/1234');
         var mv = new Command('mv ' + name + ' repositories/1234');
-        commandsToRun = [clone, rm, mv, cp, add, commit, push];
+        commandsToRun = [clone, rm, mv, cpDoc, cpRef, add, commit, push];
     } else {
         console.log('Creating fresh new repo');
-        commandsToRun = [mkdir, init, config, remote, pull, cp, add, commit, push];
+        commandsToRun = [mkdir, init, config, remote, pull, cpDoc, cpRef, add, commit, push];
     }
 
     commandline.runAll(commandsToRun).then(function() {
