@@ -25,10 +25,6 @@ var p = require('node-promise');
 var when = p.when;
 var Promise = p.Promise;
 
-app.use(express.bodyParser());
-app.use(express.static(__dirname + '/public'));
-app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-
 app.configure(function(){
     // disable layout
     app.set("view options", {layout: false});
@@ -43,6 +39,18 @@ app.configure(function(){
             };
         }
     });
+});
+
+app.configure('development', function(){
+    app.use(express.static(__dirname + '/public'));
+    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
+
+app.configure('production', function(){
+
+  var oneYear = 31557600000;
+  app.use(express.static(__dirname + '/public', { maxAge: oneYear }));
+  app.use(express.errorHandler());
 });
 
 var REPOSITORY_DIR = "./repositories/";
