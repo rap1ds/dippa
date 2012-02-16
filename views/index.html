@@ -72,7 +72,7 @@
                 <h2><span style="font-size: 35px;">3.</span> Add user "dippa" as a collaborator to the repository</h2>
                 <p>
                     <a id="step3_done" class="btn success" style="float: right">Done</a>
-                    Go to the admin section of your repository. <a id="repo_admin_link" href="" target="_blank">You find the admin section here.</a> Type "dippa" to the input field and click add.
+                    Go to the admin section of your repository. <a id="admin_link" href="" target="_blank">You find the admin section here.</a> Type "dippa" to the input field and click add.
                 </p>
             </div>
         </div>
@@ -142,6 +142,118 @@ window.onbeforeunload = function (e) {
 };
 
 $(function() {
+
+    var Hero = Spine.Controller.create({
+
+        el: $('#hero'),
+        events: {
+            'click #create_dippa': 'createDippa',
+            'click #step1_done': 'step1Done',
+            'click #step2_done': 'step2Done',
+            'click #step3_done': 'step3Done'
+        },
+        elements: {
+            '#github_instructions': 'instructions',
+            '#step1': 'step1',
+            '#step2': 'step2',
+            '#step3': 'step3',
+            '#repository_url': 'repositoryUrl',
+            '#repository_url_container': 'repositoryUrlContainer',
+            '#admin_link': 'adminLink'
+        },
+        proxied: ['createRequest'],
+
+        createDippa: function() {
+            console.log('Dippa create clicked');
+            this.instructions.slideDown();
+            $('#info').fadeOut();
+            $('#info_header').fadeOut();
+        },
+
+        step1Done: function() {
+            this.inactivate(this.step1);
+            this.activate(this.step2);
+        },
+
+        step2Done: function() {
+            this.repositoryInfo = Dippa.Github.parseRepositoryUrl(this.repositoryUrl.val());
+
+            if(!this.repositoryInfo) {
+                this.repositoryUrlContainer.addClass('error');
+                return;
+            }
+
+            this.repositoryUrlContainer.removeClass('error').addClass('success');
+
+            this.adminLink.attr('href',
+                    'https://github.com/' + this.repositoryInfo.owner + '/' +
+                            this.repositoryInfo.name + '/admin/collaboration');
+
+            this.inactivate(this.step2);
+            this.activate(this.step3)
+        },
+
+        hideInstructions: function(callback) {
+            this.instructions.slideUp(this.proxy(function() {
+                var oldOffset = this.el.offset();
+                var $temp = this.el.clone().appendTo('body');
+                $temp.css('position', 'absolute')
+                        .css('left', oldOffset.left)
+                        .css('width', '820px')
+                        .css('top', oldOffset.top)
+                        .css('marginTop', 0)
+                        .css('zIndex', 1000);
+                this.el.hide();
+
+                $temp.animate({
+                    left: '-940'
+                }, function() {
+                    callback();
+                });
+            }));
+        },
+
+        step3Done: function() {
+            this.hideInstructions(this.proxy(function() {
+                $('#loader').show();
+                this.createRequest();
+            }));
+        },
+
+        activate: function(el) {
+            el.animate({opacity: 1});
+            el.find('p').slideDown();
+        },
+
+        inactivate: function(el) {
+            el.animate({opacity: 0.25});
+            el.find('p').slideUp();
+        },
+
+        createRequest: function() {
+            $.ajax({
+                url: 'create',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({repo: this.repositoryInfo}),
+                error: function(err) {
+                    // FIXME
+                },
+                complete: function(response) {
+                    var id = response.responseText;
+                    history.pushState({}, "", id);
+
+                    $('#loader').hide();
+
+                    $('#editor_container').show('slow', function() {
+                        loadId(id);
+                    });
+                }
+            });
+        }
+
+    }).init();
 
     var docContent, refContent, mode, editor, session, LatexMode;
 
@@ -254,13 +366,6 @@ $(function() {
 
         console.log('IDNULL');
 
-        $('#create_dippa').click(function() {
-            console.log('Dippa create clicked');
-            $('#github_instructions').slideDown();
-            $('#info').fadeOut();
-            $('#info_header').fadeOut();
-        });
-
         function activate(el) {
             console.log('activate', el);
             el.animate({opacity: 1});
@@ -273,84 +378,12 @@ $(function() {
             el.find('p').slideUp();
         }
 
-        $('#step1_done').click(function() {
-            inactivate($('#step1'));
-            activate($('#step2'));
-        });
         $('#step2_done').click(function() {
             debugger;
-            var repoUrl = $('#repository_url').val();
-            repoInfo = Dippa.Github.parseRepositoryUrl(repoUrl);
-
-            if(!repoInfo) {
-                $('#repository_url_container').addClass('error');
-                return;
-            }
-
-            $('#repository_url_container').removeClass('error');
-            $('#repository_url_container').addClass('success');
-
-            inactivate($('#step2'));
-            activate($('#step3'));
-
-            $('#repo_admin_link').attr('href', 'https://github.com/' + repoInfo.owner + '/' + repoInfo.name + '/admin/collaboration')
 
         });
         $('#step3_done').click(function() {
-            $('#github_instructions').slideUp(function() {
-                var oldOffset = $('#hero').offset();
-                var $temp = $('#hero').clone().appendTo('body');
-                $temp.css('position', 'absolute')
-                        .css('left', oldOffset.left)
-                        .css('width', '820px')
-                        .css('top', oldOffset.top)
-                        .css('marginTop', 0)
-                        .css('zIndex', 1000);
-                $('#hero').hide();
 
-                $temp.animate({
-                    left: '-940'
-                }, function() {
-                    $('#loader').show();
-
-                    var requestContent = {
-                        repo: repoInfo
-                    };
-
-                    $.ajax({
-                        url: 'create',
-                        type: 'POST',
-                        dataType: 'json',
-                        contentType: 'application/json',
-                        data: JSON.stringify(requestContent),
-                        success: function(id) {
-                            /*
-                             debugger;
-                             var stateObj = {};
-                             history.pushState(stateObj, "", id);
-
-                             $('#editor_container').show('slow', function() {
-                             loadId(id);
-                             });*/
-                        },
-                        error: function(err) {
-                            debugger;
-                        },
-                        complete: function(resp) {
-                            // debugger;
-                            var id = resp.responseText;
-                            var stateObj = {};
-                            history.pushState(stateObj, "", id);
-
-                            $('#loader').hide();
-
-                            $('#editor_container').show('slow', function() {
-                                loadId(id);
-                            });
-                        }
-                    });
-                });
-            });
         });
 
         $('#step2').css('opacity', 0.25).find('p').hide();
