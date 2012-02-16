@@ -78,13 +78,13 @@
         </div>
     </div>
 
-    <div id="info_header" class="row">
+    <div id="info_header" class="row" style="display: none">
         <div class="span16">
             <h1>So, what's in it for me?</h1>
         </div>
     </div>
 
-    <div id="info" class="row">
+    <div id="info" class="row" style="display: none">
         <div class="span5">
             <h2>Online LaTeX editor</h2>
             <p><img src="img/ace.png" width="100" style="float: right; margin: 10px" />Dippa editor is an online LaTeX editor. It has a LaTeX <b>syntax hilighting</b> in it. Dippa editor uses <b>Ace editor</b> which is one of the best web-based editor components available.</p>
@@ -249,6 +249,8 @@ $(function() {
         var repoInfo;
 
         $('#hero').show();
+        $('#info_header').show();
+        $('#info').show();
 
         console.log('IDNULL');
 
