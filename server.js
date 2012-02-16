@@ -26,6 +26,8 @@ var when = p.when;
 var Promise = p.Promise;
 
 app.configure(function(){
+    app.use(express.bodyParser());
+
     // disable layout
     app.set("view options", {layout: false});
 
