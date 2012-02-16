@@ -10,20 +10,20 @@
 
 var commandline = require('./modules/commandline');
 var Command = require('./modules/commandline').Command;
-
-var express = require('express'),
-    app = express.createServer(),
-    fs = require('fs'),
-    path = require('path'),
-    spawn = require('child_process').spawn,
-    shortId = require('shortid'),
-    // Github = require('public/scripts/github.js'),
-    Mongo = require('./modules/mongo'),
-    jqtpl = require("jqtpl");
-
+var express = require('express');
+var app = express.createServer();
+var fs = require('fs');
+var path = require('path');
+var shortId = require('shortid');
+var Mongo = require('./modules/mongo');
+var jqtpl = require("jqtpl");
 var p = require('node-promise');
-var when = p.when;
 var Promise = p.Promise;
+
+var REPOSITORY_DIR = "./repositories/";
+var PORT = 5555;
+
+Mongo.init();
 
 app.configure(function(){
     app.use(express.bodyParser());
@@ -55,10 +55,6 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-var REPOSITORY_DIR = "./repositories/";
-
-Mongo.init();
-
 function create(id, owner, name, email, existingRepo, success, error) {
     var repoDir = path.resolve(REPOSITORY_DIR, id);
 
@@ -69,14 +65,10 @@ function create(id, owner, name, email, existingRepo, success, error) {
     var pull = new Command('git pull');
     var cpDoc = new Command('cp ../../template.tex ./dippa.tex', repoDir);
     var cpRef = new Command('cp ../../template_ref.bib ./ref.bib', repoDir);
-    // var touch = new Command('touch dippa.tex', repoDir);
     var add = new Command('git add dippa.tex', repoDir);
     var commit = new Command('git commit -m FirstCommit', repoDir);
     var push = new Command('git push -u origin master', repoDir);
-
     var clone = new Command('git clone ssh://dippa.github.com/' + owner + '/' + name + '.git');
-
-    console.log('All commands created but not yet run');
 
     var commandsToRun;
 
@@ -102,7 +94,6 @@ function create(id, owner, name, email, existingRepo, success, error) {
 }
 
 app.post('/create', function(req, res){
-    // var repoInfo = Github.parseRepositoryUrl(req.body.repo);
     var owner = req.body.repo.owner;
     var name = req.body.repo.name;
     var email = req.body.email;
@@ -133,22 +124,11 @@ app.get('/load/:id', function(req, res){
 
     var allRead = p.all(documentRead, referencesRead);
 
-    documentRead.then(function(fileContent) {
-        console.log('Promise resolved');
-    });
-
-    referencesRead.then(function() {
-        console.log('References resolved');
-    });
-
     allRead.then(function(results) {
-        console.log('All read');
         response.documentContent = results[0];
         response.referencesContent = results[1];
         res.send(JSON.stringify(response));
     });
-
-    console.log('Starting to read data');
 
     fs.readFile(REPOSITORY_DIR + '/' + id + '/dippa.tex', 'UTF-8', function(err, data) {
         if(err) {
@@ -177,7 +157,6 @@ app.post('/save/:id', function(req, res){
 
     var docContent = req.body.documentContent;
     var refContent = req.body.referencesContent;
-    console.log('Saving docContent', refContent);
 
     var docWritten = new Promise();
     var refWritten = new Promise();
@@ -220,8 +199,6 @@ app.post('/save/:id', function(req, res){
         });
 
         var commitMessage = "Update";
-        console.log(commitMessage);
-
         var addtex = new Command('git add dippa.tex', repoDir);
         var addref = new Command('git add ref.bib', repoDir);
         var commit = new Command('git commit --all --message="' + commitMessage + '"', repoDir);
@@ -251,8 +228,5 @@ app.get('/', function(req, res, next) {
     res.render('index.html');
 });
 
-var port = 5555;
-
-app.listen(port);
-
-console.log('Listening port ' + port);
+app.listen(PORT);
+console.log('Listening port ' + PORT);
