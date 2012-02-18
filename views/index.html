@@ -14,6 +14,7 @@
     <!-- Le styles -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
+    <link href="css/jquery.fileupload-ui.css" rel="stylesheet">
 
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="images/favicon.ico">
@@ -38,17 +39,18 @@
 
 <body>
 
-<div class="topbar">
-    <div class="fill">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
         <div class="container">
             <a class="brand" href="http://mkos.futupeople.com/dippa/">Dippa editor</a>
             <ul class="nav">
                 <li id="tab_doc" class="active" style="display: none"><a href="#">Document</a></li>
                 <li id="tab_ref" style="display: none"><a href="#">References</a></li>
+                <li id="tab_files" style="display: none"><a href="#">Files</a></li>
                 <li id="tab_out" style="display: none"><a href="#">Output</a></li>
             </ul>
-            <button id="save_button" class="btn danger editor_buttons" data-loading-text="saving document...">Save</button>
-            <button id="preview_button" class="btn info editor_buttons" data-loading-text="Preview">Preview</button>
+            <button id="save_button" class="btn btn-danger editor_buttons" data-loading-text="saving document...">Save</button>
+            <button id="preview_button" class="btn btn-info editor_buttons" data-loading-text="Preview">Preview</button>
         </div>
     </div>
 </div>
@@ -129,6 +131,41 @@
                 <span></span><br />
                 <span>Save the document to compile it to PDF</span><br />
             </div>
+
+            <div id="files" style="width: 900px; height: 100%; display: none; ">
+                <div class="row-fluid" style="height: 100%">
+                    <div class="span4" style="height: 100%">
+                        <div class="well" style="padding: 0; height: 100%">
+                            <ul id="filelist" class="nav nav-list" style="padding-top: 8px; padding-bottom: 8px;">
+                                <li class="nav-header">
+                                    Filename
+                                </li>
+                            </ul>
+
+                            <div style="margin: 12px 12px 10px 12px">
+                                <form id="fileupload" action="upload/" method="POST" enctype="multipart/form-data">
+                                    <button style="width: 100%; height: 40px" class="btn fileinput-button">
+                                        <i class="icon-plus"></i>
+                                        <span>Upload new file</span>
+                                        <input type="file" name="files[]" multiple>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span8" style="height: 100%">
+                        <div id="file-preview" style="width: 100%; height: 100%;  text-align: center; font-size: 150%; color: #999; position: relative">
+                            <div id="preview-empty" style="position: absolute; top: 30%; height: 20px; left: 0px; right: 0px;">
+                                Select a file to preview, remove a existing file or upload a new one
+                            </div>
+                            <iframe id="preview-iframe" style="width: 100%; height: 100%; display: none">
+
+                            </iframe>
+                            <img id="preview-image" style="width: 100%" />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -136,37 +173,34 @@
 
 <a href="https://github.com/rap1ds/dippa"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 10001" src="https://a248.e.akamai.net/assets.github.com/img/71eeaab9d563c2b3c590319b398dd35683265e85/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub"></a>
 
+<script id="filelistitem-template" type="text/x-handlebars-template">
+    <a class="filename" href="#"><span class="preview-file">{{filename}}</span> <i class="remove-file icon-remove" style="float: right"></i></a>
+</script>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
 <script src="src/ace-unmin.js" type="text/javascript" charset="utf-8"></script>
 <script src="src/mode-latex.js" type="text/javascript" charset="utf-8"></script>
 <script>
 
 window.Dippa = {};
 
-var changed = false;
-
-window.onbeforeunload = function (e) {
-    if(!changed) {
-        return;
-    }
-
-    e = e || window.event;
-
-    // For IE and Firefox prior to version 4
-    if (e) {
-        e.returnValue = 'You have unsaved changes.';
-    }
-
-    // For Safari
-    return 'You have unsaved changes.';
-};
-
 $(function() {
 
-    var docContent, refContent, mode, editor, session, LatexMode;
+    var docContent, refContent, mode, session, LatexMode;
 
     var splittedPath = window.location.pathname.split('/');
     var id = splittedPath.pop();
+
+    $('#fileupload').fileupload({
+        autoUpload: true,
+        url: 'upload/' + id,
+        done: function(e, data) {
+            data.result.forEach(function(filename) {
+                File.create(filename);
+            });
+        }
+    });
 
     var Hero = Spine.Controller.create({
 
@@ -326,10 +360,10 @@ $(function() {
         sendRequest: function() {
             // Update doc/refContent
             if(mode === "doc") {
-                docContent = session.getValue();
+                docContent = Editor.getValue();
             }
             if(mode === "ref") {
-                refContent = session.getValue();
+                refContent = Editor.getValue();
             }
 
             var value = JSON.stringify({documentContent: docContent, referencesContent: refContent});
@@ -358,103 +392,255 @@ $(function() {
 
     }).init();
 
+    var Editor = Spine.Controller.create({
+
+        init: function() {
+            this.editor = ace.edit('editor');
+            this.session = this.editor.getSession();
+            var LatexMode = require("ace/mode/latex").Mode;
+
+            this.session.setMode(new LatexMode());
+            this.session.setUseWrapMode(true);
+            this.editor.setShowPrintMargin(false);
+
+            this.changed = false;
+
+            this.editor.commands.addCommand({
+                name: 'save',
+                bindKey: {
+                    win: 'Ctrl-S',
+                    mac: 'Command-S',
+                    sender: 'editor'
+                },
+                exec: function(env, args, request) {
+                    SaveButton.save();
+                }
+            });
+
+            this.session.on('change', this.proxy(function() {
+                this.setChanged(true);
+            }));
+        },
+
+        getValue: function() {
+            return this.session.getValue();
+        },
+
+        setValue: function(value) {
+            this.session.setValue(value);
+        },
+
+        setChanged: function(value) {
+            this.changed = value;
+        },
+
+        hasChanged: function() {
+            return this.changed;
+        }
+
+    }).init();
+
+    var File = Spine.Model.sub();
+    File.configure('File', 'filename');
+
+    File.extend({
+        loadFromServer: function() {
+            $.ajax({
+                type: "GET",
+                url: 'uploads/' + id,
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function(response) {
+                    if(!Array.isArray(response)) {
+                        return
+                    }
+
+                    response.forEach(function(filename) {
+                        File.create({filename: filename});
+                    });
+                }
+            });
+        }
+    });
+
+    var FilePreview = Spine.Controller.create({
+        el: $('#file-preview'),
+
+        proxied: ['clearPreview'],
+
+        elements: {
+            '#preview-empty': 'empty',
+            '#preview-iframe': 'iframe',
+            '#preview-image': 'image'
+        },
+
+        init: function() {
+
+        },
+
+        previewFile: function(item) {
+            var previewPath = 'repositories/' + id + '/',
+                isPDF = item.filename.match(/\.pdf$/),
+                target = isPDF ? this.iframe : this.image,
+                toBeHidden = isPDF ? this.image : this.iframe;
+
+            this.bindListeners(item);
+            this.empty.hide();
+
+            target.attr('src', previewPath + item.filename).show();
+            toBeHidden.hide();
+        },
+
+        bindListeners: function(item) {
+            if(this.currentItem) {
+                this.currentItem.unbind("destroy", this.clearPreview);
+            }
+
+            this.currentItem = item;
+
+            if(this.currentItem) {
+                item.bind("destroy", this.proxy(this.clearPreview));
+            }
+        },
+
+        clearPreview: function() {
+            this.bindListeners(null);
+            this.image.hide();
+            this.iframe.hide();
+            this.empty.show();
+        }
+        
+    }).init();
+
+    var FileItem = Spine.Controller.sub({
+
+        // Delegate the click event to a local handler
+        events: {
+            "click .preview-file": "preview",
+            "click .remove-file": "remove"
+        },
+
+        tag: 'li',
+
+        // Bind events to the record
+        init: function() {
+            if ( !this.item ) throw "@item required";
+            this.item.bind("update", this.proxy(this.render));
+            this.item.bind("destroy", this.proxy(this.removeEl));
+        },
+
+        wtf: function() {
+            console.log('destroy');
+            debugger;
+        },
+
+        render: function(item){
+            if (item) this.item = item;
+
+            this.html(FileItem.template(this.item));
+            return this;
+        },
+
+        removeEl: function() {
+            this.el.remove();
+        },
+
+        // Called after an element is destroyed
+        remove: function(){
+            $.ajax({
+                type: 'DELETE',
+                url: 'upload/' + id + '/' + this.item.filename,
+                success: this.proxy(function() {
+                    this.item.destroy();
+                })
+            });
+        },
+
+        preview: function() {
+            FilePreview.previewFile(this.item);
+        },
+
+        click: function(){
+
+        }
+    }, {
+        template: Handlebars.compile($("#filelistitem-template").html())
+    });
+
+    var Files = Spine.Controller.sub({
+        el: $('#filelist'),
+
+        init: function(){
+            File.bind("refresh", this.proxy(this.addAll));
+            File.bind("create",  this.proxy(this.addOne));
+        },
+
+        addOne: function(item){
+            var file = new FileItem({item: item});
+            this.append(file.render());
+        },
+
+        addAll: function(){
+            File.each(this.proxy(this.addOne));
+        }
+    });
+
+    var filesController = new Files();
+
+    File.loadFromServer();
+
+    window.onbeforeunload = function (e) {
+        if(!Editor.hasChanged()) {
+            return;
+        }
+
+        e = e || window.event;
+
+        // For IE and Firefox prior to version 4
+        if (e) {
+            e.returnValue = 'You have unsaved changes.';
+        }
+
+        // For Safari
+        return 'You have unsaved changes.';
+    };
+
     function setMode(newMode) {
         if(mode === newMode) {
             return;
         }
 
         if(mode === "doc") {
-            docContent = session.getValue();
+            docContent = Editor.getValue();
         }
 
         if(mode === "ref") {
-            refContent = session.getValue();
+            refContent = Editor.getValue();
         }
 
         if(newMode === "doc") {
-            session.setValue(docContent);
-            session.setMode(new LatexMode());
-            session.setUseWrapMode(true);
+            Editor.setValue(docContent);
         }
 
         if(newMode === "ref") {
-
-            session.setValue(refContent);
-            session.setUseWrapMode(true);
+            Editor.setValue(refContent);
         }
 
         mode = newMode;
 
         // FIXME
-        changed = false;
+        Editor.setChanged(false);
     }
 
     function loadId(id) {
-        editor = ace.edit("editor");
-        session = editor.getSession();
-
-        editor.commands.addCommand({
-            name: 'save',
-            bindKey: {
-                win: 'Ctrl-S',
-                mac: 'Command-S',
-                sender: 'editor'
-            },
-            exec: function(env, args, request) {
-                SaveButton.save();
-            }
-        });
-
-        LatexMode = require("ace/mode/latex").Mode;
-
-        session.on('change', function() {
-            changed = true;
-        });
-
         $('.editor_buttons').fadeIn('slow');
         $('#tab_doc').fadeIn('slow');
         $('#tab_ref').fadeIn('slow');
+        $('#tab_files').fadeIn('slow');
         $('#tab_out').fadeIn('slow');
 
-        editor.setShowPrintMargin(false);
-
-        /*
-         $('#save_button').click(function() {
-         var $saveButton = $(this);
-         var $previewButton = $('#preview_button');
-
-         $saveButton.button('loading');
-         $previewButton.button('loading');
-
-         // Update doc/refContent
-         if(mode === "doc") {
-         docContent = session.getValue();
-         }
-         if(mode === "ref") {
-         refContent = session.getValue();
-         }
-
-         // FIX THIS THIS IS BROKEN!!!
-         var value = JSON.stringify({documentContent: docContent, referencesContent: refContent});
-
-         $.ajax({
-         type: "POST",
-         url: 'save/' + id,
-         dataType: 'json',
-         contentType: 'application/json',
-         data: value,
-         processData: false,
-         complete: function(response) {
-         $saveButton.button('reset');
-         $previewButton.button('reset');
-         changed = false;
-         }
-         });
-         });
-         */
-
         $('#preview_button').click(function() {
-            window.open('preview/' + id + '.pdf', '_newtab');
+            window.open('repositories/' + id + '/dippa.pdf', '_newtab');
         });
 
         $.ajax({
@@ -477,28 +663,6 @@ $(function() {
         $('#info_header').show();
         $('#info').show();
 
-        console.log('IDNULL');
-
-        function activate(el) {
-            console.log('activate', el);
-            el.animate({opacity: 1});
-            el.find('p').slideDown();
-        }
-
-        function inactivate(el) {
-            console.log('inactivate', el);
-            el.animate({opacity: 0.25});
-            el.find('p').slideUp();
-        }
-
-        $('#step2_done').click(function() {
-            debugger;
-
-        });
-        $('#step3_done').click(function() {
-
-        });
-
         $('#step2').css('opacity', 0.25).find('p').hide();
         $('#step3').css('opacity', 0.25).find('p').hide();;
 
@@ -509,35 +673,54 @@ $(function() {
 
     var $tab_doc = $('#tab_doc');
     var $tab_ref = $('#tab_ref');
+    var $tab_files = $('#tab_files');
     var $tab_out = $('#tab_out');
+    var allTabs = [$tab_doc, $tab_ref, $tab_files, $tab_out];
+
+    var activateTab = function($activeTab) {
+        for(var i = 0, len = allTabs.length; i < len; i++) {
+            var $tab = allTabs[i];
+
+            if($tab === $activeTab) {
+                $tab.addClass('active');
+            } else {
+                $tab.removeClass('active');
+            }
+        }
+    }
 
     $tab_doc.click(function() {
-        $tab_ref.removeClass('active');
-        $tab_out.removeClass('active');
-        $tab_doc.addClass('active');
+        activateTab($tab_doc);
 
         setMode("doc");
         $('#editor').show();
         $('#console').hide();
+        $('#files').hide();
     });
 
     $tab_ref.click(function() {
-        $tab_doc.removeClass('active');
-        $tab_out.removeClass('active');
-        $tab_ref.addClass('active');
+        activateTab($tab_ref);
 
         setMode("ref");
         $('#editor').show();
         $('#console').hide();
+        $('#files').hide();
+    });
+
+    $tab_files.click(function() {
+        activateTab($tab_files);
+
+        $('#editor').hide();
+        $('#console').hide();
+        $('#files').show();
     });
 
     $tab_out.click(function() {
-        $tab_doc.removeClass('active');
-        $tab_ref.removeClass('active');
-        $tab_out.addClass('active');
+        activateTab($tab_out);
 
         $('#editor').hide();
         $('#console').show();
+        $('#files').hide();
     });
 
 });
@@ -546,6 +729,11 @@ $(function() {
 <script src="scripts/github.js"></script>
 <script src="scripts/bootstrap-buttons.js"></script>
 <script src="scripts/spine/spine.js"></script>
+<script src="scripts/spine/ajax.js"></script>
+<script src="scripts/jquery.iframe-transport.js"></script>
+<script src="scripts/jquery.fileupload.js"></script>
+<script src="scripts/jquery.fileupload-ui.js"></script>
+<script src="scripts/handlebars-1.0.0.beta.6.js"></script>
 
 </body>
 </html>

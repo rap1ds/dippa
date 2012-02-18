@@ -9,6 +9,7 @@
         "node-promise": "",
         "shortid": "1.0.5",
         "mongoose": "2.4.9",
-        "jqtpl": ""
+        "jqtpl": "",
+        "promised-io": "0.3.2"
     }
 }

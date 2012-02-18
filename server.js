@@ -19,8 +19,10 @@ var Mongo = require('./modules/mongo');
 var jqtpl = require("jqtpl");
 var p = require('node-promise');
 var Promise = p.Promise;
+var PromisedIO = require("promised-io/promise");
+var PromisedFS = require("promised-io/fs").fs;
 
-var REPOSITORY_DIR = "./repositories/";
+var REPOSITORY_DIR = "./public/repositories/";
 var PORT = 5555;
 
 Mongo.init();
@@ -50,9 +52,9 @@ app.configure('development', function(){
 
 app.configure('production', function(){
 
-  var oneYear = 31557600000;
-  app.use(express.static(__dirname + '/public', { maxAge: oneYear }));
-  app.use(express.errorHandler());
+    var oneYear = 31557600000;
+    app.use(express.static(__dirname + '/public', { maxAge: oneYear }));
+    app.use(express.errorHandler());
 });
 
 function create(id, owner, name, email, existingRepo, success, error) {
@@ -74,8 +76,8 @@ function create(id, owner, name, email, existingRepo, success, error) {
 
     if(existingRepo) {
         console.log('Creating existing repo');
-        var rm = new Command('rm -rf repositories/1234');
-        var mv = new Command('mv ' + name + ' repositories/1234');
+        var rm = new Command('rm -rf ' + REPOSITORY_DIR + '1234');
+        var mv = new Command('mv ' + name + ' ' + REPOSITORY_DIR + '1234');
         commandsToRun = [clone, rm, mv, cpDoc, cpRef, add, commit, push];
     } else {
         console.log('Creating fresh new repo');
@@ -151,7 +153,7 @@ app.get('/load/:id', function(req, res){
 
 app.post('/save/:id', function(req, res){
     var id = req.params.id;
-    var repoDir = 'repositories/' + id + '/';
+    var repoDir = REPOSITORY_DIR + id + '/';
     var texFile = repoDir + 'dippa.tex';
     var refFile = repoDir + 'ref.bib';
 
@@ -192,9 +194,8 @@ app.post('/save/:id', function(req, res){
         var latex2 = new Command('latex --interaction=nonstopmode dippa', repoDir);
         var bibtex2 = new Command('bibtex dippa', repoDir);
         var pdflatex = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
-        var copy = new Command('cp ' + repoDir + 'dippa.pdf public/preview/' + id + '.pdf');
 
-        commandline.runAll([latex1, bibtex1, latex2, bibtex2, pdflatex, copy]).then(function(output) {
+        commandline.runAll([latex1, bibtex1, latex2, bibtex2, pdflatex]).then(function(output) {
             previewPromise.resolve(output);
         });
 
@@ -210,6 +211,79 @@ app.post('/save/:id', function(req, res){
         });
 
     });
+});
+
+function readdir(repoDir, successCallback, errorCallback) {
+    var exclude = ['.git', 'dippa.tex', 'ref.bib', 'dippa.aux', 'dippa.bbl', 'dippa.blg', 'dippa.dvi', 'dippa.log', 'dippa.pdf'];
+
+    fs.readdir(repoDir, function(err, files) {
+        if(err) {
+            errorCallback(err);
+        }
+
+        files = files.filter(function(value) {
+            return exclude.indexOf(value) === -1;
+        });
+
+        successCallback(files);
+    });
+}
+
+app.get('/uploads/:id', function(req, res, next) {
+    var repoDir = REPOSITORY_DIR + req.params.id + '/';
+
+    readdir(repoDir, function success(files) {
+        res.send(JSON.stringify(files));
+    }, function error(err) {
+        res.send(err);
+    });
+});
+
+app.post('/upload/:id', function(req, res, next) {
+    var repoDir = REPOSITORY_DIR + req.params.id + '/';
+    var files = req.files.files;
+
+    var copyPromises = [];
+    var resultMessage = [];
+    files.forEach(function(file) {
+        var deferred = new PromisedIO.Deferred();
+
+        var fs = require('fs'),
+            util = require('util');
+
+        var is = fs.createReadStream(file.path)
+        var os = fs.createWriteStream(repoDir + file.name);
+
+        util.pump(is, os, function() {
+            fs.unlink(file.path, function() {
+                resultMessage.push({filename: file.name});
+                deferred.resolve();
+            });
+        });
+        copyPromises.push(deferred);
+    });
+
+    var allFilesCopied = PromisedIO.all(copyPromises);
+
+    allFilesCopied.then(function() {
+        console.log('All files copied', resultMessage);
+        res.send(JSON.stringify(resultMessage));
+    });
+});
+
+app.delete('/upload/:id/:filename', function(req, res, next) {
+    var repoDir = REPOSITORY_DIR + req.params.id + '/';
+    var filename = req.params.filename;
+
+    if(filename.length === 0) {
+        return;
+    }
+
+    var filepath = repoDir + filename;
+    console.log('Removing file', filepath);
+    fs.unlink(filepath, function() {
+        res.send();
+    })
 });
 
 app.get('/:id', function(req, res, next) {
