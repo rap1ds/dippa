@@ -87,8 +87,8 @@ function create(id, owner, name, email, existingRepo, success, error) {
 
         Mongo.createNew(id, owner, name, email).then(function() {
             success(id);
-        }, function(error) {
-            error(error);
+        }, function(e) {
+            error(e);
         });
     });
 }
