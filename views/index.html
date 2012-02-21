@@ -23,15 +23,15 @@
 
     <script type="text/javascript">
 
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-29338354-1']);
-      _gaq.push(['_trackPageview']);
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-29338354-1']);
+        _gaq.push(['_trackPageview']);
 
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
 
     </script>
 </head>
@@ -157,6 +157,8 @@ window.onbeforeunload = function (e) {
 
 $(function() {
 
+    var docContent, refContent, mode, editor, session, LatexMode;
+
     var Hero = Spine.Controller.create({
 
         el: $('#hero'),
@@ -269,7 +271,71 @@ $(function() {
 
     }).init();
 
-    var docContent, refContent, mode, editor, session, LatexMode;
+    var PreviewButton = Spine.Controller.create({
+        el: $('#preview_button'),
+
+        buttonLoading: function() {
+            this.el.button('loading');
+        },
+
+        buttonReset: function() {
+            this.el.button('reset');
+        }
+
+    }).init();
+
+    var SaveButton = Spine.Controller.create({
+        el: $('#save_button'),
+
+        events: {
+            'click': 'save'
+        },
+
+        buttonLoading: function() {
+            this.el.button('loading');
+        },
+
+        buttonReset: function() {
+            this.el.button('reset');
+        },
+
+        save: function() {
+            var $saveButton = $(this);
+            var $previewButton = $('#preview_button');
+
+            this.buttonLoading();
+            PreviewButton.buttonLoading();
+
+            this.sendRequest();
+        },
+
+        sendRequest: function() {
+            // Update doc/refContent
+            if(mode === "doc") {
+                docContent = session.getValue();
+            }
+            if(mode === "ref") {
+                refContent = session.getValue();
+            }
+
+            var value = JSON.stringify({documentContent: docContent, referencesContent: refContent});
+
+            $.ajax({
+                type: "POST",
+                url: 'save/' + id,
+                dataType: 'json',
+                contentType: 'application/json',
+                data: value,
+                processData: false,
+                complete: this.proxy(function(response) {
+                    this.buttonReset();
+                    PreviewButton.buttonReset();
+                    changed = false;
+                })
+            });
+        }
+
+    }).init();
 
     function setMode(newMode) {
         if(mode === newMode) {
@@ -306,6 +372,18 @@ $(function() {
         editor = ace.edit("editor");
         session = editor.getSession();
 
+        editor.commands.addCommand({
+            name: 'save',
+            bindKey: {
+                win: 'Ctrl-S',
+                mac: 'Command-S',
+                sender: 'editor'
+            },
+            exec: function(env, args, request) {
+                SaveButton.save();
+            }
+        });
+
         LatexMode = require("ace/mode/latex").Mode;
 
         session.on('change', function() {
@@ -318,38 +396,40 @@ $(function() {
 
         editor.setShowPrintMargin(false);
 
-        $('#save_button').click(function() {
-            var $saveButton = $(this);
-            var $previewButton = $('#preview_button');
+        /*
+         $('#save_button').click(function() {
+         var $saveButton = $(this);
+         var $previewButton = $('#preview_button');
 
-            $saveButton.button('loading');
-            $previewButton.button('loading');
+         $saveButton.button('loading');
+         $previewButton.button('loading');
 
-            // Update doc/refContent
-            if(mode === "doc") {
-                docContent = session.getValue();
-            }
-            if(mode === "ref") {
-                refContent = session.getValue();
-            }
+         // Update doc/refContent
+         if(mode === "doc") {
+         docContent = session.getValue();
+         }
+         if(mode === "ref") {
+         refContent = session.getValue();
+         }
 
-            // FIX THIS THIS IS BROKEN!!!
-            var value = JSON.stringify({documentContent: docContent, referencesContent: refContent});
+         // FIX THIS THIS IS BROKEN!!!
+         var value = JSON.stringify({documentContent: docContent, referencesContent: refContent});
 
-            $.ajax({
-                type: "POST",
-                url: 'save/' + id,
-                dataType: 'json',
-                contentType: 'application/json',
-                data: value,
-                processData: false,
-                complete: function(response) {
-                    $saveButton.button('reset');
-                    $previewButton.button('reset');
-                    changed = false;
-                }
-            });
-        });
+         $.ajax({
+         type: "POST",
+         url: 'save/' + id,
+         dataType: 'json',
+         contentType: 'application/json',
+         data: value,
+         processData: false,
+         complete: function(response) {
+         $saveButton.button('reset');
+         $previewButton.button('reset');
+         changed = false;
+         }
+         });
+         });
+         */
 
         $('#preview_button').click(function() {
             window.open('preview/' + id + '.pdf', '_newtab');
