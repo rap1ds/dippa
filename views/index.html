@@ -45,6 +45,7 @@
             <ul class="nav">
                 <li id="tab_doc" class="active" style="display: none"><a href="#">Document</a></li>
                 <li id="tab_ref" style="display: none"><a href="#">References</a></li>
+                <li id="tab_out" style="display: none"><a href="#">Output</a></li>
             </ul>
             <button id="save_button" class="btn danger editor_buttons" data-loading-text="saving document...">Save</button>
             <button id="preview_button" class="btn info editor_buttons" data-loading-text="Preview">Preview</button>
@@ -123,6 +124,11 @@
     <div id="editor_container" style="display: none; width: 900px; height: 100%; position: relative">
         <div style="position: absolute; top: 60px; bottom: 20px; left: 0; right: 0">
             <div id="editor" style="width: 900px; height: 100%"></div>
+            <div id="console" style="overflow: scroll; background-color: #222; color: rgb(40, 254, 20); display: none; width: 900px; height: 100%; border: 1px solid #CCC; padding: 5px; font-family: monospace;">
+                <span>Console output</span><br />
+                <span></span><br />
+                <span>Save the document to compile it to PDF</span><br />
+            </div>
         </div>
     </div>
 
@@ -306,6 +312,11 @@ $(function() {
             this.buttonLoading();
             PreviewButton.buttonLoading();
 
+            $('#console').empty();
+            $('#console').append('<span>Saving and compiling document</span><br />');
+            $('#console').append('<span></span><br />');
+            $('#console').append('<span>Please wait a moment...</span><br />');
+
             this.sendRequest();
         },
 
@@ -331,6 +342,13 @@ $(function() {
                     this.buttonReset();
                     PreviewButton.buttonReset();
                     changed = false;
+                }),
+                success: this.proxy(function(response) {
+                    $console = $('#console');
+                    $console.empty();
+                    $.each(response, function(key, value) {
+                        $console.append('<span>' + value.output + '</span><br />');
+                    })
                 })
             });
         }
@@ -393,6 +411,7 @@ $(function() {
         $('.editor_buttons').fadeIn('slow');
         $('#tab_doc').fadeIn('slow');
         $('#tab_ref').fadeIn('slow');
+        $('#tab_out').fadeIn('slow');
 
         editor.setShowPrintMargin(false);
 
@@ -490,20 +509,36 @@ $(function() {
 
     var $tab_doc = $('#tab_doc');
     var $tab_ref = $('#tab_ref');
+    var $tab_out = $('#tab_out');
 
     $tab_doc.click(function() {
         $tab_ref.removeClass('active');
+        $tab_out.removeClass('active');
         $tab_doc.addClass('active');
 
         setMode("doc");
+        $('#editor').show();
+        $('#console').hide();
     });
 
     $tab_ref.click(function() {
         $tab_doc.removeClass('active');
+        $tab_out.removeClass('active');
         $tab_ref.addClass('active');
 
         setMode("ref");
-    })
+        $('#editor').show();
+        $('#console').hide();
+    });
+
+    $tab_out.click(function() {
+        $tab_doc.removeClass('active');
+        $tab_ref.removeClass('active');
+        $tab_out.addClass('active');
+
+        $('#editor').hide();
+        $('#console').show();
+    });
 
 });
 

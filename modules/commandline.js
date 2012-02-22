@@ -20,31 +20,38 @@ var CommandLine = {
     _run: function(promise, cmd, args, workingDir) {
         var spawnOperation = spawn(cmd, args, {cwd: workingDir});
 
-        spawnOperation.on('exit', function() {
-            promise.resolve();
+        var output = new CommandLine.Output();
+
+        spawnOperation.on('exit', function(code) {
+            console.log('child process exited with code ' + code);
+            promise.resolve(output.getOutput());
         });
         spawnOperation.stdout.on('data', function (data) {
-            console.log('STDOUT: ' + data.toString('utf-8'));
+            var string = data.toString('utf-8');
+            output.stdout(string);
         });
 
         spawnOperation.stderr.on('data', function (data) {
-            console.log('STDERR: ' + data.toString('utf-8'));
+            var string = data.toString('utf-8');
+            output.stderr(string);
         });
     },
 
     runAll: function(commands) {
         var promise = new Promise();
+        var allOutputs = [];
 
         function runCommand() {
             var commandToRun = commands.shift();
 
             if(commandToRun) {
-                commandToRun.promise.then(function() {
+                commandToRun.promise.then(function(output) {
+                    allOutputs = allOutputs.concat(output);
                     runCommand();
                 });
                 commandToRun.run();
             } else {
-                promise.resolve();
+                promise.resolve(allOutputs);
             }
         }
 
@@ -54,12 +61,96 @@ var CommandLine = {
     }
 }
 
+CommandLine.Output = function() {
+    this.allOutputs = [];
+    this.stdoutBuffer;
+    this.stderrBuffer;
+}
+
+CommandLine.Output.prototype.stdout = function(output) {
+    // Add to buffer
+    var buf = this.stdoutBuffer || "";
+    this.stdoutBuffer = buf + output;
+
+    // Flush buffer
+    this.flushStderr(true);
+    this.flushStdout();
+}
+
+CommandLine.Output.prototype.flushStdout = function(forceEmpty) {
+    if(!this.stdoutBuffer) {
+        return;
+    }
+
+    var lines = this.stdoutBuffer.split('\n');
+    var len = lines.length;
+
+    for(var i = 0; i < len - 1; i++) {
+        var line = lines.shift();
+        this.allOutputs.push({type: "stdout", output: line});
+        console.log('OUT ' + line);
+    }
+
+    // Last line
+    if(len > 0 && forceEmpty === true) {
+        var lastLine = lines.shift();
+        this.allOutputs.push({type: "stdout", output: lastLine});
+        console.log('ERR ' + lastLine);
+
+        this.stdoutBuffer = null;
+    } else {
+        this.stdoutBuffer = lines.shift();
+    }
+}
+
+CommandLine.Output.prototype.stderr = function(output) {
+    // Add to buffer
+    var buf = this.stderrBuffer || "";
+    this.stderrBuffer = buf + output;
+
+    // Flush buffer
+    this.flushStdout(true);
+    this.flushStderr();
+}
+
+CommandLine.Output.prototype.flushStderr = function(forceEmpty) {
+    if(!this.stderrBuffer) {
+        return;
+    }
+
+    var lines = this.stderrBuffer.split('\n');
+    var len = lines.length;
+
+    // More than one line
+    for(var i = 0; i < len - 1; i++) {
+        var line = lines.shift();
+        this.allOutputs.push({type: "stderr", output: line});
+        console.log('OUT' + line);
+    }
+
+    // Last line
+    if(len > 0 && forceEmpty === true) {
+        var lastLine = lines.shift();
+        this.allOutputs.push({type: "stderr", output: lastLine});
+        console.log('ERR ' + lastLine);
+    }
+}
+
+CommandLine.Output.prototype.getOutput = function() {
+    this.flushStdout(true);
+    this.flushStderr(true);
+
+    return this.allOutputs;
+}
+
 CommandLine.Command = function(cmd, workingDir) {
     var splitted = CommandLine._splitCmd(cmd);
     this.cmd = splitted.cmd;
     this.args = splitted.args;
     this.cwd = workingDir;
     this.promise = new Promise();
+    this.stdout = [];
+    this.stderr = [];
 }
 
 CommandLine.Command.prototype.run = function() {

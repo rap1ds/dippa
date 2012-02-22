@@ -183,19 +183,19 @@ app.post('/save/:id', function(req, res){
         var previewPromise = new Promise();
         var pushPromise = new Promise();
 
-        previewPromise.then(function() {
-            res.send("ok");
+        previewPromise.then(function(output) {
+            res.send(output);
         });
 
-        var latex1 = new Command('latex dippa', repoDir);
+        var latex1 = new Command('latex --interaction=nonstopmode dippa', repoDir);
         var bibtex1 = new Command('bibtex dippa', repoDir);
-        var latex2 = new Command('latex dippa', repoDir);
+        var latex2 = new Command('latex --interaction=nonstopmode dippa', repoDir);
         var bibtex2 = new Command('bibtex dippa', repoDir);
-        var pdflatex = new Command('pdflatex dippa', repoDir);
+        var pdflatex = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
         var copy = new Command('cp ' + repoDir + 'dippa.pdf public/preview/' + id + '.pdf');
 
-        commandline.runAll([latex1, bibtex1, latex2, bibtex2, pdflatex, copy]).then(function() {
-            previewPromise.resolve();
+        commandline.runAll([latex1, bibtex1, latex2, bibtex2, pdflatex, copy]).then(function(output) {
+            previewPromise.resolve(output);
         });
 
         var commitMessage = "Update";
