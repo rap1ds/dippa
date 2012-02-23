@@ -165,6 +165,9 @@ $(function() {
 
     var docContent, refContent, mode, editor, session, LatexMode;
 
+    var splittedPath = window.location.pathname.split('/');
+    var id = splittedPath.pop();
+
     var Hero = Spine.Controller.create({
 
         el: $('#hero'),
@@ -263,7 +266,7 @@ $(function() {
                     // FIXME
                 },
                 complete: function(response) {
-                    var id = response.responseText;
+                    id = response.responseText;
                     history.pushState({}, "", id);
 
                     $('#loader').hide();
@@ -465,9 +468,6 @@ $(function() {
             }
         });
     }
-
-    var splittedPath = window.location.pathname.split('/');
-    var id = splittedPath.pop();
 
     if(!id) {
 
