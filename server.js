@@ -65,8 +65,8 @@ function create(id, owner, name, email, existingRepo, success, error) {
     var config = new Command('git config user.email mikko.koski@aalto.fi');
     var remote = new Command('git remote add origin ssh://dippa.github.com/' + owner + '/' + name + '.git', repoDir);
     var pull = new Command('git pull');
-    var cpDoc = new Command('cp ../../template.tex ./dippa.tex', repoDir);
-    var cpRef = new Command('cp ../../template_ref.bib ./ref.bib', repoDir);
+    var cpDoc = new Command('cp ../../../template.tex ./dippa.tex', repoDir);
+    var cpRef = new Command('cp ../../../template_ref.bib ./ref.bib', repoDir);
     var add = new Command('git add dippa.tex', repoDir);
     var commit = new Command('git commit -m FirstCommit', repoDir);
     var push = new Command('git push -u origin master', repoDir);

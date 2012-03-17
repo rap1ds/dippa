@@ -43,11 +43,11 @@
     <div class="navbar-inner">
         <div class="container">
             <a class="brand" href="http://mkos.futupeople.com/dippa/">Dippa editor</a>
-            <ul class="nav">
-                <li id="tab_doc" class="active" style="display: none"><a href="#">Document</a></li>
-                <li id="tab_ref" style="display: none"><a href="#">References</a></li>
-                <li id="tab_files" style="display: none"><a href="#">Files</a></li>
-                <li id="tab_out" style="display: none"><a href="#">Output</a></li>
+            <ul id="nav" class="nav" style="display: none">
+                <li id="tab_doc"><a href="#">Document</a></li>
+                <li id="tab_ref"><a href="#">References</a></li>
+                <li id="tab_files"><a href="#">Files</a></li>
+                <li id="tab_out"><a href="#">Output</a></li>
             </ul>
             <button id="save_button" class="btn btn-danger editor_buttons" data-loading-text="saving document...">Save</button>
             <button id="preview_button" class="btn btn-info editor_buttons" data-loading-text="Preview">Preview</button>
@@ -60,13 +60,13 @@
     <div id="hero" class="hero-unit" style="display: none; margin-top: 60px;">
         <h1>Hello, this is Dippa Editor!</h1>
         <p>With Dippa Editor, you can create professional looking academic white papers. Dippa editor uses LaTeX for laying out your document, but don't worry, using LaTeX has never been this easy! With the web-based editor you can skip all the installing steps of LaTeX!</p>
-        <p><a id="create_dippa" class="btn primary large">Create a new Dippa &raquo;</a></p>
+        <p><a id="create_dippa" class="btn btn-primary btn-large">Create a new Dippa &raquo;</a></p>
 
         <div id="github_instructions" style="display: none">
             <div id="step1" class="step active">
                 <h2><span style="font-size: 35px;">1.</span> Create a free Github account</h2>
                 <p>
-                    <a id="step1_done" class="btn success" style="float: right">Done</a>
+                    <a id="step1_done" class="btn btn-success" style="float: right">Done</a>
                     If you don't already have one, <a href="https://github.com/signup/free">sign up here.</a>
                 </p>
             </div>
@@ -74,7 +74,7 @@
             <div id="step2" class="step inactive">
                 <h2><span style="font-size: 35px;">2.</span> Create a new Github repository</h2>
                 <p>Log in and create a new empty repository. <a href="https://github.com/repositories/new">You can do it here.</a>
-                    <a id="step2_done" class="btn success" style="float: right">Done</a>
+                    <a id="step2_done" class="btn btn-success" style="float: right">Done</a>
                     <br />When your done, copy-paste your repository URL here:
                     <br />
                 <form>
@@ -88,7 +88,7 @@
             <div id="step3" class="step inactive">
                 <h2><span style="font-size: 35px;">3.</span> Add user "dippa" as a collaborator to the repository</h2>
                 <p>
-                    <a id="step3_done" class="btn success" style="float: right">Done</a>
+                    <a id="step3_done" class="btn btn-success" style="float: right">Done</a>
                     Go to the admin section of your repository. <a id="admin_link" href="" target="_blank">You find the admin section here.</a> Type "dippa" to the input field and click add.
                 </p>
             </div>
@@ -96,21 +96,21 @@
     </div>
 
     <div id="info_header" class="row" style="display: none">
-        <div class="span16">
+        <div class="span12">
             <h1>So, what's in it for me?</h1>
         </div>
     </div>
 
     <div id="info" class="row" style="display: none">
-        <div class="span5">
+        <div class="span4">
             <h2>Online LaTeX editor</h2>
             <p><img src="img/ace.png" width="100" style="float: right; margin: 10px" />Dippa editor is an online LaTeX editor. It has a LaTeX <b>syntax hilighting</b> in it. Dippa editor uses <b>Ace editor</b> which is one of the best web-based editor components available.</p>
         </div>
-        <div class="span5">
+        <div class="span4">
             <h2>Github integration</h2>
             <p><img src="img/github.png" width="100" style="float: right; margin: 10px" />Your Dippa is always in safe a place! Thanks to the <b>Github integration</b>, you don't lose any of your stuff if the server room burns down or even if you delete the whole document yourself. Github provides a <b>version control system</b>, which means that it saves all the previous versions of your document. You can easily go back to the previous version, if something unexpected would happen.</p>
         </div>
-        <div class="span5">
+        <div class="span4">
             <h2>No need user accounts</h2>
             <p>After you've created a new Dippa, you'll be directed to <b>a secret URL</b> where your document is. You can come back to your document with this URL without typing username or password. Easy as it can be!</p>
 
@@ -181,559 +181,130 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
 <script src="src/ace-unmin.js" type="text/javascript" charset="utf-8"></script>
 <script src="src/mode-latex.js" type="text/javascript" charset="utf-8"></script>
-<script>
-
-window.Dippa = {};
-
-$(function() {
-
-    var docContent, refContent, mode, session, LatexMode;
-
-    var splittedPath = window.location.pathname.split('/');
-    var id = splittedPath.pop();
-
-    $('#fileupload').fileupload({
-        autoUpload: true,
-        url: 'upload/' + id,
-        done: function(e, data) {
-            data.result.forEach(function(filename) {
-                File.create(filename);
-            });
-        }
-    });
-
-    var Hero = Spine.Controller.create({
-
-        el: $('#hero'),
-        events: {
-            'click #create_dippa': 'createDippa',
-            'click #step1_done': 'step1Done',
-            'click #step2_done': 'step2Done',
-            'click #step3_done': 'step3Done'
-        },
-        elements: {
-            '#github_instructions': 'instructions',
-            '#step1': 'step1',
-            '#step2': 'step2',
-            '#step3': 'step3',
-            '#repository_url': 'repositoryUrl',
-            '#repository_url_container': 'repositoryUrlContainer',
-            '#admin_link': 'adminLink'
-        },
-        proxied: ['createRequest'],
-
-        createDippa: function() {
-            console.log('Dippa create clicked');
-            this.instructions.slideDown();
-            $('#info').fadeOut();
-            $('#info_header').fadeOut();
-        },
-
-        step1Done: function() {
-            this.inactivate(this.step1);
-            this.activate(this.step2);
-        },
-
-        step2Done: function() {
-            this.repositoryInfo = Dippa.Github.parseRepositoryUrl(this.repositoryUrl.val());
-
-            if(!this.repositoryInfo) {
-                this.repositoryUrlContainer.addClass('error');
-                return;
-            }
-
-            this.repositoryUrlContainer.removeClass('error').addClass('success');
-
-            this.adminLink.attr('href',
-                    'https://github.com/' + this.repositoryInfo.owner + '/' +
-                            this.repositoryInfo.name + '/admin/collaboration');
-
-            this.inactivate(this.step2);
-            this.activate(this.step3)
-        },
-
-        hideInstructions: function(callback) {
-            this.instructions.slideUp(this.proxy(function() {
-                var oldOffset = this.el.offset();
-                var $temp = this.el.clone().appendTo('body');
-                $temp.css('position', 'absolute')
-                        .css('left', oldOffset.left)
-                        .css('width', '820px')
-                        .css('top', oldOffset.top)
-                        .css('marginTop', 0)
-                        .css('zIndex', 1000);
-                this.el.hide();
-
-                $temp.animate({
-                    left: '-940'
-                }, function() {
-                    callback();
-                });
-            }));
-        },
-
-        step3Done: function() {
-            this.hideInstructions(this.proxy(function() {
-                $('#loader').show();
-                this.createRequest();
-            }));
-        },
-
-        activate: function(el) {
-            el.animate({opacity: 1});
-            el.find('p').slideDown();
-        },
-
-        inactivate: function(el) {
-            el.animate({opacity: 0.25});
-            el.find('p').slideUp();
-        },
-
-        createRequest: function() {
-            $.ajax({
-                url: 'create',
-                type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json',
-                data: JSON.stringify({repo: this.repositoryInfo}),
-                error: function(err) {
-                    // FIXME
-                },
-                complete: function(response) {
-                    id = response.responseText;
-                    history.pushState({}, "", id);
-
-                    $('#loader').hide();
-
-                    $('#editor_container').show('slow', function() {
-                        loadId(id);
-                    });
-                }
-            });
-        }
-
-    }).init();
-
-    var PreviewButton = Spine.Controller.create({
-        el: $('#preview_button'),
-
-        buttonLoading: function() {
-            this.el.button('loading');
-        },
-
-        buttonReset: function() {
-            this.el.button('reset');
-        }
-
-    }).init();
-
-    var SaveButton = Spine.Controller.create({
-        el: $('#save_button'),
-
-        events: {
-            'click': 'save'
-        },
-
-        buttonLoading: function() {
-            this.el.button('loading');
-        },
-
-        buttonReset: function() {
-            this.el.button('reset');
-        },
-
-        save: function() {
-            var $saveButton = $(this);
-            var $previewButton = $('#preview_button');
-
-            this.buttonLoading();
-            PreviewButton.buttonLoading();
-
-            $('#console').empty();
-            $('#console').append('<span>Saving and compiling document</span><br />');
-            $('#console').append('<span></span><br />');
-            $('#console').append('<span>Please wait a moment...</span><br />');
-
-            this.sendRequest();
-        },
-
-        sendRequest: function() {
-            // Update doc/refContent
-            if(mode === "doc") {
-                docContent = Editor.getValue();
-            }
-            if(mode === "ref") {
-                refContent = Editor.getValue();
-            }
-
-            var value = JSON.stringify({documentContent: docContent, referencesContent: refContent});
-
-            $.ajax({
-                type: "POST",
-                url: 'save/' + id,
-                dataType: 'json',
-                contentType: 'application/json',
-                data: value,
-                processData: false,
-                complete: this.proxy(function(response) {
-                    this.buttonReset();
-                    PreviewButton.buttonReset();
-                    changed = false;
-                }),
-                success: this.proxy(function(response) {
-                    $console = $('#console');
-                    $console.empty();
-                    $.each(response, function(key, value) {
-                        $console.append('<span>' + value.output + '</span><br />');
-                    })
-                })
-            });
-        }
-
-    }).init();
-
-    var Editor = Spine.Controller.create({
-
-        init: function() {
-            this.editor = ace.edit('editor');
-            this.session = this.editor.getSession();
-            var LatexMode = require("ace/mode/latex").Mode;
-
-            this.session.setMode(new LatexMode());
-            this.session.setUseWrapMode(true);
-            this.editor.setShowPrintMargin(false);
-
-            this.changed = false;
-
-            this.editor.commands.addCommand({
-                name: 'save',
-                bindKey: {
-                    win: 'Ctrl-S',
-                    mac: 'Command-S',
-                    sender: 'editor'
-                },
-                exec: function(env, args, request) {
-                    SaveButton.save();
-                }
-            });
-
-            this.session.on('change', this.proxy(function() {
-                this.setChanged(true);
-            }));
-        },
-
-        getValue: function() {
-            return this.session.getValue();
-        },
-
-        setValue: function(value) {
-            this.session.setValue(value);
-        },
-
-        setChanged: function(value) {
-            this.changed = value;
-        },
-
-        hasChanged: function() {
-            return this.changed;
-        }
-
-    }).init();
-
-    var File = Spine.Model.sub();
-    File.configure('File', 'filename');
-
-    File.extend({
-        loadFromServer: function() {
-            $.ajax({
-                type: "GET",
-                url: 'uploads/' + id,
-                dataType: 'json',
-                contentType: 'application/json',
-                success: function(response) {
-                    if(!Array.isArray(response)) {
-                        return
-                    }
-
-                    response.forEach(function(filename) {
-                        File.create({filename: filename});
-                    });
-                }
-            });
-        }
-    });
-
-    var FilePreview = Spine.Controller.create({
-        el: $('#file-preview'),
-
-        proxied: ['clearPreview'],
-
-        elements: {
-            '#preview-empty': 'empty',
-            '#preview-iframe': 'iframe',
-            '#preview-image': 'image'
-        },
-
-        init: function() {
-
-        },
-
-        previewFile: function(item) {
-            var previewPath = 'repositories/' + id + '/',
-                isPDF = item.filename.match(/\.pdf$/),
-                target = isPDF ? this.iframe : this.image,
-                toBeHidden = isPDF ? this.image : this.iframe;
-
-            this.bindListeners(item);
-            this.empty.hide();
-
-            target.attr('src', previewPath + item.filename).show();
-            toBeHidden.hide();
-        },
-
-        bindListeners: function(item) {
-            if(this.currentItem) {
-                this.currentItem.unbind("destroy", this.clearPreview);
-            }
-
-            this.currentItem = item;
-
-            if(this.currentItem) {
-                item.bind("destroy", this.proxy(this.clearPreview));
-            }
-        },
-
-        clearPreview: function() {
-            this.bindListeners(null);
-            this.image.hide();
-            this.iframe.hide();
-            this.empty.show();
-        }
-        
-    }).init();
-
-    var FileItem = Spine.Controller.sub({
-
-        // Delegate the click event to a local handler
-        events: {
-            "click .preview-file": "preview",
-            "click .remove-file": "remove"
-        },
-
-        tag: 'li',
-
-        // Bind events to the record
-        init: function() {
-            if ( !this.item ) throw "@item required";
-            this.item.bind("update", this.proxy(this.render));
-            this.item.bind("destroy", this.proxy(this.removeEl));
-        },
-
-        wtf: function() {
-            console.log('destroy');
-            debugger;
-        },
-
-        render: function(item){
-            if (item) this.item = item;
-
-            this.html(FileItem.template(this.item));
-            return this;
-        },
-
-        removeEl: function() {
-            this.el.remove();
-        },
-
-        // Called after an element is destroyed
-        remove: function(){
-            $.ajax({
-                type: 'DELETE',
-                url: 'upload/' + id + '/' + this.item.filename,
-                success: this.proxy(function() {
-                    this.item.destroy();
-                })
-            });
-        },
-
-        preview: function() {
-            FilePreview.previewFile(this.item);
-        },
-
-        click: function(){
-
-        }
-    }, {
-        template: Handlebars.compile($("#filelistitem-template").html())
-    });
-
-    var Files = Spine.Controller.sub({
-        el: $('#filelist'),
-
-        init: function(){
-            File.bind("refresh", this.proxy(this.addAll));
-            File.bind("create",  this.proxy(this.addOne));
-        },
-
-        addOne: function(item){
-            var file = new FileItem({item: item});
-            this.append(file.render());
-        },
-
-        addAll: function(){
-            File.each(this.proxy(this.addOne));
-        }
-    });
-
-    var filesController = new Files();
-
-    File.loadFromServer();
-
-    window.onbeforeunload = function (e) {
-        if(!Editor.hasChanged()) {
-            return;
-        }
-
-        e = e || window.event;
-
-        // For IE and Firefox prior to version 4
-        if (e) {
-            e.returnValue = 'You have unsaved changes.';
-        }
-
-        // For Safari
-        return 'You have unsaved changes.';
-    };
-
-    function setMode(newMode) {
-        if(mode === newMode) {
-            return;
-        }
-
-        if(mode === "doc") {
-            docContent = Editor.getValue();
-        }
-
-        if(mode === "ref") {
-            refContent = Editor.getValue();
-        }
-
-        if(newMode === "doc") {
-            Editor.setValue(docContent);
-        }
-
-        if(newMode === "ref") {
-            Editor.setValue(refContent);
-        }
-
-        mode = newMode;
-
-        // FIXME
-        Editor.setChanged(false);
-    }
-
-    function loadId(id) {
-        $('.editor_buttons').fadeIn('slow');
-        $('#tab_doc').fadeIn('slow');
-        $('#tab_ref').fadeIn('slow');
-        $('#tab_files').fadeIn('slow');
-        $('#tab_out').fadeIn('slow');
-
-        $('#preview_button').click(function() {
-            window.open('repositories/' + id + '/dippa.pdf', '_newtab');
-        });
-
-        $.ajax({
-            url: 'load/' +id,
-            dataType: 'json',
-            success: function(content) {
-                docContent = content.documentContent;
-                refContent = content.referencesContent;
-
-                setMode("doc");
-            }
-        });
-    }
-
-    if(!id) {
-
-        var repoInfo;
-
-        $('#hero').show();
-        $('#info_header').show();
-        $('#info').show();
-
-        $('#step2').css('opacity', 0.25).find('p').hide();
-        $('#step3').css('opacity', 0.25).find('p').hide();;
-
-    } else {
-        loadId(id);
-        $('#editor_container').show();
-    }
-
-    var $tab_doc = $('#tab_doc');
-    var $tab_ref = $('#tab_ref');
-    var $tab_files = $('#tab_files');
-    var $tab_out = $('#tab_out');
-    var allTabs = [$tab_doc, $tab_ref, $tab_files, $tab_out];
-
-    var activateTab = function($activeTab) {
-        for(var i = 0, len = allTabs.length; i < len; i++) {
-            var $tab = allTabs[i];
-
-            if($tab === $activeTab) {
-                $tab.addClass('active');
-            } else {
-                $tab.removeClass('active');
-            }
-        }
-    }
-
-    $tab_doc.click(function() {
-        activateTab($tab_doc);
-
-        setMode("doc");
-        $('#editor').show();
-        $('#console').hide();
-        $('#files').hide();
-    });
-
-    $tab_ref.click(function() {
-        activateTab($tab_ref);
-
-        setMode("ref");
-        $('#editor').show();
-        $('#console').hide();
-        $('#files').hide();
-    });
-
-    $tab_files.click(function() {
-        activateTab($tab_files);
-
-        $('#editor').hide();
-        $('#console').hide();
-        $('#files').show();
-    });
-
-    $tab_out.click(function() {
-        activateTab($tab_out);
-
-        $('#editor').hide();
-        $('#console').show();
-        $('#files').hide();
-    });
-
-});
-
-</script>
-<script src="scripts/github.js"></script>
 <script src="scripts/bootstrap-buttons.js"></script>
 <script src="scripts/spine/spine.js"></script>
 <script src="scripts/spine/ajax.js"></script>
+<script src="scripts/spine/manager.js"></script>
+<script src="scripts/spine/route.js"></script>
 <script src="scripts/jquery.iframe-transport.js"></script>
 <script src="scripts/jquery.fileupload.js"></script>
 <script src="scripts/jquery.fileupload-ui.js"></script>
 <script src="scripts/handlebars-1.0.0.beta.6.js"></script>
+<script>
+    window.Dippa = {};
+
+    var splittedPath = window.location.pathname.split('/');
+    Dippa.id = splittedPath.pop();
+</script>
+<script src="scripts/github.js"></script>
+<script src="scripts/controllers.js"></script>
+<script src="scripts/models.js"></script>
+
+<script>
+    $(function() {
+
+        var session, LatexMode;
+
+        $('#fileupload').fileupload({
+            autoUpload: true,
+            url: 'upload/' + Dippa.id,
+            done: function(e, data) {
+                data.result.forEach(function(filename) {
+                    Dippa.File.create(filename);
+                });
+            }
+        });
+
+        window.onbeforeunload = function (e) {
+            if(!Dippa.Editor.hasChanged()) {
+                return;
+            }
+
+            e = e || window.event;
+
+            // For IE and Firefox prior to version 4
+            if (e) {
+                e.returnValue = 'You have unsaved changes.';
+            }
+
+            // For Safari
+            return 'You have unsaved changes.';
+        };
+
+        Dippa.setMode = function(newMode) {
+            if(Dippa.mode === newMode) {
+                return;
+            }
+
+            if(Dippa.mode === "doc") {
+                Dippa.docContent = Dippa.Editor.getValue();
+            }
+
+            if(Dippa.mode === "ref") {
+                Dippa.refContent = Dippa.Editor.getValue();
+            }
+
+            if(newMode === "doc") {
+                Dippa.Editor.setValue(Dippa.docContent);
+            }
+
+            if(newMode === "ref") {
+                Dippa.Editor.setValue(Dippa.refContent);
+            }
+
+            Dippa.mode = newMode;
+
+            // FIXME
+            Dippa.Editor.setChanged(false);
+        }
+
+        var filesController = new Dippa.Files();
+        Dippa.File.loadFromServer();
+        var controllers = new Dippa.ControllerStack();
+        var tabStack = new Dippa.TabStack({controllerStack: controllers});
+
+        var App = Spine.Controller.sub({
+            init: function(){
+                Spine.Route.add(/\/$/, this.home);
+                Spine.Route.add(/\/(.*)#?$/, this.loadId);
+            },
+
+            home: function(route) {
+                $('#hero').show();
+                $('#info_header').show();
+                $('#info').show();
+
+                $('#step2').css('opacity', 0.25).find('p').hide();
+                $('#step3').css('opacity', 0.25).find('p').hide();
+            },
+
+            loadId: function(route) {
+                Dippa.id = route.match[1];
+
+                $('.editor_buttons').fadeIn('slow');
+                tabStack.fadeIn();
+
+                $.ajax({
+                    url: 'load/' + Dippa.id,
+                    dataType: 'json',
+                    success: function(content) {
+                        Dippa.docContent = content.documentContent;
+                        Dippa.refContent = content.referencesContent;
+
+                        Dippa.setMode("doc");
+                    }
+                });
+
+                $('#editor_container').show();
+            }
+
+        });
+
+        var app = new App();
+        Spine.Route.setup({history: true});
+    });
+
+</script>
 
 </body>
 </html>
