@@ -99,7 +99,7 @@
                 complete: function(response) {
                     var id = response.responseText;
 
-                    Spine.Route.navigate('/' + id);
+                    Spine.Route.navigate(id);
                     $('#loader').hide();
                     $('#editor_container').show('slow');
                 }
