@@ -117,6 +117,69 @@
         </div>
     </div>
 
+    <div id="screenshots" class="row">
+
+        <br />
+        <h1>See it in action!</h1>
+        <br />
+
+
+        <div class="span4">
+            <p>On the right side you can see screenshots of the main views of Dippa editor: <strong>document editor,</strong> <strong>reference editor,</strong> <strong>file uploader</strong> and <strong>console output</strong>
+            </p>
+
+            <br />
+
+            <p>If you're not satisfied just watching how it works, you can also try it!</p>
+
+            <button class="btn btn-success btn-large">Try the demo</button>
+
+        </div>
+
+        <div class="span8">
+            <div id="myCarousel" class="carousel">
+                <!-- Carousel items -->
+                <div class="carousel-inner">
+                    <div class="active item">
+                        <img src="img/demo/demo_document_01.png" style="width: 100%;">
+                        <div class="carousel-caption">
+                            <h4>LaTeX document</h4>
+                            <p>Editor with LaTeX command coloring</p>
+                        </div>
+                    </div>
+                    <div class="item"><img src="img/demo/demo_references_01.png" style="width: 100%;">
+                        <div class="carousel-caption">
+                            <h4>References</h4>
+                            <p>Edit the references in standard BibTex format</p>
+                        </div>
+                    </div>
+                    <div class="item"><img src="img/demo/demo_files_01.png" style="width: 100%;">
+                        <div class="carousel-caption">
+                            <h4>Image files</h4>
+                            <p>Upload image files and embed them to your document</p>
+                        </div>
+                    </div>
+                    <div class="item"><img src="img/demo/demo_output_01.png" style="width: 100%;">
+                        <div class="carousel-caption">
+                            <h4>Console output</h4>
+                            <p>See the console output to debug errors in your document</p>
+                        </div>
+                    </div>
+                    <div class="item"><img src="img/demo/demo_preview_01.png" style="width: 100%;">
+                        <div class="carousel-caption">
+                            <h4>Preview</h4>
+                            <p>Preview the actual compiled PDF document</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Carousel nav -->
+                <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+                <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+            </div>
+        </div>
+
+    </div>
+
     <div id="loader" style="position: relative; height: 50%; display: none">
         <div style="position: absolute; bottom: 0px; height: 20px; left: 0px; right: 0px; text-align: center">
             <img src="img/ajax-loader.gif" />
@@ -181,7 +244,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
 <script src="src/ace-unmin.js" type="text/javascript" charset="utf-8"></script>
 <script src="src/mode-latex.js" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/bootstrap-transition.js"></script>
 <script src="scripts/bootstrap-buttons.js"></script>
+<script src="scripts/bootstrap-carousel.js"></script>
 <script src="scripts/spine/spine.js"></script>
 <script src="scripts/spine/ajax.js"></script>
 <script src="scripts/spine/manager.js"></script>
@@ -246,7 +311,9 @@
 
             // FIXME
             Dippa.Editor.setChanged(false);
-        }
+        };
+
+        $('.carousel').carousel();
 
         var filesController = new Dippa.Files();
         var controllers = new Dippa.ControllerStack();
