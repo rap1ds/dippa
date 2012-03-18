@@ -111,6 +111,10 @@
     var PreviewButton = Spine.Controller.create({
         el: $('#preview_button'),
 
+        events: {
+            'click': 'click'
+        },
+
         buttonLoading: function() {
             this.el.button('loading');
         },
