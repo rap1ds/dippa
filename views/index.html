@@ -196,6 +196,8 @@
     var splittedPath = window.location.pathname.split('/');
     Dippa.id = splittedPath.pop();
 
+    Dippa.basepath = window.location.hostname.indexOf('localhost') !== -1 ? '/' : '/dippa/';
+
 </script>
 <script src="scripts/github.js"></script>
 <script src="scripts/controllers.js"></script>
@@ -208,7 +210,7 @@
 
         $('#fileupload').fileupload({
             autoUpload: true,
-            url: 'upload/' + Dippa.id,
+            url: Dippa.basepath + 'upload/' + Dippa.id,
             done: function(e, data) {
                 data.result.forEach(function(filename) {
                     Dippa.File.create(filename);
@@ -266,11 +268,14 @@
 
         var App = Spine.Controller.sub({
             init: function(){
-                Spine.Route.add(/\/$/, this.home);
-                Spine.Route.add(/.*\/(.*)#?$/, this.loadId);
+                var homeRegexp = new RegExp(Dippa.basepath + '$');
+                Spine.Route.add(homeRegexp, this.home);
+                var idRegExp = new RegExp('.*' + Dippa.basepath + '(.*)#?$')
+                Spine.Route.add(idRegExp, this.loadId);
             },
 
             home: function(route) {
+                console.log('home route');
                 $('#hero').show();
                 $('#info_header').show();
                 $('#info').show();
@@ -280,6 +285,7 @@
             },
 
             loadId: function(route) {
+                console.log('loadId route');
                 Dippa.id = route.match[1];
 
                 $('.editor_buttons').fadeIn('slow');

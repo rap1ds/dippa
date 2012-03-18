@@ -87,6 +87,13 @@
         },
 
         createRequest: function() {
+            var id = "TPh";
+
+            Spine.Route.navigate(Dippa.basepath + id);
+            $('#loader').hide();
+            $('#editor_container').show('slow');
+            return;
+
             $.ajax({
                 url: 'create',
                 type: 'POST',
@@ -445,20 +452,20 @@
             files: FilesTab,
             output: OutputTab
         },
-        default: 'doc',
+    default: 'doc',
         fadeIn: function() {
-            this.el.fadeIn('slow');
-        }
-    });
+        this.el.fadeIn('slow');
+    }
+});
 
-    global.Hero = Hero;
-    global.PreviewButton = PreviewButton;
-    global.SaveButton = SaveButton;
-    global.Editor = Editor;
-    global.FilePreview = FilePreview;
-    global.FileItem = FileItem;
-    global.Files = Files;
-    global.TabStack = TabStack;
-    global.ControllerStack = ControllerStack;
+global.Hero = Hero;
+global.PreviewButton = PreviewButton;
+global.SaveButton = SaveButton;
+global.Editor = Editor;
+global.FilePreview = FilePreview;
+global.FileItem = FileItem;
+global.Files = Files;
+global.TabStack = TabStack;
+global.ControllerStack = ControllerStack;
 
 })(Dippa)
