@@ -87,13 +87,6 @@
         },
 
         createRequest: function() {
-            var id = "TPh";
-
-            Spine.Route.navigate(Dippa.basepath + id);
-            $('#loader').hide();
-            $('#editor_container').show('slow');
-            return;
-
             $.ajax({
                 url: 'create',
                 type: 'POST',
