@@ -266,7 +266,7 @@
         var App = Spine.Controller.sub({
             init: function(){
                 Spine.Route.add(/\/$/, this.home);
-                Spine.Route.add(/\.*/(.*)#?$/, this.loadId);
+                Spine.Route.add(/.*\/(.*)#?$/, this.loadId);
             },
 
             home: function(route) {
