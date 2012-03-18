@@ -193,9 +193,6 @@
 <script>
     window.Dippa = {};
 
-    var splittedPath = window.location.pathname.split('/');
-    Dippa.id = splittedPath.pop();
-
     Dippa.basepath = window.location.hostname.indexOf('localhost') !== -1 ? '/' : '/dippa/';
 
 </script>
@@ -207,16 +204,6 @@
     $(function() {
 
         var session, LatexMode;
-
-        $('#fileupload').fileupload({
-            autoUpload: true,
-            url: Dippa.basepath + 'upload/' + Dippa.id,
-            done: function(e, data) {
-                data.result.forEach(function(filename) {
-                    Dippa.File.create(filename);
-                });
-            }
-        });
 
         window.onbeforeunload = function (e) {
             if(!Dippa.Editor.hasChanged()) {
@@ -262,7 +249,6 @@
         }
 
         var filesController = new Dippa.Files();
-        Dippa.File.loadFromServer();
         var controllers = new Dippa.ControllerStack();
         var tabStack = new Dippa.TabStack({controllerStack: controllers});
 
@@ -298,7 +284,18 @@
                         Dippa.docContent = content.documentContent;
                         Dippa.refContent = content.referencesContent;
 
+                        Dippa.File.loadFromServer();
                         Dippa.setMode("doc");
+
+                        $('#fileupload').fileupload({
+                            autoUpload: true,
+                            url: Dippa.basepath + 'upload/' + Dippa.id,
+                            done: function(e, data) {
+                                data.result.forEach(function(filename) {
+                                    Dippa.File.create(filename);
+                                });
+                            }
+                        });
                     }
                 });
 

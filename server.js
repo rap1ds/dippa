@@ -230,6 +230,7 @@ function readdir(repoDir, successCallback, errorCallback) {
 }
 
 app.get('/uploads/:id', function(req, res, next) {
+
     var repoDir = REPOSITORY_DIR + req.params.id + '/';
 
     readdir(repoDir, function success(files) {
