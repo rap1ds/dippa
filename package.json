@@ -7,7 +7,7 @@
         "oauth": "0.9.5",
         "github": "0.0.7",
         "node-promise": "",
-        "shortid": "1.0.5",
+        "shortid": "1.0.6",
         "mongoose": "2.4.9",
         "jqtpl": "",
         "promised-io": "0.3.2"
