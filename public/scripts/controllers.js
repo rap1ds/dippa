@@ -22,8 +22,8 @@
         createDippa: function() {
             console.log('Dippa create clicked');
             this.instructions.slideDown();
+            $('#screenshots').fadeOut();
             $('#info').fadeOut();
-            $('#info_header').fadeOut();
         },
 
         step1Done: function() {
@@ -125,6 +125,40 @@
 
         click: function() {
             window.open('repositories/' + Dippa.id + '/dippa.pdf', '_newtab');
+        }
+
+    }).init();
+
+    var DemoButtom = Spine.Controller.create({
+        el: $('#demo_button'),
+
+        events: {
+            'click': 'click'
+        },
+
+        click: function() {
+            $('#info').fadeOut();
+            $('#screenshots').fadeOut();
+            Hero.el.fadeOut(function() {
+                $('#loader').show();
+                $.ajax({
+                    url: 'create',
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify({isDemo: true}),
+                    error: function(err) {
+                        // FIXME
+                    },
+                    complete: function(response) {
+                        var id = response.responseText;
+
+                        Spine.Route.navigate(Dippa.basepath + id);
+                        $('#loader').hide();
+                        $('#editor_container').show('slow');
+                    }
+                });
+            });
         }
 
     }).init();
@@ -449,20 +483,26 @@
             files: FilesTab,
             output: OutputTab
         },
-    default: 'doc',
+
+        default: 'doc',
+
         fadeIn: function() {
-        this.el.fadeIn('slow');
-    }
-});
+            this.el.fadeIn('slow');
+        },
 
-global.Hero = Hero;
-global.PreviewButton = PreviewButton;
-global.SaveButton = SaveButton;
-global.Editor = Editor;
-global.FilePreview = FilePreview;
-global.FileItem = FileItem;
-global.Files = Files;
-global.TabStack = TabStack;
-global.ControllerStack = ControllerStack;
+        fadeOut: function() {
+            this.el.fadeOut('slow');
+        }
+    });
 
-})(Dippa)
+    global.Hero = Hero;
+    global.PreviewButton = PreviewButton;
+    global.SaveButton = SaveButton;
+    global.Editor = Editor;
+    global.FilePreview = FilePreview;
+    global.FileItem = FileItem;
+    global.Files = Files;
+    global.TabStack = TabStack;
+    global.ControllerStack = ControllerStack;
+
+})(Dippa);

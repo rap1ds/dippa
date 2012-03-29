@@ -57,7 +57,7 @@ app.configure('production', function(){
     app.use(express.errorHandler());
 });
 
-function create(id, owner, name, email, existingRepo, success, error) {
+function create(id, owner, name, email, noGithub, success, error) {
     var repoDir = path.resolve(REPOSITORY_DIR, id);
 
     var mkdir = new Command('mkdir -p ' + repoDir);
@@ -70,24 +70,22 @@ function create(id, owner, name, email, existingRepo, success, error) {
     var add = new Command('git add dippa.tex', repoDir);
     var commit = new Command('git commit -m FirstCommit', repoDir);
     var push = new Command('git push -u origin master', repoDir);
-    var clone = new Command('git clone ssh://dippa.github.com/' + owner + '/' + name + '.git');
 
-    var commandsToRun;
+    var commandsToRun, isDemo;
 
-    if(existingRepo) {
-        console.log('Creating existing repo');
-        var rm = new Command('rm -rf ' + REPOSITORY_DIR + '1234');
-        var mv = new Command('mv ' + name + ' ' + REPOSITORY_DIR + '1234');
-        commandsToRun = [clone, rm, mv, cpDoc, cpRef, add, commit, push];
+    if(noGithub) {
+        commandsToRun = [mkdir, cpDoc, cpRef];
+        isDemo = true;
     } else {
-        console.log('Creating fresh new repo');
         commandsToRun = [mkdir, init, config, remote, pull, cpDoc, cpRef, add, commit, push];
+        isDemo = false;
     }
+
 
     commandline.runAll(commandsToRun).then(function() {
         console.log('Done');
 
-        Mongo.createNew(id, owner, name, email).then(function() {
+        Mongo.createNew(id, owner, name, email, isDemo).then(function() {
             success(id);
         }, function(e) {
             error(e);
@@ -95,20 +93,51 @@ function create(id, owner, name, email, existingRepo, success, error) {
     });
 }
 
+// The best way to trigger this? Timer?
+(function removeOldDemos() {
+    var commandsToRun = [];
+
+    Mongo.findOldDemos().then(function(oldDemos) {
+        oldDemos = oldDemos || [];
+
+        console.info('Found ' + oldDemos.length + ' old demos ready to be removed');
+
+        oldDemos.forEach(function(oldDemo) {
+            var repoDir = path.resolve(REPOSITORY_DIR, oldDemo.shortId);
+            commandsToRun.push(new Command('rm -r ' + repoDir));
+
+            console.info('About to remove dir ' + repoDir);
+        });
+
+        commandline.runAll(commandsToRun).then(function() {
+            console.log('Old demo directories removed. Done!');
+
+            Mongo.removeOldDemos().then(function() {
+                console.log('Removed old demos from DB');
+            }, function(e) {
+                console.error('Failed to remove old demos from DB');
+            });
+        });
+    });
+})(); // Run once on startup
+
 app.post('/create', function(req, res){
-    var owner = req.body.repo.owner;
-    var name = req.body.repo.name;
+    var repo = req.body.repo || {};
+
+    var owner = repo.owner;
+    var name = repo.name;
     var email = req.body.email;
+    var isDemo = req.body.isDemo;
 
     var id = shortId.generate();
 
-    if(!(owner && name)) {
+    if(!isDemo && !(owner && name)) {
         // Send error message
         res.send('Error');
         return;
     }
 
-    create(id, owner, name, email, false, function(id) {
+    create(id, owner, name, email, isDemo, function(id) {
         res.send(id);
     }, function(error) {
         res.send(error);
@@ -164,6 +193,9 @@ app.post('/save/:id', function(req, res){
     var refWritten = new Promise();
     var allWritten = p.all([docWritten, refWritten]);
 
+    // Check if demo
+    var mongoReady = Mongo.findByShortId(id);
+
     fs.writeFile(texFile, docContent, function (err) {
         if (err) {
             throw err;
@@ -183,7 +215,6 @@ app.post('/save/:id', function(req, res){
     allWritten.then(function() {
 
         var previewPromise = new Promise();
-        var pushPromise = new Promise();
 
         previewPromise.then(function(output) {
             res.send(output);
@@ -199,15 +230,23 @@ app.post('/save/:id', function(req, res){
             previewPromise.resolve(output);
         });
 
-        var commitMessage = "Update";
-        var addtex = new Command('git add dippa.tex', repoDir);
-        var addref = new Command('git add ref.bib', repoDir);
-        var commit = new Command('git commit --all --message="' + commitMessage + '"', repoDir);
-        var pull = new Command('git pull', repoDir);
-        var push = new Command('git push', repoDir);
+        mongoReady.then(function(result) {
+            if(result.isDemo) {
+                console.log('Demo, not pushing');
+                return;
+            }
 
-        commandline.runAll([addtex, addref, commit, pull, push]).then(function() {
-            pushPromise.resolve();
+            var commitMessage = "Update";
+            var addtex = new Command('git add dippa.tex', repoDir);
+            var addref = new Command('git add ref.bib', repoDir);
+            var commit = new Command('git commit --all --message="' + commitMessage + '"', repoDir);
+            var pull = new Command('git pull', repoDir);
+            var push = new Command('git push', repoDir);
+
+            commandline.runAll([addtex, addref, commit, pull, push]).then(function() {
+                // Nothing here
+            });
+
         });
 
     });
@@ -289,9 +328,8 @@ app.delete('/upload/:id/:filename', function(req, res, next) {
 
 app.get('/:id', function(req, res, next) {
     var id = req.params.id
-    console.log(id);
     Mongo.findByShortId(id).then(function(data) {
-        if(data.length) {
+        if(data) {
             res.render('index.html');
         } else {
             res.redirect('/');

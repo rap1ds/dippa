@@ -95,13 +95,12 @@
         </div>
     </div>
 
-    <div id="info_header" class="row" style="display: none">
-        <div class="span12">
+    <div id="info" class="row" style="display: none">
+
+        <div class="page-header">
             <h1>So, what's in it for me?</h1>
         </div>
-    </div>
 
-    <div id="info" class="row" style="display: none">
         <div class="span4">
             <h2>Online LaTeX editor</h2>
             <p><img src="img/ace.png" width="100" style="float: right; margin: 10px" />Dippa editor is an online LaTeX editor. It has a LaTeX <b>syntax hilighting</b> in it. Dippa editor uses <b>Ace editor</b> which is one of the best web-based editor components available.</p>
@@ -117,12 +116,13 @@
         </div>
     </div>
 
-    <div id="screenshots" class="row">
+    <br />
 
-        <br />
-        <h1>See it in action!</h1>
-        <br />
+    <div id="screenshots" class="row" style="display: none">
 
+        <div class="page-header">
+            <h1>See it in action! <small>Screenshots and live demo</small></h1>
+        </div>
 
         <div class="span4">
             <p>On the right side you can see screenshots of the main views of Dippa editor: <strong>document editor,</strong> <strong>reference editor,</strong> <strong>file uploader</strong> and <strong>console output</strong>
@@ -130,10 +130,21 @@
 
             <br />
 
-            <p>If you're not satisfied just watching how it works, you can also try it!</p>
+            <p>If you're not satisfied just watching how it works, you can also try it! <i>(Please not the demo documents are removed once in a while)</i></p>
 
-            <button class="btn btn-success btn-large">Try the demo</button>
+            <p><button id="demo_button" class="btn btn-success btn-large">Try the demo</button></p>
+            
+            <br />
+            <br />
 
+            <h3>Stay updated!</h3>
+
+            <br />
+
+            <p>
+                <a href="https://twitter.com/DippaEditor" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @DippaEditor</a>
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+            </p>
         </div>
 
         <div class="span8">
@@ -332,9 +343,14 @@
                 $('#hero').show();
                 $('#info_header').show();
                 $('#info').show();
+                $('#screenshots').show();
 
                 $('#step2').css('opacity', 0.25).find('p').hide();
                 $('#step3').css('opacity', 0.25).find('p').hide();
+
+                $('#editor_container').hide();
+                $('.editor_buttons').fadeOut('slow');
+                tabStack.fadeOut('slow');
             },
 
             loadId: function(route) {
