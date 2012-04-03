@@ -266,11 +266,9 @@
 <script src="scripts/jquery.fileupload.js"></script>
 <script src="scripts/jquery.fileupload-ui.js"></script>
 <script src="scripts/handlebars-1.0.0.beta.6.js"></script>
+<script src="scripts/namespace.js"></script>
 <script>
-    window.Dippa = {};
-
     Dippa.basepath = window.location.hostname.indexOf('futupeople') !== -1 ? '/dippa/' : '/';
-
 </script>
 <script src="scripts/github.js"></script>
 <script src="scripts/controllers.js"></script>
@@ -297,32 +295,31 @@
             return 'You have unsaved changes.';
         };
 
-        Dippa.setMode = function(newMode) {
-            if(Dippa.mode === newMode) {
+        /*
+        Dippa.setMode = function(content) {
+            if(Dippa.mode === content.type) {
                 return;
             }
 
             if(Dippa.mode === "doc") {
-                Dippa.docContent = Dippa.Editor.getValue();
+                Dippa.Editor.docContent.value = Dippa.Editor.getValue();
             }
 
             if(Dippa.mode === "ref") {
-                Dippa.refContent = Dippa.Editor.getValue();
+                Dippa.Editor.refContent.value = Dippa.Editor.getValue();
             }
 
-            if(newMode === "doc") {
-                Dippa.Editor.setValue(Dippa.docContent);
+            if(content.type === "doc") {
+                Dippa.Editor.setValue(Dippa.Editor.docContent.value);
             }
 
-            if(newMode === "ref") {
-                Dippa.Editor.setValue(Dippa.refContent);
+            if(content.type === "ref") {
+                Dippa.Editor.setValue(Dippa.Editor.refContent.value);
             }
 
-            Dippa.mode = newMode;
-
-            // FIXME
-            Dippa.Editor.setChanged(false);
+            Dippa.mode = content.type;
         };
+        */
 
         $('.carousel').carousel();
 
@@ -336,6 +333,10 @@
                 Spine.Route.add(homeRegexp, this.home);
                 var idRegExp = new RegExp('.*' + Dippa.basepath + '(.*)#?$')
                 Spine.Route.add(idRegExp, this.loadId);
+
+                // Initialize sub editors
+                Dippa.Editor = new Dippa.EditorClass();
+                Dippa.Editor.initializeEditor();
             },
 
             home: function(route) {
@@ -354,6 +355,7 @@
             },
 
             loadId: function(route) {
+                debugger;
                 console.log('loadId route');
                 Dippa.id = route.match[1];
 
@@ -364,11 +366,15 @@
                     url: 'load/' + Dippa.id,
                     dataType: 'json',
                     success: function(content) {
-                        Dippa.docContent = content.documentContent;
-                        Dippa.refContent = content.referencesContent;
+
+                        debugger;
+
+                        Dippa.Editor.docContent = new Dippa.Content({type: 'doc', value: content.documentContent});
+                        Dippa.Editor.refContent = new Dippa.Content({type: 'ref', value: content.referencesContent});
 
                         Dippa.File.loadFromServer();
-                        Dippa.setMode("doc");
+                        Dippa.Editor.changeType('doc');
+                        Dippa.Editor.setChanged(false);
 
                         $('#fileupload').fileupload({
                             autoUpload: true,

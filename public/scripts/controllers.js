@@ -194,15 +194,9 @@
         },
 
         sendRequest: function() {
-            // Update doc/refContent
-            if(Dippa.mode === "doc") {
-                Dippa.docContent = Editor.getValue();
-            }
-            if(Dippa.mode === "ref") {
-                Dippa.refContent = Editor.getValue();
-            }
+            Dippa.Editor.updateContent();
 
-            var value = JSON.stringify({documentContent: Dippa.docContent, referencesContent: Dippa.refContent});
+            var value = JSON.stringify({documentContent: Dippa.Editor.docContent.value, referencesContent: Dippa.Editor.refContent.value});
 
             $.ajax({
                 type: "POST",
@@ -214,7 +208,7 @@
                 complete: this.proxy(function(response) {
                     this.buttonReset();
                     PreviewButton.buttonReset();
-                    changed = false;
+                    Dippa.Editor.setChanged(false);
                 }),
                 success: this.proxy(function(response) {
                     $console = $('#console');
@@ -228,9 +222,13 @@
 
     }).init();
 
-    var Editor = Spine.Controller.create({
+    var EditorClass = Spine.Controller.sub({
 
         init: function() {
+
+        },
+
+        initializeEditor: function() {
             this.editor = ace.edit('editor');
             this.session = this.editor.getSession();
             var LatexMode = require("ace/mode/latex").Mode;
@@ -272,9 +270,51 @@
 
         hasChanged: function() {
             return this.changed;
-        }
+        },
 
-    }).init();
+        changeType: function(type) {
+            if(type === 'doc') {
+                this.setContent(this.docContent);
+            } else if (type === 'ref') {
+                this.setContent(this.refContent);
+            } else {
+                throw "Illegal type " + type;
+            }
+        },
+
+        setContent: function(newContent) {
+            if(this.content === newContent) {
+                return;
+            }
+
+            // Update value
+            this.updateContent();
+            this.content = newContent;
+            this.setValue(this.content.value);
+
+            // Set cursor
+            if(this.content.cursor) {
+                this.setCursorPosition(this.content.cursor);
+            }
+        },
+
+        updateContent: function() {
+            if(!this.content) {
+                return;
+            }
+
+            this.content.value = this.getValue();
+            this.content.cursor = this.getCursorPosition();
+        },
+
+        setCursorPosition: function(pos) {
+            this.editor.moveCursorToPosition(pos);
+        },
+
+        getCursorPosition: function() {
+            return this.editor.getCursorPosition();
+        }
+    });
 
     var FilePreview = Spine.Controller.create({
         el: $('#file-preview'),
@@ -444,7 +484,7 @@
     var DocumentTab = Tab.sub({
         el: '#tab_doc',
         click: function() {
-            Dippa.setMode("doc");
+            Dippa.Editor.changeType('doc');
             this.stack.controllerStack.doc.active();
             this.stack.doc.active();
         }
@@ -453,7 +493,7 @@
     var ReferencesTab = Tab.sub({
         el: '#tab_ref',
         click: function() {
-            Dippa.setMode("ref");
+            Dippa.Editor.changeType('ref');
             this.stack.controllerStack.doc.active();
             this.stack.ref.active();
         }
@@ -484,25 +524,25 @@
             output: OutputTab
         },
 
-        default: 'doc',
+    default: 'doc',
 
         fadeIn: function() {
-            this.el.fadeIn('slow');
-        },
+        this.el.fadeIn('slow');
+    },
 
-        fadeOut: function() {
-            this.el.fadeOut('slow');
-        }
-    });
+    fadeOut: function() {
+        this.el.fadeOut('slow');
+    }
+});
 
-    global.Hero = Hero;
-    global.PreviewButton = PreviewButton;
-    global.SaveButton = SaveButton;
-    global.Editor = Editor;
-    global.FilePreview = FilePreview;
-    global.FileItem = FileItem;
-    global.Files = Files;
-    global.TabStack = TabStack;
-    global.ControllerStack = ControllerStack;
+global.Hero = Hero;
+global.PreviewButton = PreviewButton;
+global.SaveButton = SaveButton;
+global.EditorClass = EditorClass;
+global.FilePreview = FilePreview;
+global.FileItem = FileItem;
+global.Files = Files;
+global.TabStack = TabStack;
+global.ControllerStack = ControllerStack;
 
 })(Dippa);

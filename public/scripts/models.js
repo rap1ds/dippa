@@ -23,6 +23,12 @@
         }
     });
 
-    global.File = File;
+    var Content = Spine.Model.sub();
+    Content.configure('Content', 'value', 'type', 'cursor');
 
-})(Dippa);
+    global.File = File;
+    global.Content = Content;
+
+
+
+})(typeof Dippa !== 'undefined' ? Dippa : module.exports);
