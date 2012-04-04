@@ -220,13 +220,13 @@ app.post('/save/:id', function(req, res){
             res.send(output);
         });
 
-        var latex1 = new Command('latex --interaction=nonstopmode dippa', repoDir);
+        var pdflatex1 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
         var bibtex1 = new Command('bibtex dippa', repoDir);
-        var latex2 = new Command('latex --interaction=nonstopmode dippa', repoDir);
+        var pdflatex2 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
         var bibtex2 = new Command('bibtex dippa', repoDir);
-        var pdflatex = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
+        var pdflatex3 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
 
-        commandline.runAll([latex1, bibtex1, latex2, bibtex2, pdflatex]).then(function(output) {
+        commandline.runAll([pdflatex1, bibtex1, pdflatex2, bibtex2, pdflatex3]).then(function(output) {
             previewPromise.resolve(output);
         });
 
