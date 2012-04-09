@@ -23,7 +23,6 @@ var API = {
 
         app.get('/', this.getIndex);
         app.get('/:id', this.getId);
-        app.post('/create', this.postCreate);
 
         var profileResolved = new Promise();
 
@@ -66,24 +65,6 @@ var API = {
 
     configure: function() {
         var promise = new Promise();
-
-        app.configure(function(){
-            app.use(express.bodyParser());
-
-            // disable layout
-            app.set("view options", {layout: false});
-
-            app.disable('view cache');
-
-            // make a custom html template
-            app.register('.html', {
-                compile: function(str, options){
-                    return function(locals){
-                        return str;
-                    };
-                }
-            });
-        });
 
         app.configure('staging', function(){
             promise.resolve('staging');
@@ -146,36 +127,54 @@ var API = {
                 res.redirect('/');
             }
         });
-    },
-
-    postCreate: function(req, res){
-        var repo = req.body.repo || {};
-
-        var owner = repo.owner;
-        var name = repo.name;
-        var email = req.body.email;
-        var isDemo = req.body.isDemo;
-
-        if(!isDemo && !(owner && name)) {
-            // Send error message
-            res.send('Error');
-            return;
-        }
-
-        var id = shortId.generate();
-
-        var directoryCreated = Directory.create(id, name, owner, isDemo);
-        var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo);
-
-        p.all(directoryCreated, mongoCreated).then(function() {
-            res.send(id);
-        }, function() {
-            res.send(error);
-        });
     }
 };
 
 module.exports = API;
+
+app.configure(function(){
+    app.use(express.bodyParser());
+
+    // disable layout
+    app.set("view options", {layout: false});
+
+    app.disable('view cache');
+
+    // make a custom html template
+    app.register('.html', {
+        compile: function(str, options){
+            return function(locals){
+                return str;
+            };
+        }
+    });
+});
+
+app.post('/create', function(req, res, next){
+    var repo = req.body.repo || {};
+
+    var owner = repo.owner;
+    var name = repo.name;
+    var email = req.body.email;
+    var isDemo = req.body.isDemo;
+
+    if(!isDemo && !(owner && name)) {
+        // Send error message
+        res.send('Error');
+        return;
+    }
+
+    var id = shortId.generate();
+
+    var directoryCreated = Directory.create(id, name, owner, isDemo);
+    var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo);
+
+    p.all(directoryCreated, mongoCreated).then(function() {
+        res.send(id);
+    }, function() {
+        res.send(error);
+    });
+});
 
 app.get('/load/:id', function(req, res){
     console.log('Loading id ' + id);
