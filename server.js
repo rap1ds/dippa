@@ -3,14 +3,12 @@ var Command = require('./modules/commandline').Command;
 var path = require('path');
 var Mongo = require('./modules/mongo');
 var API = require('./modules/api');
+var _ = require('underscore');
 
-var PORT = 5555;
-
-Mongo.init();
-API.start(PORT);
+API.start();
 
 // The best way to trigger this? Timer?
-(function removeOldDemos() {
+_.delay(function removeOldDemos() {
     var commandsToRun = [];
 
     var REPOSITORY_DIR = "./public/repositories/";
@@ -37,4 +35,4 @@ API.start(PORT);
             });
         });
     });
-})(); // Run once on startup
+}, 3000); // Run once on startup

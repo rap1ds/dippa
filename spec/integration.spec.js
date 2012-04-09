@@ -3,16 +3,22 @@ var Mongo = require('../modules/mongo');
 var IntegrationHelpers = require('./helpers').Integration;
 
 // Initialize server for integration tests
-require('../modules/api').start(6666);
+var started = require('../modules/api').start('testing');
 
-// Initialize Mongo for integration tests
-Mongo.init(Mongo.profiles.test);
-
-var confs = {port: 6666};
+var confs = {port: 8888};
 
 var testRequest = function(opts, callback) {
     return IntegrationHelpers.testRequest(opts, confs, callback);
 };
+
+var apiStarted = false;
+started.then(function() {
+    apiStarted = true;
+});
+
+waitsFor(function() {
+    return apiStarted;
+});
 
 describe('Integration test', function() {
 

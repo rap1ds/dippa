@@ -17,15 +17,120 @@ var TEMPLATE_DIR = "./templates/";
 
 var API = {
 
-    start: function(port) {
+    start: function(profile) {
+        var started = new Promise();
+        var configured = this.configure();
+
         app.get('/', this.getIndex);
         app.get('/:id', this.getId);
         app.post('/create', this.postCreate);
 
-        app.listen(port);
-        console.log('Listening port ' + port);
+        var profileResolved = new Promise();
 
+        if(profile) {
+            profileResolved.resolve(profile);
+        } else {
+            configured.then(function(profile) {
+                profileResolved.resolve(profile);
+            });
+        }
 
+        profileResolved.then(function(profile) {
+            console.log('Profile: ' + profile);
+
+            this.profile = profile;
+
+            if(profile === 'development') {
+                this.configureDevelopment();
+            } else if (profile === 'testing') {
+                this.configureTesting();
+            } else if (profile === 'staging') {
+                this.configureStating();
+            } else if (profile === 'production') {
+                this.configureProduction();
+            } else {
+                throw "Illegal profile " + profile;
+            }
+
+            Mongo.init(this.mongoProfile);
+            console.log('About to listen port ' + this.port);
+            app.listen(this.port);
+
+            console.log('Listening port ' + this.port);
+            started.resolve();
+
+        }.bind(this));
+
+        return started;
+    },
+
+    configure: function() {
+        var promise = new Promise();
+
+        app.configure(function(){
+            app.use(express.bodyParser());
+
+            // disable layout
+            app.set("view options", {layout: false});
+
+            app.disable('view cache');
+
+            // make a custom html template
+            app.register('.html', {
+                compile: function(str, options){
+                    return function(locals){
+                        return str;
+                    };
+                }
+            });
+        });
+
+        app.configure('staging', function(){
+            promise.resolve('staging');
+        });
+
+        app.configure('development', function(){
+            promise.resolve('development');
+        });
+
+        app.configure('production', function(){
+            promise.resolve('production');
+        });
+
+        return promise;
+    },
+
+    configureDevelopment: function() {
+        app.use(express.static(path.resolve(__dirname, '../public')));
+        app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+
+        API.port = 5555;
+        API.mongoProfile = Mongo.profiles.dev;
+    },
+
+    configureTesting: function() {
+        app.use(express.static(path.resolve(__dirname, '../public')));
+        app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+
+        API.port = 8888;
+        API.mongoProfile = Mongo.profiles.test;
+    },
+
+    configureStating: function() {
+        app.use(express.static(path.resolve(__dirname, '../public')));
+        app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+
+        API.port = 7777;
+        API.mongoProfile = Mongo.profiles.staging;
+    },
+
+    configureProduction: function() {
+        var oneYear = 31557600000;
+        app.use(express.static(path.resolve(__dirname, '../public'), { maxAge: oneYear }));
+        app.use(express.errorHandler());
+
+        API.port = 5555;
+        API.mongoProfile = Mongo.profiles.dev;
     },
 
     getIndex: function(req, res, next) {
@@ -71,35 +176,6 @@ var API = {
 };
 
 module.exports = API;
-
-app.configure(function(){
-    app.use(express.bodyParser());
-
-    // disable layout
-    app.set("view options", {layout: false});
-
-    app.disable('view cache');
-
-    // make a custom html template
-    app.register('.html', {
-        compile: function(str, options){
-            return function(locals){
-                return str;
-            };
-        }
-    });
-});
-
-app.configure('development', function(){
-    app.use(express.static(path.resolve(__dirname, '../public')));
-    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
-
-app.configure('production', function(){
-    var oneYear = 31557600000;
-    app.use(express.static(path.resolve(__dirname, '../public'), { maxAge: oneYear }));
-    app.use(express.errorHandler());
-});
 
 app.get('/load/:id', function(req, res){
     console.log('Loading id ' + id);
