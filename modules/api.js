@@ -18,7 +18,7 @@ var TEMPLATE_DIR = "./templates/";
 var API = {
 
     start: function(profile) {
-        console.log('Staring the API');
+        console.log('Staring the API again...');
 
         var started = new Promise();
         var configured = this.configure();
