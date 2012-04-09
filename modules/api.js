@@ -214,7 +214,7 @@ app.get('/load/:id', function(req, res){
 
 app.post('/save/:id', function(req, res){
     var id = req.params.id;
-    var repoDir = REPOSITORY_DIR + id + '/';
+    var repoDir = path.resolve(REPOSITORY_DIR + id + '/');
     var texFile = repoDir + 'dippa.tex';
     var refFile = repoDir + 'ref.bib';
 
