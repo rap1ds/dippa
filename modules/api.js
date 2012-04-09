@@ -218,6 +218,9 @@ app.post('/save/:id', function(req, res){
     var texFile = repoDir + 'dippa.tex';
     var refFile = repoDir + 'ref.bib';
 
+    console.log('tex file: ' + texFile);
+    console.log('ref file: ' + refFile);
+
     var docContent = req.body.documentContent;
     var refContent = req.body.referencesContent;
 
