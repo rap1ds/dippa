@@ -214,12 +214,12 @@ app.get('/load/:id', function(req, res){
 
 app.post('/save/:id', function(req, res){
     var id = req.params.id;
-    var repoDir = path.resolve(REPOSITORY_DIR + id + '/');
-    var texFile = repoDir + 'dippa.tex';
-    var refFile = repoDir + 'ref.bib';
+    var repoDir = path.resolve(REPOSITORY_DIR, id);
+    var texFile = path.resolve(repoDir, 'dippa.tex');
+    var refFile = path.resolve(repoDir, 'ref.bib');
 
-    console.log('tex file: ' + texFile);
-    console.log('ref file: ' + refFile);
+    console.log('tex: ' + texFile);
+    console.log('ref: ' + refFile);
 
     var docContent = req.body.documentContent;
     var refContent = req.body.referencesContent;
