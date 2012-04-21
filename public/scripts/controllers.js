@@ -20,10 +20,10 @@
         proxied: ['createRequest'],
 
         createDippa: function() {
-            console.log('Dippa create clicked');
             this.instructions.slideDown();
             $('#screenshots').fadeOut();
             $('#info').fadeOut();
+            $('#github_ribbon').fadeOut();
         },
 
         step1Done: function() {
@@ -139,6 +139,7 @@
         click: function() {
             $('#info').fadeOut();
             $('#screenshots').fadeOut();
+            $('#github_ribbon').fadeOut();
             Hero.el.fadeOut(function() {
                 $('#loader').show();
                 $.ajax({
