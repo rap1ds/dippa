@@ -7,7 +7,7 @@
         "express": "2.5.8",
         "oauth": "0.9.5",
         "github": "0.0.7",
-        "node-promise": "0.5.1",
+        "node-promise": "0.5.2",
         "shortid": "1.0.6",
         "mongoose": "2.5.13",
         "jqtpl": "",

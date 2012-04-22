@@ -29,6 +29,7 @@ var API = {
         app.get('/', this.getIndex);
         app.get('/:id', this.getId);
         app.delete('/upload/:id/:filename', this.deleteUploadedFile);
+        app.get('/load/:id', this.getLoad);
 
         var profileResolved = new Promise();
 
@@ -148,6 +149,23 @@ var API = {
         }, function error(err) {
             res.send({msg: 'An error occured while deleting file'}, 500);
         });
+    },
+
+    getLoad: function(req, res, next){
+        var id = req.params.id;
+
+        var response = {};
+
+        var documentRead = Directory.readDocumentFile(id);
+        var referencesRead = Directory.readReferenceFile(id);
+
+        p.allOrNone([documentRead, referencesRead]).then(function(results) {
+            response.documentContent = results[0];
+            response.referencesContent = results[1];
+            res.send(response);
+        }, function error() {
+            res.send({msg: 'An error occured while reading content'}, 500);
+        });
     }
 };
 
@@ -194,42 +212,6 @@ app.post('/create', function(req, res, next){
         res.send(id);
     }, function() {
         res.send(error);
-    });
-});
-
-app.get('/load/:id', function(req, res){
-    console.log('Loading id ' + id);
-    var id = req.params.id;
-
-    var response = {};
-
-    var documentRead = new Promise();
-    var referencesRead = new Promise();
-
-    var allRead = p.all(documentRead, referencesRead);
-
-    allRead.then(function(results) {
-        response.documentContent = results[0];
-        response.referencesContent = results[1];
-        res.send(JSON.stringify(response));
-    });
-
-    fs.readFile(REPOSITORY_DIR + '/' + id + '/dippa.tex', 'UTF-8', function(err, data) {
-        if(err) {
-            throw err;
-        }
-
-        console.log('Document reading done');
-        documentRead.resolve(data);
-    });
-
-    fs.readFile(REPOSITORY_DIR + '/' + id + '/ref.bib', 'UTF-8', function(err, data) {
-        if(err) {
-            throw err;
-        }
-
-        console.log('References reading done');
-        referencesRead.resolve(data);
     });
 });
 
