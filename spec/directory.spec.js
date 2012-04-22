@@ -3,6 +3,9 @@ var _ = require('underscore');
 var fs = require('fs');
 var Promise = require('node-promise').Promise;
 
+// Helpers
+var CommonHelpers = require('./helpers').Common;
+var waitsForPromise = CommonHelpers.waitsForPromise;
 
 describe('Directory', function (){
 
@@ -22,7 +25,8 @@ describe('Directory', function (){
             }
         });
 
-        spyOn(fs, 'readFile')
+        spyOn(fs, 'readFile');
+        spyOn(fs, 'unlink');
     });
 
     function expectPromiseResults(promise, resolved, expectedArgs) {
@@ -80,7 +84,7 @@ describe('Directory', function (){
             var args = fs.readFile.mostRecentCall.args
 
             expect(fs.readFile).toHaveBeenCalled();
-            expect(args[0]).toEqual('./public/repositories//1234/filename.txt');
+            expect(args[0]).toEqual('./public/repositories_test//1234/filename.txt');
             expect(args[1]).toEqual('UTF-8');
             expect(args[2]).toBeFunction();
         });
@@ -103,6 +107,51 @@ describe('Directory', function (){
             var promise = Directory.readFile('1234', 'filename.txt');
 
             expectRejected(promise, [{error: 'This is error'}]);
+        });
+    });
+
+    describe('deleteFile', function() {
+        it('should return promise', function() {
+            expect(Directory.deleteFile('1234', 'filename.txt')).toBePromise();
+        });
+
+        it('should call fs.unlink with repodir and filename', function() {
+            Directory.deleteFile('1234', 'filename.txt');
+
+            var args = fs.unlink.mostRecentCall.args
+
+            expect(fs.unlink).toHaveBeenCalled();
+            expect(args[0]).toEqual('./public/repositories_test//1234/filename.txt');
+            expect(args[1]).toBeFunction();
+        });
+
+        it('should resolve promise on success', function() {
+            fs.unlink.andCallFake(function(path, callback) {
+                callback();
+            });
+
+            var promise = Directory.deleteFile('1234', 'filename.txt');
+
+            waitsForPromise(promise);
+
+            runs(function() {
+                expect(promise.resolved).toBeTruthy();
+            });
+        });
+
+        it('should reject promise on error', function() {
+            fs.unlink.andCallFake(function(path, callback) {
+                callback({error: 'this is error'});
+            });
+
+            var promise = Directory.deleteFile('1234', 'filename.txt');
+
+            waitsForPromise(promise);
+
+            runs(function() {
+                expect(promise.rejected).toBeTruthy();
+                expect(promise.result[0]).toEqual({error: 'this is error'});
+            });
         });
     });
 

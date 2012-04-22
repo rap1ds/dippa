@@ -1,3 +1,5 @@
+"use strict";
+
 var Mongo = require('../modules/mongo');
 var commandline = require('../modules/commandline');
 var Command = require('../modules/commandline').Command;
@@ -11,6 +13,7 @@ var PromisedFS = require("promised-io/fs").fs;
 var shortId = require('shortid');
 var fs = require('fs');
 var Directory = require('../modules/directory');
+var _ = require('underscore');
 
 var REPOSITORY_DIR = "./public/repositories/";
 var TEMPLATE_DIR = "./templates/";
@@ -25,6 +28,7 @@ var API = {
 
         app.get('/', this.getIndex);
         app.get('/:id', this.getId);
+        app.delete('/upload/:id/:filename', this.deleteUploadedFile);
 
         var profileResolved = new Promise();
 
@@ -128,6 +132,21 @@ var API = {
             } else {
                 res.redirect('/');
             }
+        });
+    },
+
+    deleteUploadedFile: function(req, res, next) {
+        var id = req.params.id;
+        var filename = req.params.filename;
+
+        if(id == null || filename == null) {
+            res.send({msg: 'Missing filename or id'}, 400);
+        }
+
+        Directory.deleteFile(id, filename).then(function success() {
+            res.send(204);
+        }, function error(err) {
+            res.send({msg: 'An error occured while deleting file'}, 500);
         });
     }
 };
@@ -346,19 +365,4 @@ app.post('/upload/:id', function(req, res, next) {
         console.log('All files copied', resultMessage);
         res.send(JSON.stringify(resultMessage));
     });
-});
-
-app.delete('/upload/:id/:filename', function(req, res, next) {
-    var repoDir = REPOSITORY_DIR + req.params.id + '/';
-    var filename = req.params.filename;
-
-    if(filename.length === 0) {
-        return;
-    }
-
-    var filepath = repoDir + filename;
-    console.log('Removing file', filepath);
-    fs.unlink(filepath, function() {
-        res.send();
-    })
 });

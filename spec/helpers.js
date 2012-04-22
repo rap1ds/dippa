@@ -1,5 +1,6 @@
 var http = require('http');
 var Promise = require('node-promise').Promise;
+var _ = require('underscore');
 
 var Integration = {
 
@@ -54,6 +55,60 @@ var Integration = {
     }
 };
 
+var Common = {
+    waitsForPromise: function(promise) {
+
+        promise.then(function resolved() {
+            promise.resolved = true;
+            promise.result = _.toArray(arguments);
+        }, function rejected() {
+            promise.rejected = true;
+            promise.result = _.toArray(arguments);
+        });
+
+        waitsFor(function() {
+            return promise.resolved || promise.rejected;
+        });
+    },
+
+    spyOnPromise: function(Klass, method) {
+            if(!method) {
+                throw "Please give the method to spy as a String";
+            }
+
+            var spy = spyOn(Klass, method);
+            var realPromise = new Promise();
+
+            return {
+                andCallSuccess: function(returnValue) {
+                    spy.andReturn({
+                        then: function(callback) {
+                            callback(returnValue);
+                        }
+                    });
+                },
+                andCallError: function(errorValue) {
+                    spy.andReturn({
+                        then: function(callback, error) {
+                            error(errorValue);
+                        }
+                    });
+                },
+                andCallRealSuccess: function(returnValue) {
+                    realPromise.resolve(returnValue);
+                    spy.andReturn(realPromise);
+                    return realPromise;
+                },
+                andCallRealError: function(errorValue) {
+                    realPromise.reject(errorValue);
+                    spy.andReturn(realPromise);
+                    return realPromise;
+                }
+            };
+        }
+};
+
 module.exports = {
-    Integration: Integration
+    Integration: Integration,
+    Common: Common
 };

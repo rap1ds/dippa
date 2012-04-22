@@ -1,9 +1,11 @@
 var Mongo = require('../modules/mongo');
-
+var Directory = require('../modules/directory');
 var IntegrationHelpers = require('./helpers').Integration;
 
 // Initialize server for integration tests
 var started = require('../modules/api').start('testing');
+
+Directory.init(Directory.profiles.test);
 
 var confs = {port: 8888};
 
@@ -23,16 +25,21 @@ waitsFor(function() {
 describe('Integration test', function() {
 
     beforeEach(function() {
-        var fixturesLoaded;
+        var dbFixturesLoaded,
+            fsFixturesLoaded;
 
         runs(function() {
             Mongo.loadFixtures().then(function() {
-                fixturesLoaded = true;
+                dbFixturesLoaded = true;
+            });
+
+            Directory.loadFixtures().then(function() {
+                fsFixturesLoaded = true;
             });
         });
 
         waitsFor(function() {
-            return fixturesLoaded;
+            return dbFixturesLoaded && fsFixturesLoaded;
         });
     });
 
@@ -52,8 +59,18 @@ describe('Integration test', function() {
 
     });
 
-    xit('DELETE /upload/:id/:filename', function() {
+    it('DELETE /upload/:id/:filename, no file', function() {
+        testRequest({method: 'DELETE', path: '/upload/123456A/filename.txt'}, function(result) {
+            expect(result.statusCode).toEqual(500);
+            var body = JSON.parse(result.body);
+            expect(body.msg).toEqual('An error occured while deleting file');
+        });
+    });
 
+    it('DELETE /upload/:id/:filename', function() {
+        testRequest({method: 'DELETE', path: '/upload/123456A/doggy.jpg'}, function(result) {
+            expect(result.statusCode).toEqual(204);
+        });
     });
 
     it('GET /:id when id does exists', function() {

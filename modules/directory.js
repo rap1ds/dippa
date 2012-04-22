@@ -4,11 +4,47 @@ var Command = require('../modules/commandline').Command;
 var path = require('path');
 var Promise = require('node-promise').Promise;
 var fs = require('fs');
+var wrench = require('wrench');
 
 var REPOSITORY_DIR = "./public/repositories/";
 var TEMPLATE_DIR = "./templates/";
 
 var Directory = {
+
+    profiles: {
+        dev: {repoDir: "./public/repositories/"},
+        test: {repoDir: "./public/repositories_test/"},
+        staging: {repoDir: "./public/repositories/"},
+        production: {repoDir: "./public/repositories/"}
+    },
+
+    init: function(profile) {
+        profile = profile || this.profiles.dev;
+
+        REPOSITORY_DIR = profile.repoDir;
+    },
+
+    loadFixtures: function() {
+        var promise = new Promise();
+
+        // Double check
+        if(!REPOSITORY_DIR.match('test')) {
+            throw "Are you sure repository dir " + REPOSITORY_DIR + " is for testing?";
+        }
+
+        wrench.rmdirRecursive(REPOSITORY_DIR, function rmdirRecursivelyClbk(err) {
+            wrench.copyDirRecursive('fixtures/files', REPOSITORY_DIR, function copyDirRecursivelyClbk(err) {
+                if(err) {
+                    promise.reject();
+                    return;
+                }
+
+                promise.resolve();
+            });
+        });
+
+        return promise;
+    },
 
     create: function(id, name, owner, noGithub) {
         var promise = new Promise();
@@ -54,6 +90,20 @@ var Directory = {
                 return;
             }
             promise.resolve(data);
+        });
+
+        return promise;
+    },
+
+    deleteFile: function(id, filename) {
+        var promise = new Promise();
+
+        fs.unlink(REPOSITORY_DIR + '/' + id + '/' + filename, function(err) {
+            if(err) {
+                promise.reject(err);
+                return;
+            }
+            promise.resolve();
         });
 
         return promise;

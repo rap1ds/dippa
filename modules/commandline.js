@@ -23,7 +23,6 @@ var CommandLine = {
         var output = new CommandLine.Output();
 
         spawnOperation.on('exit', function(code) {
-            console.log('child process exited with code ' + code);
             promise.resolve(output.getOutput());
         });
         spawnOperation.stdout.on('data', function (data) {
@@ -88,15 +87,12 @@ CommandLine.Output.prototype.flushStdout = function(forceEmpty) {
     for(var i = 0; i < len - 1; i++) {
         var line = lines.shift();
         this.allOutputs.push({type: "stdout", output: line});
-        console.log('OUT ' + line);
     }
 
     // Last line
     if(len > 0 && forceEmpty === true) {
         var lastLine = lines.shift();
         this.allOutputs.push({type: "stdout", output: lastLine});
-        console.log('ERR ' + lastLine);
-
         this.stdoutBuffer = null;
     } else {
         this.stdoutBuffer = lines.shift();
@@ -132,7 +128,6 @@ CommandLine.Output.prototype.flushStderr = function(forceEmpty) {
     if(len > 0 && forceEmpty === true) {
         var lastLine = lines.shift();
         this.allOutputs.push({type: "stderr", output: lastLine});
-        console.log('ERR ' + lastLine);
     }
 }
 
