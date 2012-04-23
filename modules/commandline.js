@@ -1,5 +1,5 @@
 var spawn = require('child_process').spawn;
-var p = require('node-promise');
+var p = require("promised-io/promise");;
 var when = p.when;
 var Promise = p.Promise;
 

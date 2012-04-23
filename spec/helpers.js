@@ -1,5 +1,5 @@
 var http = require('http');
-var Promise = require('node-promise').Promise;
+var Promise = require("promised-io/promise").Promise;
 var _ = require('underscore');
 
 var Integration = {

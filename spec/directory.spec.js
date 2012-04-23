@@ -1,7 +1,7 @@
 var Directory = require('../modules/directory');
 var _ = require('underscore');
 var fs = require('fs');
-var Promise = require('node-promise').Promise;
+var Promise = require("promised-io/promise").Promise;
 
 // Helpers
 var CommonHelpers = require('./helpers').Common;

@@ -5,7 +5,7 @@ var commandline = require('../modules/commandline');
 var Command = require('../modules/commandline').Command;
 var express = require('express');
 var app = express.createServer();
-var p = require('node-promise');
+var p = require("promised-io/promise");;
 var path = require('path');
 var Promise = p.Promise;
 var PromisedIO = require("promised-io/promise");
@@ -159,7 +159,7 @@ var API = {
         var documentRead = Directory.readDocumentFile(id);
         var referencesRead = Directory.readReferenceFile(id);
 
-        p.allOrNone([documentRead, referencesRead]).then(function(results) {
+        p.all([documentRead, referencesRead]).then(function(results) {
             response.documentContent = results[0];
             response.referencesContent = results[1];
             res.send(response);

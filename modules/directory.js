@@ -2,7 +2,7 @@
 var commandline = require('../modules/commandline');
 var Command = require('../modules/commandline').Command;
 var path = require('path');
-var Promise = require('node-promise').Promise;
+var Promise = require("promised-io/promise").Promise;
 var fs = require('fs');
 var wrench = require('wrench');
 

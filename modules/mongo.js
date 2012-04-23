@@ -1,5 +1,5 @@
 var mongoose = require('mongoose')
-    , p = require('node-promise')
+    , p = require("promised-io/promise")
     , DateUtils = require('./dateutils')
     , Fixtures = require('../fixtures/fixtures')
     , _ = require('underscore');
