@@ -17,7 +17,7 @@ oop.inherits(Mode, TextMode);
     this.toggleCommentLines = function(state, doc, startRow, endRow) {
         // This code is adapted from ruby.js
         var outdent = true;
-        
+
         // LaTeX comments begin with % and go to the end of the line
         var commentRegEx = /^(\s*)\%/;
 
@@ -43,13 +43,13 @@ oop.inherits(Mode, TextMode);
             doc.indentRows(startRow, endRow, "%");
         }
     };
-    
+
     // There is no universally accepted way of indenting a tex document
     // so just maintain the indentation of the previous line
     this.getNextLineIndent = function(state, line, tab) {
         return this.$getIndent(line);
     };
-    
+
 }).call(Mode.prototype);
 
 exports.Mode = Mode;
@@ -61,9 +61,14 @@ define('ace/mode/latex_highlight_rules', ['require', 'exports', 'module' , 'ace/
 var oop = require("../lib/oop");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
-var LatexHighlightRules = function() {   
+var LatexHighlightRules = function() {
     this.$rules = {
-        "start" : [{
+        "start": [{
+            token : "comment",
+            merge : true,
+            regex : "\\\\begin{comment}",
+            next : "comment"
+        }, {
             // A tex command e.g. \foo
             token : "keyword",
             regex : "\\\\(?:[^a-zA-Z]|[a-zA-Z]+)",
@@ -80,10 +85,20 @@ var LatexHighlightRules = function() {
             token : "string",
             regex : "\\$(?:(?:\\\\.)|(?:[^\\$\\\\]))*?\\$"
         }, {
-            // A comment. Tex comments start with % and go to 
+            // A comment. Tex comments start with % and go to
             // the end of the line
             token : "comment",
             regex : "%.*$"
+        }],
+        "comment" : [{
+            token : "comment", // closing comment
+            regex : ".*?\\\\end{comment}",
+            merge : true,
+            next : "start"
+        }, {
+            token : "comment", // comment spanning whole line
+            merge : true,
+            regex : ".+"
         }]
     };
 };
@@ -91,6 +106,7 @@ var LatexHighlightRules = function() {
 oop.inherits(LatexHighlightRules, TextHighlightRules);
 
 exports.LatexHighlightRules = LatexHighlightRules;
+
 
 });
 ;
