@@ -255,6 +255,10 @@
             this.session.on('change', this.proxy(function() {
                 this.setChanged(true);
             }));
+
+            this.session.on('outline', function(outline) {
+                Outline.update(outline);
+            });
         },
 
         getValue: function() {
@@ -281,6 +285,10 @@
             } else {
                 throw "Illegal type " + type;
             }
+        },
+
+        gotoLine: function(lineNumber) {
+            this.editor.gotoLine(lineNumber);
         },
 
         setContent: function(newContent) {
@@ -433,6 +441,57 @@
             Dippa.File.each(this.proxy(this.addOne));
         }
     });
+
+    var OutlineItem = Spine.Controller.sub({
+        events: {"click": "goto"},
+
+        tag: 'li',
+
+        init: function() {},
+
+        render: function(item) {
+            if (item) this.item = item;
+
+            // Indent
+            var level = this.item.level || 0;
+            var indent = (10 * level) + 'px;';
+            this.item.indent = indent;
+
+            this.html(OutlineItem.template(this.item));
+
+            return this;
+        },
+
+        goto: function() {
+            var lineNumber = this.item.line || null;
+
+            if(lineNumber != null) {
+                Dippa.Editor.gotoLine(lineNumber);
+            }
+        }
+    }, {
+        template: Handlebars.compile($("#outlinelistitem-template").html())
+    });
+
+    var Outline = Spine.Controller.create({
+        el: $('#outline_list'),
+
+        init: function() {
+
+        },
+
+        update: function(outline) {
+            this.el.empty();
+            this.el.append('<li class="nav-header">Document outline</li>');
+
+            outline.forEach(function(item) {
+                var outlineItem = new OutlineItem({item: item});
+                this.append(outlineItem.render());
+            }.bind(this));
+        }
+
+
+    }).init();
 
 
     var EditorView = Spine.Controller.sub({

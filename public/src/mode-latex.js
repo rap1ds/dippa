@@ -6,6 +6,7 @@ var TextMode = require("./text").Mode;
 var Tokenizer = require("../tokenizer").Tokenizer;
 var LatexHighlightRules = require("./latex_highlight_rules").LatexHighlightRules;
 var Range = require("../range").Range;
+var WorkerClient = require("../worker/worker_client").WorkerClient;
 
 var Mode = function()
 {
@@ -49,6 +50,18 @@ oop.inherits(Mode, TextMode);
     this.getNextLineIndent = function(state, line, tab) {
         return this.$getIndent(line);
     };
+
+    this.createWorker = function(session) {
+            debugger;
+            var worker = new WorkerClient(["ace"], "src/worker.js", "ace/mode/latex_worker", "LatexWorker");
+            worker.attachToDocument(session.getDocument());
+
+            worker.on("outline", function(e) {
+                session._emit("outline", e.data);
+            });
+
+            return worker;
+        };
 
 }).call(Mode.prototype);
 

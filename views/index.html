@@ -1,254 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Dippa editor</title>
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<meta charset="utf-8">
+	<title>Dippa editor</title>
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
-    <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
 
-    <!-- Le styles -->
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/styles.css" rel="stylesheet">
-    <link href="css/jquery.fileupload-ui.css" rel="stylesheet">
+	<!-- Le styles -->
+	<link href="css/bootstrap.css" rel="stylesheet">
+	<link href="css/styles.css" rel="stylesheet">
+	<link href="css/jquery.fileupload-ui.css" rel="stylesheet">
 
-    <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="images/favicon.ico">
-    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+	<!-- Le fav and touch icons -->
+	<link rel="shortcut icon" href="images/favicon.ico">
+	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
 
-    <script type="text/javascript">
+	<script type="text/javascript">
 
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-29338354-1']);
-        _gaq.push(['_trackPageview']);
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-29338354-1']);
+		_gaq.push(['_trackPageview']);
 
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
 
-    </script>
+	</script>
 </head>
 
 <body>
 
 <div class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container">
-            <a class="brand" href="http://mkos.futupeople.com/dippa/">Dippa editor</a>
-            <ul id="nav" class="nav" style="display: none">
-                <li id="tab_doc"><a href="#">Document</a></li>
-                <li id="tab_ref"><a href="#">References</a></li>
-                <li id="tab_files"><a href="#">Files</a></li>
-                <li id="tab_out"><a href="#">Output</a></li>
-            </ul>
-            <button id="save_button" class="btn btn-danger editor_buttons" data-loading-text="saving document...">Save</button>
-            <button id="preview_button" class="btn btn-info editor_buttons" data-loading-text="Preview">Preview</button>
-        </div>
-    </div>
+	<div class="navbar-inner">
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span2">
+					<a class="brand" href="http://mkos.futupeople.com/dippa/">Dippa editor</a>
+				</div>
+				<div class="span10">
+					<div style="width: 940px">
+						<ul id="nav" class="nav" style="display: none">
+							<li id="tab_doc"><a href="#">Document</a></li>
+							<li id="tab_ref"><a href="#">References</a></li>
+							<li id="tab_files"><a href="#">Files</a></li>
+							<li id="tab_out"><a href="#">Output</a></li>
+						</ul>
+						<button id="save_button" class="btn btn-danger editor_buttons" data-loading-text="saving document...">Save</button>
+						<button id="preview_button" class="btn btn-info editor_buttons" data-loading-text="Preview">Preview</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
-<div class="container" style="height: 100%">
+<div class="container" style="height: 100%; display: none">
 
-    <div id="hero" class="hero-unit" style="display: none; margin-top: 60px;">
-        <h1>Hello, this is Dippa Editor!</h1>
-        <p>With Dippa Editor, you can create professional looking academic white papers. Dippa editor uses LaTeX for laying out your document, but don't worry, using LaTeX has never been this easy! With the web-based editor you can skip all the installing steps of LaTeX!</p>
-        <p><a id="create_dippa" class="btn btn-primary btn-large">Create a new Dippa &raquo;</a></p>
+	<div id="hero" class="hero-unit" style="display: none; margin-top: 60px;">
+		<h1>Hello, this is Dippa Editor!</h1>
+		<p>With Dippa Editor, you can create professional looking academic white papers. Dippa editor uses LaTeX for laying out your document, but don't worry, using LaTeX has never been this easy! With the web-based editor you can skip all the installing steps of LaTeX!</p>
+		<p><a id="create_dippa" class="btn btn-primary btn-large">Create a new Dippa &raquo;</a></p>
 
-        <div id="github_instructions" style="display: none">
-            <div id="step1" class="step active">
-                <h2><span style="font-size: 35px;">1.</span> Create a free Github account</h2>
-                <p>
-                    <a id="step1_done" class="btn btn-success" style="float: right">Done</a>
-                    If you don't already have one, <a href="https://github.com/signup/free">sign up here.</a>
-                </p>
-            </div>
+		<div id="github_instructions" style="display: none">
+			<div id="step1" class="step active">
+				<h2><span style="font-size: 35px;">1.</span> Create a free Github account</h2>
+				<p>
+					<a id="step1_done" class="btn btn-success" style="float: right">Done</a>
+					If you don't already have one, <a href="https://github.com/signup/free">sign up here.</a>
+				</p>
+			</div>
 
-            <div id="step2" class="step inactive">
-                <h2><span style="font-size: 35px;">2.</span> Create a new Github repository</h2>
-                <p>Log in and create a new empty repository. <a href="https://github.com/repositories/new">You can do it here.</a>
-                    <a id="step2_done" class="btn btn-success" style="float: right">Done</a>
-                    <br />When your done, copy-paste your repository URL here:
-                    <br />
-                <form>
-                    <div class="clearfix" id="repository_url_container">
-                        <input id="repository_url" style="width: 400px;" />
-                    </div>
-                </form>
-                </p>
-            </div>
+			<div id="step2" class="step inactive">
+				<h2><span style="font-size: 35px;">2.</span> Create a new Github repository</h2>
+				<p>Log in and create a new empty repository. <a href="https://github.com/repositories/new">You can do it here.</a>
+					<a id="step2_done" class="btn btn-success" style="float: right">Done</a>
+					<br />When your done, copy-paste your repository URL here:
+					<br />
+				<form>
+					<div class="clearfix" id="repository_url_container">
+						<input id="repository_url" style="width: 400px;" />
+					</div>
+				</form>
+				</p>
+			</div>
 
-            <div id="step3" class="step inactive">
-                <h2><span style="font-size: 35px;">3.</span> Add user "dippa" as a collaborator to the repository</h2>
-                <p>
-                    <a id="step3_done" class="btn btn-success" style="float: right">Done</a>
-                    Go to the admin section of your repository. <a id="admin_link" href="" target="_blank">You find the admin section here.</a> Type "dippa" to the input field and click add.
-                </p>
-            </div>
-        </div>
-    </div>
+			<div id="step3" class="step inactive">
+				<h2><span style="font-size: 35px;">3.</span> Add user "dippa" as a collaborator to the repository</h2>
+				<p>
+					<a id="step3_done" class="btn btn-success" style="float: right">Done</a>
+					Go to the admin section of your repository. <a id="admin_link" href="" target="_blank">You find the admin section here.</a> Type "dippa" to the input field and click add.
+				</p>
+			</div>
+		</div>
+	</div>
 
-    <div id="info" class="row" style="display: none">
+	<div id="info" class="row" style="display: none">
 
-        <div class="page-header">
-            <h1>So, what's in it for me?</h1>
-        </div>
+		<div class="page-header">
+			<h1>So, what's in it for me?</h1>
+		</div>
 
-        <div class="span4">
-            <h2>Online LaTeX editor</h2>
-            <p><img src="img/ace.png" width="100" style="float: right; margin: 10px" />Dippa editor is an online LaTeX editor. It has a LaTeX <b>syntax hilighting</b> in it. Dippa editor uses <b>Ace editor</b> which is one of the best web-based editor components available.</p>
-        </div>
-        <div class="span4">
-            <h2>Github integration</h2>
-            <p><img src="img/github.png" width="100" style="float: right; margin: 10px" />Your Dippa is always in safe a place! Thanks to the <b>Github integration</b>, you don't lose any of your stuff if the server room burns down or even if you delete the whole document yourself. Github provides a <b>version control system</b>, which means that it saves all the previous versions of your document. You can easily go back to the previous version, if something unexpected would happen.</p>
-        </div>
-        <div class="span4">
-            <h2>No need user accounts</h2>
-            <p>After you've created a new Dippa, you'll be directed to <b>a secret URL</b> where your document is. You can come back to your document with this URL without typing username or password. Easy as it can be!</p>
+		<div class="span4">
+			<h2>Online LaTeX editor</h2>
+			<p><img src="img/ace.png" width="100" style="float: right; margin: 10px" />Dippa editor is an online LaTeX editor. It has a LaTeX <b>syntax hilighting</b> in it. Dippa editor uses <b>Ace editor</b> which is one of the best web-based editor components available.</p>
+		</div>
+		<div class="span4">
+			<h2>Github integration</h2>
+			<p><img src="img/github.png" width="100" style="float: right; margin: 10px" />Your Dippa is always in safe a place! Thanks to the <b>Github integration</b>, you don't lose any of your stuff if the server room burns down or even if you delete the whole document yourself. Github provides a <b>version control system</b>, which means that it saves all the previous versions of your document. You can easily go back to the previous version, if something unexpected would happen.</p>
+		</div>
+		<div class="span4">
+			<h2>No need user accounts</h2>
+			<p>After you've created a new Dippa, you'll be directed to <b>a secret URL</b> where your document is. You can come back to your document with this URL without typing username or password. Easy as it can be!</p>
 
-        </div>
-    </div>
+		</div>
+	</div>
 
-    <br />
+	<br />
 
-    <div id="screenshots" class="row" style="display: none">
+	<div id="screenshots" class="row" style="display: none">
 
-        <div class="page-header">
-            <h1>See it in action! <small>Screenshots and live demo</small></h1>
-        </div>
+		<div class="page-header">
+			<h1>See it in action! <small>Screenshots and live demo</small></h1>
+		</div>
 
-        <div class="span4">
-            <p>On the right side you can see screenshots of the main views of Dippa editor: <strong>document editor,</strong> <strong>reference editor,</strong> <strong>file uploader</strong> and <strong>console output</strong>
-            </p>
+		<div class="span4">
+			<p>On the right side you can see screenshots of the main views of Dippa editor: <strong>document editor,</strong> <strong>reference editor,</strong> <strong>file uploader</strong> and <strong>console output</strong>
+			</p>
 
-            <br />
+			<br />
 
-            <p>If you're not satisfied just watching how it works, you can also try it! <i>(Please note the demo documents are removed once in a while)</i></p>
+			<p>If you're not satisfied just watching how it works, you can also try it! <i>(Please note the demo documents are removed once in a while)</i></p>
 
-            <p><button id="demo_button" class="btn btn-success btn-large">Try the demo</button></p>
-            
-            <br />
-            <br />
+			<p><button id="demo_button" class="btn btn-success btn-large">Try the demo</button></p>
 
-            <h3>Stay updated!</h3>
+			<br />
+			<br />
 
-            <br />
+			<h3>Stay updated!</h3>
 
-            <p>
-                <a href="https://twitter.com/DippaEditor" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @DippaEditor</a>
-                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-            </p>
-        </div>
+			<br />
 
-        <div class="span8">
-            <div id="myCarousel" class="carousel">
-                <!-- Carousel items -->
-                <div class="carousel-inner">
-                    <div class="active item">
-                        <img src="img/demo/demo_document_01.png" style="width: 100%;">
-                        <div class="carousel-caption">
-                            <h4>LaTeX document</h4>
-                            <p>Editor with LaTeX command coloring</p>
-                        </div>
-                    </div>
-                    <div class="item"><img src="img/demo/demo_references_01.png" style="width: 100%;">
-                        <div class="carousel-caption">
-                            <h4>References</h4>
-                            <p>Edit the references in standard BibTex format</p>
-                        </div>
-                    </div>
-                    <div class="item"><img src="img/demo/demo_files_01.png" style="width: 100%;">
-                        <div class="carousel-caption">
-                            <h4>Image files</h4>
-                            <p>Upload image files and embed them to your document</p>
-                        </div>
-                    </div>
-                    <div class="item"><img src="img/demo/demo_output_01.png" style="width: 100%;">
-                        <div class="carousel-caption">
-                            <h4>Console output</h4>
-                            <p>See the console output to debug errors in your document</p>
-                        </div>
-                    </div>
-                    <div class="item"><img src="img/demo/demo_preview_01.png" style="width: 100%;">
-                        <div class="carousel-caption">
-                            <h4>Preview</h4>
-                            <p>Preview the actual compiled PDF document</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Carousel nav -->
-                <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
-                <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
-            </div>
-        </div>
+			<p>
+				<a href="https://twitter.com/DippaEditor" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @DippaEditor</a>
+				<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+			</p>
+		</div>
 
-    </div>
+		<div class="span8">
+			<div id="myCarousel" class="carousel">
+				<!-- Carousel items -->
+				<div class="carousel-inner">
+					<div class="active item">
+						<img src="img/demo/demo_document_01.png" style="width: 100%;">
+						<div class="carousel-caption">
+							<h4>LaTeX document</h4>
+							<p>Editor with LaTeX command coloring</p>
+						</div>
+					</div>
+					<div class="item"><img src="img/demo/demo_references_01.png" style="width: 100%;">
+						<div class="carousel-caption">
+							<h4>References</h4>
+							<p>Edit the references in standard BibTex format</p>
+						</div>
+					</div>
+					<div class="item"><img src="img/demo/demo_files_01.png" style="width: 100%;">
+						<div class="carousel-caption">
+							<h4>Image files</h4>
+							<p>Upload image files and embed them to your document</p>
+						</div>
+					</div>
+					<div class="item"><img src="img/demo/demo_output_01.png" style="width: 100%;">
+						<div class="carousel-caption">
+							<h4>Console output</h4>
+							<p>See the console output to debug errors in your document</p>
+						</div>
+					</div>
+					<div class="item"><img src="img/demo/demo_preview_01.png" style="width: 100%;">
+						<div class="carousel-caption">
+							<h4>Preview</h4>
+							<p>Preview the actual compiled PDF document</p>
+						</div>
+					</div>
+				</div>
+				<!-- Carousel nav -->
+				<a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+				<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+			</div>
+		</div>
 
-    <div id="loader" style="position: relative; height: 50%; display: none">
-        <div style="position: absolute; bottom: 0px; height: 20px; left: 0px; right: 0px; text-align: center">
-            <img src="img/ajax-loader.gif" />
-        </div>
-    </div>
+	</div>
 
-    <div id="editor_container" style="display: none; width: 900px; height: 100%; position: relative">
-        <div style="position: absolute; top: 60px; bottom: 20px; left: 0; right: 0">
-            <div id="editor" style="width: 900px; height: 100%"></div>
-            <div id="console" style="overflow: scroll; background-color: #222; color: rgb(40, 254, 20); display: none; width: 900px; height: 100%; border: 1px solid #CCC; padding: 5px; font-family: monospace;">
-                <span>Console output</span><br />
-                <span></span><br />
-                <span>Save the document to compile it to PDF</span><br />
-            </div>
-
-            <div id="files" style="width: 900px; height: 100%; display: none; ">
-                <div class="row-fluid" style="height: 100%">
-                    <div class="span4" style="height: 100%">
-                        <div class="well" style="padding: 0; height: 100%">
-                            <ul id="filelist" class="nav nav-list" style="padding-top: 8px; padding-bottom: 8px;">
-                                <li class="nav-header">
-                                    Filename
-                                </li>
-                            </ul>
-
-                            <div style="margin: 12px 12px 10px 12px">
-                                <form id="fileupload" action="upload/" method="POST" enctype="multipart/form-data">
-                                    <button style="width: 100%; height: 40px" class="btn fileinput-button">
-                                        <i class="icon-plus"></i>
-                                        <span>Upload new file</span>
-                                        <input type="file" name="files[]" multiple>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="span8" style="height: 100%">
-                        <div id="file-preview" style="width: 100%; height: 100%;  text-align: center; font-size: 150%; color: #999; position: relative">
-                            <div id="preview-empty" style="position: absolute; top: 30%; height: 20px; left: 0px; right: 0px;">
-                                Select a file to preview, remove a existing file or upload a new one
-                            </div>
-                            <iframe id="preview-iframe" style="width: 100%; height: 100%; display: none">
-
-                            </iframe>
-                            <img id="preview-image" style="width: 100%" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div id="loader" style="position: relative; height: 50%; display: none">
+		<div style="position: absolute; bottom: 0px; height: 20px; left: 0px; right: 0px; text-align: center">
+			<img src="img/ajax-loader.gif" />
+		</div>
+	</div>
 
 </div> <!-- /container -->
+
+<div id="outer-container" style="position: absolute; top: 60px; bottom: 20px; width: 100%">
+	<div class="container-fluid" style="height: 100%">
+
+		<div class="row-fluid">
+			<div id="outline_container" class="span2">
+				<ul id="outline_list" class="nav nav-list">
+					<li class="nav-header">
+						Document outline
+					</li>
+				</ul>
+			</div>
+
+			<div id="editor_container" class="span10">
+				<div id="editor" style="width: 900px; height: 100%"></div>
+				<div id="console" style="overflow: scroll; background-color: #222; color: rgb(40, 254, 20); display: none; width: 900px; height: 100%; border: 1px solid #CCC; padding: 5px; font-family: monospace;">
+					<span>Console output</span><br />
+					<span></span><br />
+					<span>Save the document to compile it to PDF</span><br />
+				</div>
+
+				<div id="files" style="width: 900px; height: 100%; display: none; ">
+					<div class="row-fluid" style="height: 100%">
+						<div class="span4" style="height: 100%">
+							<div class="well" style="padding: 0; height: 100%">
+								<ul id="filelist" class="nav nav-list" style="padding-top: 8px; padding-bottom: 8px;">
+									<li class="nav-header">
+										Filename
+									</li>
+								</ul>
+
+								<div style="margin: 12px 12px 10px 12px">
+									<form id="fileupload" action="upload/" method="POST" enctype="multipart/form-data">
+										<button style="width: 100%; height: 40px" class="btn fileinput-button">
+											<i class="icon-plus"></i>
+											<span>Upload new file</span>
+											<input type="file" name="files[]" multiple>
+										</button>
+									</form>
+								</div>
+							</div>
+						</div>
+						<div class="span8" style="height: 100%">
+							<div id="file-preview" style="width: 100%; height: 100%;  text-align: center; font-size: 150%; color: #999; position: relative">
+								<div id="preview-empty" style="position: absolute; top: 30%; height: 20px; left: 0px; right: 0px;">
+									Select a file to preview, remove a existing file or upload a new one
+								</div>
+								<iframe id="preview-iframe" style="width: 100%; height: 100%; display: none">
+
+								</iframe>
+								<img id="preview-image" style="width: 100%" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
 <a href="https://github.com/rap1ds/dippa"><img id="github_ribbon" style="position: fixed; top: 0; right: 0; border: 0; z-index: 10001; display: none" src="https://a248.e.akamai.net/assets.github.com/img/71eeaab9d563c2b3c590319b398dd35683265e85/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub"></a>
 
 <script id="filelistitem-template" type="text/x-handlebars-template">
-    <a class="filename" href="#"><span class="preview-file">{{filename}}</span> <i class="remove-file icon-remove" style="float: right"></i></a>
+	<a class="filename" href="#"><span class="preview-file">{{filename}}</span> <i class="remove-file icon-remove" style="float: right"></i></a>
+</script>
+
+<script id="outlinelistitem-template" type="text/x-handlebars-template">
+	<a class="section" style="margin-left: {{indent}}" href="#"><span class="section-title">{{title}}</span></a>
 </script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -268,135 +293,109 @@
 <script src="scripts/handlebars-1.0.0.beta.6.js"></script>
 <script src="scripts/namespace.js"></script>
 <script>
-    Dippa.basepath = window.location.hostname.indexOf('futupeople') !== -1 ? '/dippa/' : '/';
+	Dippa.basepath = window.location.hostname.indexOf('futupeople') !== -1 ? '/dippa/' : '/';
 </script>
 <script src="scripts/github.js"></script>
 <script src="scripts/controllers.js"></script>
 <script src="scripts/models.js"></script>
 
 <script>
-    $(function() {
+	$(function() {
 
-        var session, LatexMode;
+		var session, LatexMode;
 
-        window.onbeforeunload = function (e) {
-            if(!Dippa.Editor.hasChanged()) {
-                return;
-            }
+		window.onbeforeunload = function (e) {
+			if(!Dippa.Editor.hasChanged()) {
+				return;
+			}
 
-            e = e || window.event;
+			e = e || window.event;
 
-            // For IE and Firefox prior to version 4
-            if (e) {
-                e.returnValue = 'You have unsaved changes.';
-            }
+			// For IE and Firefox prior to version 4
+			if (e) {
+				e.returnValue = 'You have unsaved changes.';
+			}
 
-            // For Safari
-            return 'You have unsaved changes.';
-        };
+			// For Safari
+			return 'You have unsaved changes.';
+		};
 
-        /*
-        Dippa.setMode = function(content) {
-            if(Dippa.mode === content.type) {
-                return;
-            }
+		$('.carousel').carousel();
 
-            if(Dippa.mode === "doc") {
-                Dippa.Editor.docContent.value = Dippa.Editor.getValue();
-            }
+		var filesController = new Dippa.Files();
+		var controllers = new Dippa.ControllerStack();
+		var tabStack = new Dippa.TabStack({controllerStack: controllers});
 
-            if(Dippa.mode === "ref") {
-                Dippa.Editor.refContent.value = Dippa.Editor.getValue();
-            }
+		var App = Spine.Controller.sub({
+			init: function(){
+				var homeRegexp = new RegExp(Dippa.basepath + '$');
+				Spine.Route.add(homeRegexp, this.home);
+				var idRegExp = new RegExp('.*' + Dippa.basepath + '(.*)#?$')
+				Spine.Route.add(idRegExp, this.loadId);
 
-            if(content.type === "doc") {
-                Dippa.Editor.setValue(Dippa.Editor.docContent.value);
-            }
+				// Initialize sub editors
+				Dippa.Editor = new Dippa.EditorClass();
+				Dippa.Editor.initializeEditor();
+			},
 
-            if(content.type === "ref") {
-                Dippa.Editor.setValue(Dippa.Editor.refContent.value);
-            }
+			home: function(route) {
+				console.log('home route');
+				$('#hero').show();
+				$('#info_header').show();
+				$('#info').show();
+				$('#screenshots').show();
 
-            Dippa.mode = content.type;
-        };
-        */
+				$('#step2').css('opacity', 0.25).find('p').hide();
+				$('#step3').css('opacity', 0.25).find('p').hide();
 
-        $('.carousel').carousel();
+				$('#editor_container').hide();
+				$('.editor_buttons').fadeOut('slow');
 
-        var filesController = new Dippa.Files();
-        var controllers = new Dippa.ControllerStack();
-        var tabStack = new Dippa.TabStack({controllerStack: controllers});
+				$('#github_ribbon').show();
 
-        var App = Spine.Controller.sub({
-            init: function(){
-                var homeRegexp = new RegExp(Dippa.basepath + '$');
-                Spine.Route.add(homeRegexp, this.home);
-                var idRegExp = new RegExp('.*' + Dippa.basepath + '(.*)#?$')
-                Spine.Route.add(idRegExp, this.loadId);
+				tabStack.fadeOut('slow');
+			},
 
-                // Initialize sub editors
-                Dippa.Editor = new Dippa.EditorClass();
-                Dippa.Editor.initializeEditor();
-            },
+			loadId: function(route) {
+				Dippa.id = route.match[1];
 
-            home: function(route) {
-                console.log('home route');
-                $('#hero').show();
-                $('#info_header').show();
-                $('#info').show();
-                $('#screenshots').show();
+				$('.editor_buttons').fadeIn('slow');
+				tabStack.fadeIn();
 
-                $('#step2').css('opacity', 0.25).find('p').hide();
-                $('#step3').css('opacity', 0.25).find('p').hide();
+				$.ajax({
+					url: 'load/' + Dippa.id,
+					dataType: 'json',
+					success: function(content) {
 
-                $('#editor_container').hide();
-                $('.editor_buttons').fadeOut('slow');
+						debugger;
 
-                $('#github_ribbon').show();
+						Dippa.Editor.docContent = new Dippa.Content({type: 'doc', value: content.documentContent});
+						Dippa.Editor.refContent = new Dippa.Content({type: 'ref', value: content.referencesContent});
 
-                tabStack.fadeOut('slow');
-            },
+						Dippa.File.loadFromServer();
+						Dippa.Editor.changeType('doc');
+						Dippa.Editor.setChanged(false);
 
-            loadId: function(route) {
-                Dippa.id = route.match[1];
+						$('#fileupload').fileupload({
+							autoUpload: true,
+							url: Dippa.basepath + 'upload/' + Dippa.id,
+							done: function(e, data) {
+								data.result.forEach(function(filename) {
+									Dippa.File.create(filename);
+								});
+							}
+						});
+					}
+				});
 
-                $('.editor_buttons').fadeIn('slow');
-                tabStack.fadeIn();
+				$('#editor_container').show();
+			}
 
-                $.ajax({
-                    url: 'load/' + Dippa.id,
-                    dataType: 'json',
-                    success: function(content) {
+		});
 
-                        debugger;
-
-                        Dippa.Editor.docContent = new Dippa.Content({type: 'doc', value: content.documentContent});
-                        Dippa.Editor.refContent = new Dippa.Content({type: 'ref', value: content.referencesContent});
-
-                        Dippa.File.loadFromServer();
-                        Dippa.Editor.changeType('doc');
-                        Dippa.Editor.setChanged(false);
-
-                        $('#fileupload').fileupload({
-                            autoUpload: true,
-                            url: Dippa.basepath + 'upload/' + Dippa.id,
-                            done: function(e, data) {
-                                data.result.forEach(function(filename) {
-                                    Dippa.File.create(filename);
-                                });
-                            }
-                        });
-                    }
-                });
-
-                $('#editor_container').show();
-            }
-
-        });
-
-        var app = new App();
-        Spine.Route.setup({history: true});
-    });
+		var app = new App();
+		Spine.Route.setup({history: true});
+	});
 
 </script>
 
