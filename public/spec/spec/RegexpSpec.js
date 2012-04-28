@@ -7,7 +7,7 @@ describe('Regexp', function() {
         "Plöö plöö\n" + // 3
         "\\subsection{1.1}\n" + // 4
         "\\subsection{1.2}\n" + // 5
-        "\\subsection{1.3}\n" + // 6
+        "\\subsection*{1.3}\n" + // 6
         "\\subsubsection{1.3.1}\n" + // 7
         "\\subsubsection{1.3.2}\n" + // 8
         "\\subsubsection{1.3.3}\n" + // 9
@@ -30,7 +30,7 @@ describe('Regexp', function() {
         "Plöö plöö\n" + // 26
         "Plöö plöö\n" + // 27
         "\\part{First part}\n" + // 28
-        "\\chapter{First chapter}\n" + // 29
+        "\\chapter*{First chapter}\n" + // 29
         "Plöö plöö\n" + // 30
         "Plöö plöö\n" + // 31
         "Plöö plöö\n" + // 32
@@ -41,7 +41,7 @@ describe('Regexp', function() {
         var len = lines.length;
         var outline = [];
 
-        var findSections = /\\((?:sub)*)section\{(.*)\}|\\part\{(.*)\}|\\chapter\{(.*)\}/g;
+        var findSections = /\\((?:sub)*)section\*?\{(.*)\}|\\part\*?\{(.*)\}|\\chapter\*?\{(.*)\}/g;
 
         var minLevel = null;
         for(var i = 0; i < len; i++) {
@@ -54,12 +54,12 @@ describe('Regexp', function() {
                 if(result[1] == null) {
                     var orig = result[0];
 
-                    if(orig.match(/\\part\{(.*)\}/)) {
+                    if(orig.match(/\\part\*?\{(.*)\}/)) {
                         section.level = 0;
                         section.title = result[3];
                     }
 
-                    if(orig.match(/\\chapter\{(.*)\}/)) {
+                    if(orig.match(/\\chapter\*?\{(.*)\}/)) {
                         section.level = 1;
                         section.title = result[4];
                     }
