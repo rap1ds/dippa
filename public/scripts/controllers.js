@@ -101,6 +101,7 @@
 
                     Spine.Route.navigate(Dippa.basepath + id);
                     $('#loader').hide();
+                    $('#outer-container').show();
                     $('#editor_container').show('slow');
                 }
             });
@@ -156,6 +157,7 @@
 
                         Spine.Route.navigate(Dippa.basepath + id);
                         $('#loader').hide();
+                        $('#outer-container').show();
                         $('#editor_container').show('slow');
                     }
                 });

@@ -63,7 +63,7 @@
 	</div>
 </div>
 
-<div class="container" style="height: 100%; display: none">
+<div id="main-container" class="container" style="height: 100%;">
 
 	<div id="hero" class="hero-unit" style="display: none; margin-top: 60px;">
 		<h1>Hello, this is Dippa Editor!</h1>
@@ -207,10 +207,10 @@
 
 </div> <!-- /container -->
 
-<div id="outer-container" style="position: absolute; top: 60px; bottom: 20px; width: 100%">
+<div id="outer-container" style="position: absolute; top: 60px; bottom: 20px; width: 100%; display: none">
 	<div class="container-fluid" style="height: 100%">
 
-		<div class="row-fluid">
+		<div class="row-fluid" style="height: 100%">
 			<div id="outline_container" class="span2">
 				<ul id="outline_list" class="nav nav-list">
 					<li class="nav-header">
@@ -219,7 +219,7 @@
 				</ul>
 			</div>
 
-			<div id="editor_container" class="span10">
+			<div id="editor_container" class="span10" style="height: 100%">
 				<div id="editor" style="width: 900px; height: 100%"></div>
 				<div id="console" style="overflow: scroll; background-color: #222; color: rgb(40, 254, 20); display: none; width: 900px; height: 100%; border: 1px solid #CCC; padding: 5px; font-family: monospace;">
 					<span>Console output</span><br />
@@ -351,6 +351,9 @@
 				$('#editor_container').hide();
 				$('.editor_buttons').fadeOut('slow');
 
+				$('#main-container').show();
+				$('#outer-container').hide();
+
 				$('#github_ribbon').show();
 
 				tabStack.fadeOut('slow');
@@ -359,6 +362,8 @@
 			loadId: function(route) {
 				Dippa.id = route.match[1];
 
+				$('#main-container').hide();
+				$('#outer-container').show();
 				$('.editor_buttons').fadeIn('slow');
 				tabStack.fadeIn();
 

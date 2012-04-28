@@ -69,7 +69,7 @@ describe('Regexp', function() {
                     section.level = (result[1].length / 3) + 2; // 'sub'.length === 3
                 }
 
-                section.line = i;
+                section.line = i + 1;
 
                 // Update min level
                 minLevel = minLevel === null ? section.level : Math.min(minLevel, section.level);
@@ -85,24 +85,24 @@ describe('Regexp', function() {
             }
         }
 
-        expect(outline[0]).toEqual({title: '1', level: 2, line: 1});
-        expect(outline[1]).toEqual({title: '1.1', level: 3, line: 4});
-        expect(outline[2]).toEqual({title: '1.2', level: 3, line: 5});
-        expect(outline[3]).toEqual({title: '1.3', level: 3, line: 6});
-        expect(outline[4]).toEqual({title: '1.3.1', level: 4, line: 7});
-        expect(outline[5]).toEqual({title: '1.3.2', level: 4, line: 8});
-        expect(outline[6]).toEqual({title: '1.3.3', level: 4, line: 9});
-        expect(outline[7]).toEqual({title: '1.3.3.1', level: 5, line: 10});
-        expect(outline[8]).toEqual({title: '1.3.3.1.1', level: 6, line: 11});
-        expect(outline[9]).toEqual({title: '1.3.4', level: 4, line: 12});
-        expect(outline[10]).toEqual({title: '1.4', level: 3, line: 13});
-        expect(outline[11]).toEqual({title: '2', level: 2, line: 17});
-        expect(outline[12]).toEqual({title: '2.0.0.1', level: 5, line: 18});
-        expect(outline[13]).toEqual({title: '3', level: 2, line: 21});
-        expect(outline[14]).toEqual({title: '4', level: 2, line: 22});
-        expect(outline[15]).toEqual({title: '5', level: 2, line: 23});
-        expect(outline[16]).toEqual({title: 'First part', level: 0, line: 28});
-        expect(outline[17]).toEqual({title: 'First chapter', level: 1, line: 29});
+        expect(outline[0]).toEqual({title: '1', level: 2, line: 2});
+        expect(outline[1]).toEqual({title: '1.1', level: 3, line: 5});
+        expect(outline[2]).toEqual({title: '1.2', level: 3, line: 6});
+        expect(outline[3]).toEqual({title: '1.3', level: 3, line: 7});
+        expect(outline[4]).toEqual({title: '1.3.1', level: 4, line: 8});
+        expect(outline[5]).toEqual({title: '1.3.2', level: 4, line: 9});
+        expect(outline[6]).toEqual({title: '1.3.3', level: 4, line: 10});
+        expect(outline[7]).toEqual({title: '1.3.3.1', level: 5, line: 11});
+        expect(outline[8]).toEqual({title: '1.3.3.1.1', level: 6, line: 12});
+        expect(outline[9]).toEqual({title: '1.3.4', level: 4, line: 13});
+        expect(outline[10]).toEqual({title: '1.4', level: 3, line: 14});
+        expect(outline[11]).toEqual({title: '2', level: 2, line: 18});
+        expect(outline[12]).toEqual({title: '2.0.0.1', level: 5, line: 19});
+        expect(outline[13]).toEqual({title: '3', level: 2, line: 22});
+        expect(outline[14]).toEqual({title: '4', level: 2, line: 23});
+        expect(outline[15]).toEqual({title: '5', level: 2, line: 24});
+        expect(outline[16]).toEqual({title: 'First part', level: 0, line: 29});
+        expect(outline[17]).toEqual({title: 'First chapter', level: 1, line: 30});
     });
 
 });
