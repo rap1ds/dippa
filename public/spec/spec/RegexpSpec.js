@@ -29,9 +29,11 @@ describe('Regexp', function() {
         "Plöö plöö\n" + // 25
         "Plöö plöö\n" + // 26
         "Plöö plöö\n" + // 27
-        "Plöö plöö\n" + // 28
-        "Plöö plöö\n" + // 29
+        "\\part{First part}\n" + // 28
+        "\\chapter{First chapter}\n" + // 29
         "Plöö plöö\n" + // 30
+        "Plöö plöö\n" + // 31
+        "Plöö plöö\n" + // 32
         "\n";
 
     it('should found (sub)sections', function() {
@@ -39,38 +41,68 @@ describe('Regexp', function() {
         var len = lines.length;
         var outline = [];
 
-        var findSections = /\\((?:sub)*)section\{(.*)\}/g;
+        var findSections = /\\((?:sub)*)section\{(.*)\}|\\part\{(.*)\}|\\chapter\{(.*)\}/g;
 
+        var minLevel = null;
         for(var i = 0; i < len; i++) {
             var line = lines[i];
             var result;
             while ((result = findSections.exec(line)) != null)
             {
                 var section = {};
-                section.title = result[2];
-                section.level = result[1].length / 3; // 'sub'.length === 3
+
+                if(result[1] == null) {
+                    var orig = result[0];
+
+                    if(orig.match(/\\part\{(.*)\}/)) {
+                        section.level = 0;
+                        section.title = result[3];
+                    }
+
+                    if(orig.match(/\\chapter\{(.*)\}/)) {
+                        section.level = 1;
+                        section.title = result[4];
+                    }
+                } else {
+                    // (sub)section
+                    section.title = result[2];
+                    section.level = (result[1].length / 3) + 2; // 'sub'.length === 3
+                }
+
                 section.line = i;
+
+                // Update min level
+                minLevel = minLevel === null ? section.level : Math.min(minLevel, section.level);
 
                 outline.push(section);
             }
         }
 
-        expect(outline[0]).toEqual({title: '1', level: 0, line: 1});
-        expect(outline[1]).toEqual({title: '1.1', level: 1, line: 4});
-        expect(outline[2]).toEqual({title: '1.2', level: 1, line: 5});
-        expect(outline[3]).toEqual({title: '1.3', level: 1, line: 6});
-        expect(outline[4]).toEqual({title: '1.3.1', level: 2, line: 7});
-        expect(outline[5]).toEqual({title: '1.3.2', level: 2, line: 8});
-        expect(outline[6]).toEqual({title: '1.3.3', level: 2, line: 9});
-        expect(outline[7]).toEqual({title: '1.3.3.1', level: 3, line: 10});
-        expect(outline[8]).toEqual({title: '1.3.3.1.1', level: 4, line: 11});
-        expect(outline[9]).toEqual({title: '1.3.4', level: 2, line: 12});
-        expect(outline[10]).toEqual({title: '1.4', level: 1, line: 13});
-        expect(outline[11]).toEqual({title: '2', level: 0, line: 17});
-        expect(outline[12]).toEqual({title: '2.0.0.1', level: 3, line: 18});
-        expect(outline[13]).toEqual({title: '3', level: 0, line: 21});
-        expect(outline[14]).toEqual({title: '4', level: 0, line: 22});
-        expect(outline[15]).toEqual({title: '5', level: 0, line: 23});
+        // Fix levels
+        if(minLevel > 0) {
+            for(var j = 0, outlineLen = outline.length; j < outlineLen; j++) {
+                outline[j].level -= minLevel;
+            }
+        }
+
+        expect(outline[0]).toEqual({title: '1', level: 2, line: 1});
+        expect(outline[1]).toEqual({title: '1.1', level: 3, line: 4});
+        expect(outline[2]).toEqual({title: '1.2', level: 3, line: 5});
+        expect(outline[3]).toEqual({title: '1.3', level: 3, line: 6});
+        expect(outline[4]).toEqual({title: '1.3.1', level: 4, line: 7});
+        expect(outline[5]).toEqual({title: '1.3.2', level: 4, line: 8});
+        expect(outline[6]).toEqual({title: '1.3.3', level: 4, line: 9});
+        expect(outline[7]).toEqual({title: '1.3.3.1', level: 5, line: 10});
+        expect(outline[8]).toEqual({title: '1.3.3.1.1', level: 6, line: 11});
+        expect(outline[9]).toEqual({title: '1.3.4', level: 4, line: 12});
+        expect(outline[10]).toEqual({title: '1.4', level: 3, line: 13});
+        expect(outline[11]).toEqual({title: '2', level: 2, line: 17});
+        expect(outline[12]).toEqual({title: '2.0.0.1', level: 5, line: 18});
+        expect(outline[13]).toEqual({title: '3', level: 2, line: 21});
+        expect(outline[14]).toEqual({title: '4', level: 2, line: 22});
+        expect(outline[15]).toEqual({title: '5', level: 2, line: 23});
+        expect(outline[16]).toEqual({title: 'First part', level: 0, line: 28});
+        expect(outline[17]).toEqual({title: 'First chapter', level: 1, line: 29});
     });
 
 });
