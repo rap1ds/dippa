@@ -54,7 +54,7 @@
 							<li id="tab_files"><a href="#">Files</a></li>
 							<li id="tab_out"><a href="#">Output</a></li>
 						</ul>
-						<button id="save_button" class="btn btn-danger editor_buttons" data-loading-text="saving document...">Save</button>
+						<button id="save_button" class="btn btn-danger editor_buttons" data-complete-text="Saved!" data-enable-text="Save" data-saving-text="saving document...">Save</button>
 						<button id="preview_button" class="btn btn-info editor_buttons" data-loading-text="Preview">Preview</button>
 					</div>
 				</div>
@@ -279,6 +279,7 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+<script src="scripts/underscore.js"></script>
 <script src="src/ace-unmin.js" type="text/javascript" charset="utf-8"></script>
 <script src="src/mode-latex.js" type="text/javascript" charset="utf-8"></script>
 <script src="scripts/bootstrap-transition.js"></script>
@@ -381,6 +382,8 @@
 						Dippa.File.loadFromServer();
 						Dippa.Editor.changeType('doc');
 						Dippa.Editor.setChanged(false);
+
+						Spine.trigger('initialLoading');
 
 						$('#fileupload').fileupload({
 							autoUpload: true,

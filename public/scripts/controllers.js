@@ -1,4 +1,4 @@
-/*global $:false, Spine:false, Dippa:false, ace:false, require:false, Handlebars */
+/*global $:false, Spine:false, Dippa:false, ace:false, require:false, Handlebars:false, _:false */
 
 /*jshint onevar:false, browser:true, eqnull:true */
 
@@ -172,26 +172,94 @@
 
     }).init();
 
-    var SaveButton = Spine.Controller.create({
+    var SaveButtonClass = Spine.Controller.sub({
         el: $('#save_button'),
+        state: "disabled",
 
         events: {
             'click': 'save'
         },
 
-        buttonLoading: function() {
-            this.el.button('loading');
+        init: function() {
+            Spine.bind('change', this.proxy(this.documentChanged));
+            Spine.bind('initialLoading', this.proxy(this.initialLoading));
         },
 
-        buttonReset: function() {
+        initialLoading: function() {
+            this.initialLoadingDone = true;
+            this.stateDisable();
+        },
+
+        documentChanged: function() {
+            this.changed = true;
+            if(this.initialLoadingDone && this.state === "disabled") {
+                this.stateEnable();
+            }
+        },
+
+        /**
+         * Enables button. This happens when document is changed
+         */
+        stateEnable: function() {
+            this.state = "enabled";
+            this.changed = false;
+            this.el.button('enable');
+
+            // Enable button
+            this.enabled = true;
+            this.el.removeClass('disabled');
+            this.el.removeAttr('disabled');
+        },
+
+        /**
+         * Resets buttons state to the default (disabled) state
+         */
+        stateDisable: function() {
+            this.state = "disabled";
             this.el.button('reset');
+            this.disableButton();
+        },
+
+        /**
+         * Changes text to saving text
+         */
+        stateSaving: function() {
+            this.changed = false;
+            this.state = "saving";
+            this.el.button('saving');
+            this.disableButton();
+        },
+
+        /**
+         * Changes text to "complete" for some seconds
+         */
+        stateComplete: function(timeout) {
+            this.state = "complete";
+            timeout = timeout || 1000;
+
+            this.el.button('complete');
+            this.disableButton();
+
+            _.delay(function() {
+                if(this.changed) {
+                    this.stateEnable();
+                } else {
+                    this.stateDisable();
+                }
+            }.bind(this), timeout);
+        },
+
+        disableButton: function() {
+            this.enabled = false;
+            this.el.addClass('disabled');
+            this.el.attr('disabled', 'disabled');
         },
 
         save: function() {
             var $saveButton = $(this);
             var $previewButton = $('#preview_button');
 
-            this.buttonLoading();
+            this.stateSaving();
             PreviewButton.buttonLoading();
 
             $('#console').empty();
@@ -215,7 +283,7 @@
                 data: value,
                 processData: false,
                 complete: this.proxy(function(response) {
-                    this.buttonReset();
+                    this.stateComplete();
                     PreviewButton.buttonReset();
                     Dippa.Editor.setChanged(false);
                 }),
@@ -228,8 +296,9 @@
                 })
             });
         }
+    });
 
-    }).init();
+    var SaveButton = new SaveButtonClass();
 
     var EditorClass = Spine.Controller.sub({
 
@@ -261,6 +330,7 @@
             });
 
             this.session.on('change', this.proxy(function() {
+                Spine.trigger('change');
                 this.setChanged(true);
             }));
 
@@ -605,7 +675,7 @@
 
 global.Hero = Hero;
 global.PreviewButton = PreviewButton;
-global.SaveButton = SaveButton;
+global.SaveButtonClass = SaveButtonClass;
 global.EditorClass = EditorClass;
 global.FilePreview = FilePreview;
 global.FileItem = FileItem;

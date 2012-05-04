@@ -189,6 +189,23 @@ app.configure(function(){
     });
 });
 
+function compile(repoDir) {
+
+    var compilePromise = new Promise();
+
+    var pdflatex1 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
+    var bibtex1 = new Command('bibtex dippa', repoDir);
+    var pdflatex2 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
+    var bibtex2 = new Command('bibtex dippa', repoDir);
+    var pdflatex3 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
+
+    commandline.runAll([pdflatex1, bibtex1, pdflatex2, bibtex2, pdflatex3]).then(function(output) {
+        compilePromise.resolve(output);
+    });
+
+    return compilePromise;
+}
+
 app.post('/create', function(req, res, next){
     var repo = req.body.repo || {};
 
@@ -209,8 +226,15 @@ app.post('/create', function(req, res, next){
     var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo);
 
     p.all(directoryCreated, mongoCreated).then(function() {
-        res.send(id);
-    }, function() {
+        var repoDir = path.resolve(REPOSITORY_DIR, id);
+        var compiled = compile(repoDir);
+
+        compiled.then(function() {
+            res.send(id);
+        }, function(e) {
+            res.error(e);
+        });
+    }, function(error) {
         res.send(error);
     });
 });
@@ -252,20 +276,10 @@ app.post('/save/:id', function(req, res){
 
     allWritten.then(function() {
 
-        var previewPromise = new Promise();
+        var previewPromise = compile(repoDir);
 
         previewPromise.then(function(output) {
             res.send(output);
-        });
-
-        var pdflatex1 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
-        var bibtex1 = new Command('bibtex dippa', repoDir);
-        var pdflatex2 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
-        var bibtex2 = new Command('bibtex dippa', repoDir);
-        var pdflatex3 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
-
-        commandline.runAll([pdflatex1, bibtex1, pdflatex2, bibtex2, pdflatex3]).then(function(output) {
-            previewPromise.resolve(output);
         });
 
         mongoReady.then(function(result) {
