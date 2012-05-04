@@ -1,4 +1,10 @@
+/*global $:false, Spine:false, Dippa:false, ace:false, require:false, Handlebars */
+
+/*jshint onevar:false, browser:true, eqnull:true */
+
 (function(global) {
+    "use strict";
+
     var Hero = Spine.Controller.sub({
 
         el: $('#hero'),
@@ -46,7 +52,7 @@
                     this.repositoryInfo.name + '/admin/collaboration');
 
             this.inactivate(this.step2);
-            this.activate(this.step3)
+            this.activate(this.step3);
         },
 
         hideInstructions: function(callback) {
@@ -214,11 +220,11 @@
                     Dippa.Editor.setChanged(false);
                 }),
                 success: this.proxy(function(response) {
-                    $console = $('#console');
+                    var $console = $('#console');
                     $console.empty();
                     $.each(response, function(key, value) {
                         $console.append('<span>' + value.output + '</span><br />');
-                    })
+                    });
                 })
             });
         }
@@ -502,7 +508,6 @@
         },
 
         deactivate: function() {
-            debugger;
             $('#editor').hide();
         }
     });
@@ -579,6 +584,7 @@
 
     var TabStack = Spine.Stack.sub({
         el: '#nav',
+
         controllers: {
             doc: DocumentTab,
             ref: ReferencesTab,
@@ -586,16 +592,16 @@
             output: OutputTab
         },
 
-    default: 'doc',
+        'default': 'doc',
 
         fadeIn: function() {
-        this.el.fadeIn('slow');
-    },
+            this.el.fadeIn('slow');
+        },
 
-    fadeOut: function() {
-        this.el.fadeOut('slow');
-    }
-});
+        fadeOut: function() {
+            this.el.fadeOut('slow');
+        }
+    });
 
 global.Hero = Hero;
 global.PreviewButton = PreviewButton;
