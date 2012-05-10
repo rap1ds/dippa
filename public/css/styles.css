@@ -45,3 +45,7 @@ body, html {
 .editor_buttons {
     display: none;
 }
+
+#outline_list > li {
+    word-wrap: break-word;
+}
