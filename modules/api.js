@@ -5,7 +5,7 @@ var commandline = require('../modules/commandline');
 var Command = require('../modules/commandline').Command;
 var express = require('express');
 var app = express.createServer();
-var p = require("promised-io/promise");;
+var p = require("promised-io/promise");
 var path = require('path');
 var Promise = p.Promise;
 var PromisedIO = require("promised-io/promise");
@@ -30,6 +30,7 @@ var API = {
         app.get('/:id', this.getId);
         app.delete('/upload/:id/:filename', this.deleteUploadedFile);
         app.get('/load/:id', this.getLoad);
+        app.post('/create', this.postCreate);
 
         var profileResolved = new Promise();
 
@@ -59,6 +60,7 @@ var API = {
             }
 
             Mongo.init(this.mongoProfile);
+            Directory.init(this.directoryProfile);
             console.log('About to listen port ' + this.port);
             app.listen(this.port);
 
@@ -94,6 +96,7 @@ var API = {
 
         API.port = 5555;
         API.mongoProfile = Mongo.profiles.dev;
+        API.directoryProfile = Directory.profiles.dev;
     },
 
     configureTesting: function() {
@@ -102,6 +105,7 @@ var API = {
 
         API.port = 8888;
         API.mongoProfile = Mongo.profiles.test;
+        API.directoryProfile = Directory.profiles.test;
     },
 
     configureStating: function() {
@@ -110,6 +114,7 @@ var API = {
 
         API.port = 7777;
         API.mongoProfile = Mongo.profiles.staging;
+        API.directoryProfile = Directory.profiles.staging;
     },
 
     configureProduction: function() {
@@ -119,6 +124,7 @@ var API = {
 
         API.port = 5555;
         API.mongoProfile = Mongo.profiles.dev;
+        API.directoryProfile = Directory.profiles.production;
     },
 
     getIndex: function(req, res, next) {
@@ -166,6 +172,35 @@ var API = {
         }, function error() {
             res.send({msg: 'An error occured while reading content'}, 500);
         });
+    },
+
+    postCreate: function(req, res, next) {
+        var repo = req.body.repo || {};
+
+        var owner = repo.owner;
+        var name = repo.name;
+        var email = req.body.email;
+        var isDemo = req.body.isDemo;
+        var template = req.body.template;
+
+        if(!isDemo && !(owner && name)) {
+            // Send error message
+            res.send('Error');
+            return;
+        }
+
+        var id = shortId.generate();
+
+        var directoryOptions = {id: id, name: name, owner: owner, noGithub: isDemo, template: template};
+
+        var createdAndCompiled = p.seq([Directory.create, Directory.compile], directoryOptions);
+        var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo);
+
+        p.all(createdAndCompiled, mongoCreated).then(function() {
+            res.send(id);
+        }, function(error) {
+            res.send(error);
+        });
     }
 };
 
@@ -186,56 +221,6 @@ app.configure(function(){
                 return str;
             };
         }
-    });
-});
-
-function compile(repoDir) {
-
-    var compilePromise = new Promise();
-
-    var pdflatex1 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
-    var bibtex1 = new Command('bibtex dippa', repoDir);
-    var pdflatex2 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
-    var bibtex2 = new Command('bibtex dippa', repoDir);
-    var pdflatex3 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
-
-    commandline.runAll([pdflatex1, bibtex1, pdflatex2, bibtex2, pdflatex3]).then(function(output) {
-        compilePromise.resolve(output);
-    });
-
-    return compilePromise;
-}
-
-app.post('/create', function(req, res, next){
-    var repo = req.body.repo || {};
-
-    var owner = repo.owner;
-    var name = repo.name;
-    var email = req.body.email;
-    var isDemo = req.body.isDemo;
-
-    if(!isDemo && !(owner && name)) {
-        // Send error message
-        res.send('Error');
-        return;
-    }
-
-    var id = shortId.generate();
-
-    var directoryCreated = Directory.create(id, name, owner, isDemo);
-    var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo);
-
-    p.all(directoryCreated, mongoCreated).then(function() {
-        var repoDir = path.resolve(REPOSITORY_DIR, id);
-        var compiled = compile(repoDir);
-
-        compiled.then(function() {
-            res.send(id);
-        }, function(e) {
-            res.error(e);
-        });
-    }, function(error) {
-        res.send(error);
     });
 });
 
@@ -276,7 +261,7 @@ app.post('/save/:id', function(req, res){
 
     allWritten.then(function() {
 
-        var previewPromise = compile(repoDir);
+        var previewPromise = Directory.compile(repoDir);
 
         previewPromise.then(function(output) {
             res.send(output);

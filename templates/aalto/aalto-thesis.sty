@@ -1,0 +1,387 @@
+% ==================================================================
+% This template has been used and modified by
+% Sanna Suoranta, Pekka Kanerva, Lauri Karppinen, Linda Staffans,
+% Laura Takkinen, Jukka Larja, Samuli Sorvakko,
+% and numerous unknown authors.
+% ------------------------------------------------------------------
+% 9.2.2011 Tuukka Haapasalo made a near-complete rewrite of the
+% package, cleaning up stuff and updating the layout to the
+% new Aalto specifications, and adding a standard thesis layout
+% example.
+% ------------------------------------------------------------------
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{aalto-thesis}[2011/02/25 v1.1 Aalto Thesis style]
+
+\selectlanguage{english}
+
+% Graphics are required for including PDF files into the document
+\RequirePackage{graphicx}
+% The url package provides commands for formatting URLs
+\RequirePackage{url}
+% Multirow allows table cells to span multiple rows
+\RequirePackage{multirow}
+% The tabularx environment is an extension of tabular that allows
+% paragraph-type column widths to be calculated automatically
+\RequirePackage{tabularx}
+
+% Improvements for mathematical formatting
+\RequirePackage{amsmath}
+
+% The lastpage package provides a label that can be used to get the
+% page number of the last page
+\RequirePackage{lastpage}
+
+% The etoolbox command provides some advanced commands
+\RequirePackage{etoolbox}
+
+% The array package fixes some things in the default LaTeX arrays and
+% tabulars. This package is required by many other packages.
+\RequirePackage{array}
+% The ifthen package provides conditional evaluation of statements
+\RequirePackage{ifthen}
+% Textpos can be used to position text absolutely (at an absolute
+% position in the page, instead of a relative position)
+\RequirePackage[absolute]{textpos}
+
+\newcommand{\startcoverpage}{\pagenumbering{arabic}}
+\newcommand{\startfirstchapter}{}
+% The number of pages is counted based on the labels.
+% The lastpage package calculates the position of the LastPage label.
+% A plain label may not work if last pages contain floats that are placed
+% after text.
+\newcommand{\PAGES}{\pageref{LastPage}}
+
+
+% From Samwise, edited by JLarja. Fixme can be used to wrote something that should be fixed later.
+% It is better than just writing something to comments, since it is shown in the output file. If
+% mydraft is declared (in documentclass), text will be shown bold between two FIXMEs. If not, text
+% will be shown normally.
+\newcommand{\fixme}[1]{#1}
+% Draft command is used in the cover page to show the date of the
+% draft (assumed to be today)
+\newcommand{\DRAFT}{}
+\DeclareOption{mydraft}{
+\renewcommand{\fixme}[1]{\textsc{\small !Fixme} \textbf{#1}
+\textsc{\small Fixme!}}
+\renewcommand{\DRAFT}{
+\begin{center}
+\textbf{DRAFT! --- \today\ --- DRAFT!}
+\end{center}}
+}
+
+\newcommand{\NUMINSTRUCTORS}{1}
+\DeclareOption{twoinstructors}{
+\renewcommand{\NUMINSTRUCTORS}{2}
+}
+\newcommand{\NUMSUPERVISORS}{1}
+\DeclareOption{twosupervisors}{
+\renewcommand{\NUMSUPERVISORS}{2}
+}
+
+\DeclareOption{doublenumbering}{
+\renewcommand{\startcoverpage}{\pagenumbering{roman}}
+\renewcommand{\startfirstchapter}{\pagenumbering{arabic}}
+% The number of pages is counted based on the labels.
+% Pages-prelude is placed manually, and the lastpage package calculates
+% the position of the LastPage label. A plain label may not work if last
+% pages contain floats that are placed after text.
+\renewcommand{\PAGES}{\pageref{pages-prelude}~$+$~\pageref{LastPage}}
+}
+\ProcessOptions
+
+% A shortcut command for using ifthenelse when you don't need the
+% else clause.
+\newcommand{\ifthen}[2]{\ifthenelse{#1}{#2}{}}
+
+% By default, only up to 3rd level headers are numbered (e.g. 1.2.2.)
+% Specify which headers are numbered
+\setcounter{secnumdepth}{4}
+% Specify which headers are put in the TOC
+\setcounter{tocdepth}{3}
+
+% These set the units of the textpos positioning parameters.
+% Now they are set to be multiples of centimeters.
+\setlength{\TPHorizModule}{1cm}
+\setlength{\TPVertModule}{1cm}
+
+% This command can be used in tables to allow linebreaks within a table
+% cell. Takes two parameters: the width of the text area, and the text
+% to print. Unfortunately the width seems to be required; although at
+% some situations you can use \textwidth (but probably not inside tables).
+\newcommand{\allowlinebreaks}[2]{
+% Top align makes sure that there is enough padding/margins at the top
+\begin{minipage}[t]{#1}%
+#2
+% Strut here makes sure that there is enough padding/margins at the bottom
+\strut
+\end{minipage}
+}
+
+
+% Text options for rendering the cover page
+% ------------------------------------------------------------------
+% These get overwritten when a language is specified
+\newcommand{\ATUNIV}{}
+\newcommand{\ATSCHOOL}{}
+\newcommand{\ATDEGREEPROG}{}
+\newcommand{\ATTITLE}{}
+\newcommand{\ATTITLENAME}{}
+\newcommand{\ATSUBTITLE}{}
+\newcommand{\ATTHESIS}{}
+\newcommand{\ATSUPERVISORNAME}{}
+\newcommand{\ATINSTRUCTORNAME}{}
+\newcommand{\ATSUPERVISOR}{}
+\newcommand{\ATINSTRUCTOR}{}
+\newcommand{\ATDATENAME}{}
+\newcommand{\ATDATE}{}
+\newcommand{\ATCITY}{}
+\newcommand{\ATABSTRACTNAME}{}
+\newcommand{\ATLOGO}{}
+\newcommand{\ATAUTHORNAME}{}
+\newcommand{\ATKEYWORDSNAME}{}
+\newcommand{\ATKEYWORDS}{}
+\newcommand{\ATPAGESNAME}{}
+\newcommand{\ATLANGUAGENAME}{}
+\newcommand{\ATLANGUAGE}{}
+\newcommand{\ATPROFSHIPNAME}{}
+\newcommand{\ATPROFCODENAME}{}
+\newcommand{\ATPROFSHIP}{}
+
+% Default language terms (in English)
+% ------------------------------------------------------------------
+% You may change these if you wish
+\newcommand{\selectterms}[1]{
+\ifthen{\equal{#1}{english}}{
+  \renewcommand{\ATTITLENAME}{Title}
+  \renewcommand{\ATTITLE}{\TITLE}
+  \renewcommand{\ATSUBTITLE}{\SUBTITLE}
+  \renewcommand{\ATTHESIS}{Master's Thesis}
+  \ifthenelse{\NUMSUPERVISORS = 1}%
+    {\renewcommand{\ATSUPERVISORNAME}{Supervisor}}%
+    {\renewcommand{\ATSUPERVISORNAME}{Supervisors}}
+  \ifthenelse{\NUMINSTRUCTORS = 1}%
+    {\renewcommand{\ATINSTRUCTORNAME}{Instructor}}%
+    {\renewcommand{\ATINSTRUCTORNAME}{Instructors}}
+  \renewcommand{\ATSUPERVISOR}{\SUPERVISOR}
+  \renewcommand{\ATINSTRUCTOR}{\INSTRUCTOR}
+  \renewcommand{\ATDATENAME}{Date}
+  \renewcommand{\ATDATE}{\DATE}
+  \renewcommand{\ATCITY}{Espoo}
+  \renewcommand{\ATUNIV}{Aalto University}
+  \renewcommand{\ATSCHOOL}{School of Science}
+  \renewcommand{\ATDEGREEPROG}{Degree Programme of Computer Science and Engineering}
+  \renewcommand{\ATABSTRACTNAME}{ABSTRACT OF MASTER'S THESIS}
+  \renewcommand{\ATLOGO}{aalto-logo-en}
+  \renewcommand{\ATAUTHORNAME}{Author}
+  \renewcommand{\ATKEYWORDSNAME}{Keywords}
+  \renewcommand{\ATKEYWORDS}{\KEYWORDS}
+  \renewcommand{\ATPAGESNAME}{Pages}
+  \renewcommand{\ATLANGUAGENAME}{Language}
+  \renewcommand{\ATLANGUAGE}{\LANGUAGE}
+  \renewcommand{\ATPROFSHIPNAME}{Professorship}
+  \renewcommand{\ATPROFCODENAME}{Code}
+  \renewcommand{\ATPROFSHIP}{\PROFESSORSHIP}
+}
+% Terms in Finnish
+% ------------------------------------------------------------------
+% You may change these if you wish
+\ifthen{\equal{#1}{finnish}}{
+  \renewcommand{\ATTITLENAME}{Työn nimi}
+  \renewcommand{\ATTITLE}{\FTITLE}
+  \renewcommand{\ATSUBTITLE}{\FSUBTITLE}
+  \ifthenelse{\NUMSUPERVISORS = 1}%
+    {\renewcommand{\ATSUPERVISORNAME}{Valvoja}}%
+    {\renewcommand{\ATSUPERVISORNAME}{Valvojat}}
+  \ifthenelse{\NUMINSTRUCTORS = 1}%
+    {\renewcommand{\ATINSTRUCTORNAME}{Ohjaaja}}%
+    {\renewcommand{\ATINSTRUCTORNAME}{Ohjaajat}}
+  \renewcommand{\ATSUPERVISOR}{\FSUPERVISOR}
+  \renewcommand{\ATINSTRUCTOR}{\FINSTRUCTOR}
+  \renewcommand{\ATDATENAME}{Päiväys}
+  \renewcommand{\ATDATE}{\FDATE}
+  \renewcommand{\ATTHESIS}{Diplomityö}
+  \renewcommand{\ATCITY}{Espoo}
+  \renewcommand{\ATUNIV}{Aalto-yliopisto}
+  \renewcommand{\ATSCHOOL}{Perustieteiden korkeakoulu}
+  \renewcommand{\ATDEGREEPROG}{Tietotekniikan tutkinto-ohjelma}
+  \renewcommand{\ATABSTRACTNAME}{DIPLOMITYÖN TIIVISTELMƒ}
+  \renewcommand{\ATLOGO}{aalto-logo-fi}
+  \renewcommand{\ATAUTHORNAME}{Tekijä}
+  \renewcommand{\ATKEYWORDSNAME}{Asiasanat}
+  \renewcommand{\ATKEYWORDS}{\FKEYWORDS}
+  \renewcommand{\ATPAGESNAME}{Sivumäärä}
+  \renewcommand{\ATLANGUAGE}{\FLANGUAGE}
+  \renewcommand{\ATLANGUAGENAME}{Kieli}
+  \renewcommand{\ATPROFSHIPNAME}{Professuuri}
+  \renewcommand{\ATPROFCODENAME}{Koodi}
+  \renewcommand{\ATPROFSHIP}{\FPROFESSORSHIP}
+}
+% Terms in Swedish
+% ------------------------------------------------------------------
+% You may change these if you wish
+\ifthen{\equal{#1}{swedish}}{
+  \renewcommand{\ATTITLENAME}{Arbetets namn}
+  \renewcommand{\ATTITLE}{\STITLE}
+  \renewcommand{\ATSUBTITLE}{\SSUBTITLE}
+  \ifthenelse{\NUMSUPERVISORS = 1}%
+    {\renewcommand{\ATSUPERVISORNAME}{Övervakare}}%
+    {\renewcommand{\ATSUPERVISORNAME}{Övervakare}}
+  \ifthenelse{\NUMINSTRUCTORS = 1}%
+    {\renewcommand{\ATINSTRUCTORNAME}{Handledare}}%
+    {\renewcommand{\ATINSTRUCTORNAME}{Handledare}}
+  \renewcommand{\ATSUPERVISOR}{\SSUPERVISOR}
+  \renewcommand{\ATINSTRUCTOR}{\SINSTRUCTOR}
+  \renewcommand{\ATDATENAME}{Datum}
+  \renewcommand{\ATDATE}{\SDATE}
+  \renewcommand{\ATTHESIS}{Diplomarbete}
+  \renewcommand{\ATCITY}{Esbo}
+  \renewcommand{\ATUNIV}{Aalto-universitetet}
+  \renewcommand{\ATSCHOOL}{Högskolan för teknikvetenskaper}
+  \renewcommand{\ATDEGREEPROG}{Examensprogram för datateknik}
+  \renewcommand{\ATABSTRACTNAME}{SAMMANDRAG AV DIPLOMARBETET}
+  \renewcommand{\ATLOGO}{aalto-logo-se}
+  \renewcommand{\ATAUTHORNAME}{Utfört av}
+  \renewcommand{\ATKEYWORDSNAME}{Nyckelord}
+  \renewcommand{\ATKEYWORDS}{\SKEYWORDS}
+  \renewcommand{\ATPAGESNAME}{Sidantal}
+  \renewcommand{\ATLANGUAGENAME}{Språk}
+  \renewcommand{\ATLANGUAGE}{\SLANGUAGE}
+  \renewcommand{\ATPROFSHIPNAME}{Professur}
+  \renewcommand{\ATPROFCODENAME}{Kod}
+  \renewcommand{\ATPROFSHIP}{\SPROFESSORSHIP}
+}
+}
+
+
+% Command to render the cover page
+% ------------------------------------------------------------------
+% Takes one parameter, options: finnish, swedish, and (default): english
+% These control in which language the cover-page information is shown
+\newcommand{\coverpage}[1]{
+\thispagestyle{empty}
+\selectlanguage{#1}
+\selectterms{#1}
+\noindent{\small\ATUNIV\\
+\ATSCHOOL\\
+\ATDEGREEPROG}
+\vskip 30mm
+
+\noindent{\small \AUTHOR}
+\vskip 10mm
+
+% The title is printed here. Change the formatting if you like!
+\noindent{\LARGE\textbf{\ATTITLE}}
+\vskip 2ex
+
+% The subtitle is printed here. Change the formatting if you like!
+\noindent{\Large\textbf{\ATSUBTITLE}}
+
+\vfill
+{\noindent
+\small
+\ATTHESIS \\
+\ATCITY, \ATDATE
+\vskip 2em
+
+\DRAFT
+
+\small
+\noindent
+\begin{tabular}{@{}l@{\hspace{3em}}l}
+\ATSUPERVISORNAME: & \allowlinebreaks{10cm}{%
+\ifthenelse{\isundefined{\COVERSUPERVISOR}}%
+{\ATSUPERVISOR}{\COVERSUPERVISOR}}\\
+\ATINSTRUCTORNAME: & \allowlinebreaks{10cm}{%
+\ifthenelse{\isundefined{\COVERINSTRUCTOR}}%
+{\ATINSTRUCTOR}{\COVERINSTRUCTOR}}\\
+\end{tabular}
+}
+\newpage%
+}
+
+
+% Command to render abstracts
+% ------------------------------------------------------------------
+% Takes two parameters: language and the abstract text
+% Language can be either english, finnish, or swedish
+% Text and logos are selected accordingly
+\newcommand{\thesisabstract}[2]{
+\selectlanguage{#1}
+\selectterms{#1}
+{%
+% First block sets the logo. Must be placed manually, because
+% the logo itself has huge blank areas around it.
+\begin{textblock}{10}(9.07,1)
+\raggedleft\noindent\includegraphics[height=2.7cm]{\ATLOGO}
+\end{textblock}
+% Before the main abstract table there is the school name
+% and abstract title (ABSTRACT OF THE MASTER'S THESIS etc.)
+\begin{textblock}{15}(3.2,3)
+\setlength{\extrarowheight}{0.5ex}
+\noindent
+\begin{tabularx}{\textwidth}{@{}X@{}r@{}}
+\begin{minipage}[b]{11cm}
+\ATUNIV\\
+\ATSCHOOL\\
+\ATDEGREEPROG
+\end{minipage} &
+\begin{minipage}[b]{4cm}
+\raggedleft
+\noindent\ATABSTRACTNAME
+\end{minipage}\\
+\end{tabularx}\\
+% Now we start the main abstract table
+\noindent
+\begin{tabularx}{\textwidth}{|p{3cm}Xlp{2cm}|}
+\hline
+\textbf{\ATAUTHORNAME:} & \multicolumn{3}{l|}{\AUTHOR} \\
+\multicolumn{4}{|l|}{\allowlinebreaks{14.5cm}{\textbf{\ATTITLENAME:}\\
+\ATTITLE\ \ATSUBTITLE}}\\
+\hline
+\textbf{\ATDATENAME:} & \ATDATE & \textbf{\ATPAGESNAME:} & \PAGES\\
+\hline
+\textbf{\ATPROFSHIPNAME:} & \ATPROFSHIP &
+\textbf{\ATPROFCODENAME:} & \PROFCODE\\
+\hline
+\textbf{\ATSUPERVISORNAME:} &
+\multicolumn{3}{l|}{\allowlinebreaks{11cm}{\ATSUPERVISOR}}\\
+\textbf{\ATINSTRUCTORNAME:} &
+\multicolumn{3}{l|}{\allowlinebreaks{11cm}{\ATINSTRUCTOR}}\\
+\hline
+\multicolumn{4}{|l|}{\allowlinebreaks{14.5cm}{%
+% The abstract text is here
+\setlength{\parskip}{1ex}%
+#2%
+}}\\
+\hline
+\textbf{\ATKEYWORDSNAME:} & \multicolumn{3}{p{11cm}|}{\ATKEYWORDS}\\
+\hline
+\textbf{\ATLANGUAGENAME:} & \multicolumn{3}{l|}{\ATLANGUAGE}\\
+\hline
+\end{tabularx}
+\end{textblock}}
+\null\newpage
+}
+
+
+% Document setup
+% ------------------------------------------------------------------
+
+
+% The following command we instruct LaTeX to not
+% complain about underfull hboxes in the bibliography:
+\apptocmd{\thebibliography}{\hbadness 10000\relax}{}{}
+% Alternatively, we can force the bibliography to be raggedright
+% (not justified), this often works as well:
+% \apptocmd{\thebibliography}{\raggedright}{}{}
+
+
+% The standard teletype font makes URLs look a bit too big. These commands
+% here make the URLs a bit smaller, so that they look better in text.
+\makeatletter
+\def\url@smallurlstyle{%
+  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\small\ttfamily}}}
+\makeatother
+%% Now actually use the newly defined style.
+\urlstyle{smallurl}
+

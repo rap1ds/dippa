@@ -1,5 +1,7 @@
 var API = require('../modules/api');
 var Directory = require('../modules/directory');
+var Mongo = require('../modules/mongo');
+var _ = require('underscore');
 
 // Helpers
 var CommonHelpers = require('./helpers').Common;
@@ -11,6 +13,7 @@ describe('API', function() {
 
     beforeEach(function() {
         req = {};
+        req.body = {};
         req.params = {};
         res = {};
         res.send = jasmine.createSpy('res.send');
@@ -63,6 +66,43 @@ describe('API', function() {
 
             runs(function() {
                 expect(res.send).toHaveBeenCalledWith({documentContent: "this is the latex doc", referencesContent: "these are the references"});
+            });
+        });
+    });
+
+    describe('postCreate', function() {
+        beforeEach(function() {
+            this.directoryCreated = spyOnPromise(Directory, 'create').andCallRealSuccess('/repo/dir');
+            this.directoryCompiled = spyOnPromise(Directory, 'compile').andCallRealSuccess('> console output ok');
+            this.mongoCreatedNew = spyOnPromise(Mongo, 'createNew').andCallRealSuccess();
+        });
+
+        it('should create new document directory, compile and save to mongo', function() {
+            req.body.repo = {owner: 'rap1ds', name: 'dippa'};
+            req.body.email = 'my@email.com';
+            req.body.isDemo = false;
+            req.body.template = 'aalto-university';
+
+            API.postCreate(req, res, next);
+
+            // Directory
+            var args = Directory.create.mostRecentCall.args[0];
+            var id = args.id;
+            expect(_.isString(id)).toBeTruthy();
+            expect(Directory.create).toHaveBeenCalledWith({id: id, owner: 'rap1ds', name: 'dippa', noGithub: false, template: 'aalto-university'});
+
+            // Compile
+            expect(Directory.compile).toHaveBeenCalledWith('/repo/dir');
+
+            // Mongo
+            expect(Mongo.createNew).toHaveBeenCalledWith(id, 'rap1ds', 'dippa', 'my@email.com', false);
+
+            waitsForPromise(this.directoryCreated);
+            waitsForPromise(this.directoryCompiled);
+            waitsForPromise(this.mongoCreatedNew);
+
+            runs(function() {
+                expect(res.send).toHaveBeenCalledWith(id);
             });
         });
     });

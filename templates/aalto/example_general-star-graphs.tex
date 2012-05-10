@@ -1,0 +1,114 @@
+\begin{tikzpicture}[x=\graphgridsize,y=\graphgridsize] 
+
+\coordinate (o) at (0,0);
+\fill[black] (o) circle (\graphdotsize);
+\foreach \d in {0, 90, ..., 270} {
+  \coordinate (tmp) at ($(o) + (\d:1.5)$);
+  \draw (o) -- (tmp);
+  \fill[black] (tmp) circle (\graphdotsize);
+}
+
+\coordinate[right=4 of o] (o);
+\coordinate (o1) at ($(o) + (0:0.3)$);
+\coordinate (o2) at ($(o) + (180:0.3)$);
+\fill[black] (o1) circle (\graphdotsize);
+\fill[black] (o2) circle (\graphdotsize);
+\draw (o1) -- (o2);
+\foreach \d in {45, 135, 270} {
+  \coordinate (tmp\d) at ($(o) + (\d:1.5)$);
+  \draw (o2) -- (tmp\d);
+  \fill[black] (tmp\d) circle (\graphdotsize);
+}
+\draw (o1) -- (tmp45);
+
+
+\coordinate[right=4 of o] (o);
+\coordinate (o1) at ($(o) + (0:0.3)$);
+\coordinate (o2) at ($(o) + (180:0.3)$);
+\fill[black] (o1) circle (\graphdotsize);
+\fill[black] (o2) circle (\graphdotsize);
+\draw (o1) -- (o2);
+\foreach \d in {45, 135, 270} {
+  \coordinate (tmp\d) at ($(o) + (\d:1.5)$);
+  \draw (o2) -- (tmp\d);
+  \fill[black] (tmp\d) circle (\graphdotsize);
+}
+\draw (o1) -- (tmp45);
+\draw (o1) -- (tmp135);
+
+
+\coordinate[right=4 of o] (o);
+\coordinate (o1) at ($(o) + (0:0.3)$);
+\coordinate (o2) at ($(o) + (180:0.3)$);
+\fill[black] (o1) circle (\graphdotsize);
+\fill[black] (o2) circle (\graphdotsize);
+\draw (o1) -- (o2);
+\foreach \d in {45, 135, 270} {
+  \coordinate (tmp\d) at ($(o) + (\d:1.5)$);
+  \draw (o1) -- (tmp\d);
+  \draw (o2) -- (tmp\d);
+  \fill[black] (tmp\d) circle (\graphdotsize);
+}
+
+
+\coordinate[right=3.5 of o] (o);
+\coordinate (o1) at ($(o) + (90:0.3)$);
+\coordinate (o2) at ($(o) + (210:0.5)$);
+\coordinate (o3) at ($(o) + (330:0.5)$);
+\fill[black] (o1) circle (\graphdotsize);
+\fill[black] (o2) circle (\graphdotsize);
+\fill[black] (o3) circle (\graphdotsize);
+\draw (o1) -- (o2);
+\draw (o1) -- (o3);
+\draw (o2) -- (o3);
+\foreach \d in {90, 270} {
+  \coordinate (tmp\d) at ($(o) + (\d:1.5)$);
+  \draw (o2) -- (tmp\d);
+  \draw (o3) -- (tmp\d);
+  \fill[black] (tmp\d) circle (\graphdotsize);
+}
+\draw (o1) -- (tmp90);
+
+
+\coordinate[right=3 of o] (o);
+\coordinate (o1) at ($(o) + (90:0.3)$);
+\coordinate (o2) at ($(o) + (210:0.5)$);
+\coordinate (o3) at ($(o) + (330:0.5)$);
+\fill[black] (o1) circle (\graphdotsize);
+\fill[black] (o2) circle (\graphdotsize);
+\fill[black] (o3) circle (\graphdotsize);
+\draw (o1) -- (o2);
+\draw (o1) -- (o3);
+\draw (o2) -- (o3);
+\foreach \d in {90, 270} {
+  \coordinate (tmp\d) at ($(o) + (\d:1.5)$);
+  \draw (o2) -- (tmp\d);
+  \draw (o3) -- (tmp\d);
+  \fill[black] (tmp\d) circle (\graphdotsize);
+}
+\draw (o1) -- (tmp90);
+\draw (o1) -- (tmp270);
+
+
+
+\coordinate[right=3.5 of o] (o);
+\coordinate (o1) at ($(o) + (18:1.3)$);
+\coordinate (o2) at ($(o) + (90:1.3)$);
+\coordinate (o3) at ($(o) + (162:1.3)$);
+\coordinate (o4) at ($(o) + (234:1.3)$);
+\coordinate (o5) at ($(o) + (306:1.3)$);
+\foreach \d in {1, 2, ..., 5} {
+  \fill[black] (o\d) circle (\graphdotsize);
+}
+\draw (o1) -- (o2);
+\draw (o1) -- (o3);
+\draw (o1) -- (o4);
+\draw (o1) -- (o5);
+\draw (o2) -- (o3);
+\draw (o2) -- (o4);
+\draw (o2) -- (o5);
+\draw (o3) -- (o4);
+\draw (o3) -- (o5);
+\draw (o4) -- (o5);
+
+\end{tikzpicture}

@@ -1,0 +1,1200 @@
+% Lines starting with a percent sign (%) are comments. LaTeX will
+% not process those lines. Similarly, everything after a percent
+% sign in a line is considered a comment. To produce a percent sign
+% in the output, write \% (backslash followed by the percent sign).
+% ==================================================================
+% Usage instructions:
+% ------------------------------------------------------------------
+% The file is heavily commented so that you know what the various
+% commands do. Feel free to remove any comments you don't need from
+% your own copy. When redistributing the example thesis file, please
+% retain all the comments for the benefit of other thesis writers!
+% ==================================================================
+% Compilation instructions:
+% ------------------------------------------------------------------
+% Use pdflatex to compile! Input images are expected as PDF files.
+% Example compilation:
+% ------------------------------------------------------------------
+% > pdflatex thesis-example.tex
+% > bibtex thesis-example
+% > pdflatex thesis-example.tex
+% > pdflatex thesis-example.tex
+% ------------------------------------------------------------------
+% You need to run pdflatex multiple times so that all the cross-references
+% are fixed. pdflatex will tell you if you need to re-run it (a warning
+% will be issued)
+% ------------------------------------------------------------------
+% Compilation has been tested to work in ukk.cs.hut.fi and kosh.hut.fi
+% - if you have problems of missing .sty -files, then the local LaTeX
+% environment does not have all the required packages installed.
+% For example, when compiling in vipunen.hut.fi, you get an error that
+% tikz.sty is missing - in this case you must either compile somewhere
+% else, or you cannot use TikZ graphics in your thesis and must therefore
+% remove or comment out the tikz package and all the tikz definitions.
+% ------------------------------------------------------------------
+
+% General information
+% ==================================================================
+% Package documentation:
+%
+% The comments often refer to package documentation. (Almost) all LaTeX
+% packages have documentation accompanying them, so you can read the
+% package documentation for further information. When a package 'xxx' is
+% installed to your local LaTeX environment (the document compiles
+% when you have \usepackage{xxx} and LaTeX does not complain), you can
+% find the documentation somewhere in the local LaTeX texmf directory
+% hierarchy. In ukk.cs.hut.fi, this is /usr/texlive/2008/texmf-dist,
+% and the documentation for the titlesec package (for example) can be
+% found at /usr/texlive/2008/texmf-dist/doc/latex/titlesec/titlesec.pdf.
+% Most often the documentation is located as a PDF file in
+% /usr/texlive/2008/texmf-dist/doc/latex/xxx, where xxx is the package name;
+% however, documentation for TikZ is in
+% /usr/texlive/2008/texmf-dist/doc/latex/generic/pgf/pgfmanual.pdf
+% (this is because TikZ is a front-end for PGF, which is meant to be a
+% generic portable graphics format for LaTeX).
+% You can try to look for the package manual using the ``find'' shell
+% command in Linux machines; the find databases are up-to-date at least
+% in ukk.cs.hut.fi. Just type ``find xxx'', where xxx is the package
+% name, and you should find a documentation file.
+% Note that in some packages, the documentation is in the DVI file
+% format. In this case, you can copy the DVI file to your home directory,
+% and convert it to PDF with the dvipdfm command (or you can read the
+% DVI file directly with a DVI viewer).
+%
+% If you can't find the documentation for a package, just try Googling
+% for ``latex packagename''; most often you can get a direct link to the
+% package manual in PDF format.
+% ------------------------------------------------------------------
+
+
+% Document class for the thesis is report
+% ------------------------------------------------------------------
+% You can change this but do so at your own risk - it may break other things.
+% Note that the option pdftext is used for pdflatex; there is no
+% pdflatex option.
+% ------------------------------------------------------------------
+\documentclass[12pt,a4paper,oneside,pdftex]{report}
+
+% The input files (tex files) are encoded with the latin-1 encoding
+% (ISO-8859-1 works). Change the latin1-option if you use UTF8
+% (at some point LaTeX did not work with UTF8, but I'm not sure
+% what the current situation is)
+\usepackage[utf8]{inputenc}
+% OT1 font encoding seems to work better than T1. Check the rendered
+% PDF file to see if the fonts are encoded properly as vectors (instead
+% of rendered bitmaps). You can do this by zooming very close to any letter
+% - if the letter is shown pixelated, you should change this setting
+% (try commenting out the entire line, for example).
+\usepackage[OT1]{fontenc}
+% The babel package provides hyphenating instructions for LaTeX. Give
+% the languages you wish to use in your thesis as options to the babel
+% package (as shown below). You can remove any language you are not
+% going to use.
+% Examples of valid language codes: english (or USenglish), british,
+% finnish, swedish; and so on.
+\usepackage[finnish,swedish,english]{babel}
+
+
+% Font selection
+% ------------------------------------------------------------------
+% The default LaTeX font is a very good font for rendering your
+% thesis. It is a very professional font, which will always be
+% accepted.
+% If you, however, wish to spicen up your thesis, you can try out
+% these font variants by uncommenting one of the following lines
+% (or by finding another font package). The fonts shown here are
+% all fonts that you could use in your thesis (not too silly).
+% Changing the font causes the layouts to shift a bit; you many
+% need to manually adjust some layouts. Check the warning messages
+% LaTeX gives you.
+% ------------------------------------------------------------------
+% To find another font, check out the font catalogue from
+% http://www.tug.dk/FontCatalogue/mathfonts.html
+% This link points to the list of fonts that support maths, but
+% that's a fairly important point for master's theses.
+% ------------------------------------------------------------------
+% <rant>
+% Remember, there is no excuse to use Comic Sans, ever, in any
+% situation! (Well, maybe in speech bubbles in comics, but there
+% are better options for those too)
+% </rant>
+
+% \usepackage{palatino}
+% \usepackage{tgpagella}
+
+
+
+% Optional packages
+% ------------------------------------------------------------------
+% Select those packages that you need for your thesis. You may delete
+% or comment the rest.
+
+% Natbib allows you to select the format of the bibliography references.
+% The first example uses numbered citations:
+\usepackage[square,sort&compress,numbers]{natbib}
+% The second example uses author-year citations.
+% If you use author-year citations, change the bibliography style (below);
+% acm style does not work with author-year citations.
+% Also, you should use \citet (cite in text) when you wish to refer
+% to the author directly (\citet{blaablaa} said blaa blaa), and
+% \citep when you wish to refer similarly than with numbered citations
+% (It has been said that blaa blaa~\citep{blaablaa}).
+% \usepackage[square]{natbib}
+
+% The alltt package provides an all-teletype environment that acts
+% like verbatim but you can use LaTeX commands in it. Uncomment if
+% you want to use this environment.
+% \usepackage{alltt}
+
+% The eurosym package provides a euro symbol. Use with \euro{}
+\usepackage{eurosym}
+
+% Verbatim provides a standard teletype environment that renderes
+% the text exactly as written in the tex file. Useful for code
+% snippets (although you can also use the listings package to get
+% automatic code formatting).
+\usepackage{verbatim}
+
+% The listing package provides automatic code formatting utilities
+% so that you can copy-paste code examples and have them rendered
+% nicely. See the package documentation for details.
+% \usepackage{listings}
+
+% The fancuvrb package provides fancier verbatim environments
+% (you can, for example, put borders around the verbatim text area
+% and so on). See package for details.
+% \usepackage{fancyvrb}
+
+% Supertabular provides a tabular environment that can span multiple
+% pages.
+%\usepackage{supertabular}
+% Longtable provides a tabular environment that can span multiple
+% pages. This is used in the example acronyms file.
+\usepackage{longtable}
+
+% The fancyhdr package allows you to set your the page headers
+% manually, and allows you to add separator lines and so on.
+% Check the package documentation.
+% \usepackage{fancyhdr}
+
+% Subfigure package allows you to use subfigures (i.e. many subfigures
+% within one figure environment). These can have different labels and
+% they are numbered automatically. Check the package documentation.
+\usepackage{subfigure}
+
+% The titlesec package can be used to alter the look of the titles
+% of sections, chapters, and so on. This example uses the ``medium''
+% package option which sets the titles to a medium size, making them
+% a bit smaller than what is the default. You can fine-tune the
+% title fonts and sizes by using the package options. See the package
+% documentation.
+\usepackage[medium]{titlesec}
+
+% The TikZ package allows you to create professional technical figures.
+% The learning curve is quite steep, but it is definitely worth it if
+% you wish to have really good-looking technical figures.
+\usepackage{tikz}
+% You also need to specify which TikZ libraries you use
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+\usetikzlibrary{arrows}
+\usetikzlibrary{decorations.pathmorphing,decorations.markings}
+\usetikzlibrary{shapes}
+\usetikzlibrary{patterns}
+
+
+% The aalto-thesis package provides typesetting instructions for the
+% standard master's thesis parts (abstracts, front page, and so on)
+% Load this package second-to-last, just before the hyperref package.
+% Options that you can use:
+%   mydraft - renders the thesis in draft mode.
+%             Do not use for the final version.
+%   doublenumbering - [optional] number the first pages of the thesis
+%                     with roman numerals (i, ii, iii, ...); and start
+%                     arabic numbering (1, 2, 3, ...) only on the
+%                     first page of the first chapter
+%   twoinstructors  - changes the title of instructors to plural form
+%   twosupervisors  - changes the title of supervisors to plural form
+\usepackage[mydraft,twosupervisors]{aalto-thesis}
+%\usepackage[mydraft,doublenumbering]{aalto-thesis}
+%\usepackage{aalto-thesis}
+
+
+% Hyperref
+% ------------------------------------------------------------------
+% Hyperref creates links from URLs, for references, and creates a
+% TOC in the PDF file.
+% This package must be the last one you include, because it has
+% compatibility issues with many other packages and it fixes
+% those issues when it is loaded.
+\RequirePackage[pdftex]{hyperref}
+% Setup hyperref so that links are clickable but do not look
+% different
+\hypersetup{colorlinks=false,raiselinks=false,breaklinks=true}
+\hypersetup{pdfborder={0 0 0}}
+\hypersetup{bookmarksnumbered=true}
+% The following line suggests the PDF reader that it should show the
+% first level of bookmarks opened in the hierarchical bookmark view.
+\hypersetup{bookmarksopen=true,bookmarksopenlevel=1}
+% Hyperref can also set up the PDF metadata fields. These are
+% set a bit later on, after the thesis setup.
+
+
+% Thesis setup
+% ==================================================================
+% Change these to fit your own thesis.
+% \COMMAND always refers to the English version;
+% \FCOMMAND refers to the Finnish version; and
+% \SCOMMAND refers to the Swedish version.
+% You may comment/remove those language variants that you do not use
+% (but then you must not include the abstracts for that language)
+% ------------------------------------------------------------------
+% If you do not find the command for a text that is shown in the cover page or
+% in the abstract texts, check the aalto-thesis.sty file and locate the text
+% from there.
+% All the texts are configured in language-specific blocks (lots of commands
+% that look like this: \renewcommand{\ATCITY}{Espoo}.
+% You can just fix the texts there. Just remember to check all the language
+% variants you use (they are all there in the same place).
+% ------------------------------------------------------------------
+\newcommand{\TITLE}{Software Processes for Dummies:}
+\newcommand{\FTITLE}{Ohjelmistoprosessit mänteille:}
+\newcommand{\STITLE}{Den stora stygga vargen:}
+\newcommand{\SUBTITLE}{Re-inventing the Wheel}
+\newcommand{\FSUBTITLE}{Uusi organisaatio, uudet pyörät}
+\newcommand{\SSUBTITLE}{Lilla Vargens universum}
+\newcommand{\DATE}{June 18, 2011}
+\newcommand{\FDATE}{18. kesäkuuta 2011}
+\newcommand{\SDATE}{Den 18 Juni 2011}
+
+% Supervisors and instructors
+% ------------------------------------------------------------------
+% If you have two supervisors, write both names here, separate them with a
+% double-backslash (see below for an example)
+% Also remember to add the package option ``twosupervisors'' or
+% ``twoinstructors'' to the aalto-thesis package so that the titles are in
+% plural.
+% Example of one supervisor:
+%\newcommand{\SUPERVISOR}{Professor Antti Ylä-Jääski}
+%\newcommand{\FSUPERVISOR}{Professori Antti Ylä-Jääski}
+%\newcommand{\SSUPERVISOR}{Professor Antti Ylä-Jääski}
+% Example of twosupervisors:
+\newcommand{\SUPERVISOR}{Professor Antti Ylä-Jääski\\
+  Professor Pekka Perustieteilijä}
+\newcommand{\FSUPERVISOR}{Professori Antti Ylä-Jääski\\
+  Professori Pekka Perustieteilijä}
+\newcommand{\SSUPERVISOR}{Professor Antti Ylä-Jääski\\
+  Professor Pekka Perustieteilijä}
+
+% If you have only one instructor, just write one name here
+\newcommand{\INSTRUCTOR}{Olli Ohjaaja M.Sc. (Tech.)}
+\newcommand{\FINSTRUCTOR}{Diplomi-insinööri Olli Ohjaaja}
+\newcommand{\SINSTRUCTOR}{Diplomingenjör Olli Ohjaaja}
+% If you have two instructors, separate them with \\ to create linefeeds
+% \newcommand{\INSTRUCTOR}{Olli Ohjaaja M.Sc. (Tech.)\\
+%  Elli Opas M.Sc. (Tech)}
+%\newcommand{\FINSTRUCTOR}{Diplomi-insinööri Olli Ohjaaja\\
+%  Diplomi-insinööri Elli Opas}
+%\newcommand{\SINSTRUCTOR}{Diplomingenjör Olli Ohjaaja\\
+%  Diplomingenjör Elli Opas}
+
+% If you have two supervisors, it is common to write the schools
+% of the supervisors in the cover page. If the following command is defined,
+% then the supervisor names shown here are printed in the cover page. Otherwise,
+% the supervisor names defined above are used.
+\newcommand{\COVERSUPERVISOR}{Professor Antti Ylä-Jääski, Aalto University\\
+  Professor Pekka Perustieteilijä, University of Helsinki}
+
+% The same option is for the instructors, if you have multiple instructors.
+% \newcommand{\COVERINSTRUCTOR}{Olli Ohjaaja M.Sc. (Tech.), Aalto University\\
+%  Elli Opas M.Sc. (Tech), Aalto SCI}
+
+
+% Other stuff
+% ------------------------------------------------------------------
+\newcommand{\PROFESSORSHIP}{Data Communication Software}
+\newcommand{\FPROFESSORSHIP}{Tietoliikenneohjelmistot}
+\newcommand{\SPROFESSORSHIP}{Datakommunikationsprogram}
+% Professorship code is the same in all languages
+\newcommand{\PROFCODE}{T-110}
+\newcommand{\KEYWORDS}{ocean, sea, marine, ocean mammal, marine mammal, whales,
+cetaceans, dolphins, porpoises}
+\newcommand{\FKEYWORDS}{AEL, aineistot, aitta, akustiikka, Alankomaat,
+aluerakentaminen, Anttolanhovi, Arcada, ArchiCad, arkki}
+\newcommand{\SKEYWORDS}{omsättning, kassaflöde, värdepappersmarknadslagen,
+yrkesutövare, intresseföretag, verifieringskedja}
+\newcommand{\LANGUAGE}{English}
+\newcommand{\FLANGUAGE}{Englanti}
+\newcommand{\SLANGUAGE}{Engelska}
+
+% Author is the same for all languages
+\newcommand{\AUTHOR}{Stella Student}
+
+
+% Currently the English versions are used for the PDF file metadata
+% Set the PDF title
+\hypersetup{pdftitle={\TITLE\ \SUBTITLE}}
+% Set the PDF author
+\hypersetup{pdfauthor={\AUTHOR}}
+% Set the PDF keywords
+\hypersetup{pdfkeywords={\KEYWORDS}}
+% Set the PDF subject
+\hypersetup{pdfsubject={Master's Thesis}}
+
+
+% Layout settings
+% ------------------------------------------------------------------
+
+% When you write in English, you should use the standard LaTeX
+% paragraph formatting: paragraphs are indented, and there is no
+% space between paragraphs.
+% When writing in Finnish, we often use no indentation in the
+% beginning of the paragraph, and there is some space between the
+% paragraphs.
+
+% If you write your thesis Finnish, uncomment these lines; if
+% you write in English, leave these lines commented!
+% \setlength{\parindent}{0pt}
+% \setlength{\parskip}{1ex}
+
+% Use this to control how much space there is between each line of text.
+% 1 is normal (no extra space), 1.3 is about one-half more space, and
+% 1.6 is about double line spacing.
+% \linespread{1} % This is the default
+% \linespread{1.3}
+
+% Bibliography style
+% acm style gives you a basic reference style. It works only with numbered
+% references.
+\bibliographystyle{acm}
+% Plainnat is a plain style that works with both numbered and name citations.
+% \bibliographystyle{plainnat}
+
+
+% Extra hyphenation settings
+% ------------------------------------------------------------------
+% You can list here all the files that are not hyphenated correctly.
+% You can provide many \hyphenation commands and/or separate each word
+% with a space inside a single command. Put hyphens in the places where
+% a word can be hyphenated.
+% Note that (by default) LaTeX will not hyphenate words that already
+% have a hyphen in them (for example, if you write ``structure-modification
+% operation'', the word structure-modification will never be hyphenated).
+% You need a special package to hyphenate those words.
+\hyphenation{di-gi-taa-li-sta yksi-suun-tai-sta}
+
+
+
+% The preamble ends here, and the document begins.
+% Place all formatting commands and such before this line.
+% ------------------------------------------------------------------
+\begin{document}
+% This command adds a PDF bookmark to the cover page. You may leave
+% it out if you don't like it...
+\pdfbookmark[0]{Cover page}{bookmark.0.cover}
+% This command is defined in aalto-thesis.sty. It controls the page
+% numbering based on whether the doublenumbering option is specified
+\startcoverpage
+
+% Cover page
+% ------------------------------------------------------------------
+% Options: finnish, english, and swedish
+% These control in which language the cover-page information is shown
+\coverpage{english}
+
+
+% Abstracts
+% ------------------------------------------------------------------
+% Include an abstract in the language that the thesis is written in,
+% and if your native language is Finnish or Swedish, one in that language.
+
+% Abstract in English
+% ------------------------------------------------------------------
+\thesisabstract{english}{
+A dissertation or thesis is a document submitted in support of candidature
+for a degree or professional qualification presenting the author's research and
+findings. In some countries/universities, the word thesis or a cognate is used
+as part of a bachelor's or master's course, while dissertation is normally
+applied to a doctorate, whilst, in others, the reverse is true.
+
+\fixme{Abstract text goes here (and this is an example how to use fixme).}
+Fixme is a command that helps you identify parts of your thesis that still
+require some work. When compiled in the custom \texttt{mydraft} mode, text
+parts tagged with fixmes are shown in bold and with fixme tags around them. When
+compiled in normal mode, the fixme-tagged text is shown normally (without
+special formatting). The draft mode also causes the ``Draft'' text to appear on
+the front page, alongside with the document compilation date. The custom
+\texttt{mydraft} mode is selected by the \texttt{mydraft} option given for the
+package \texttt{aalto-thesis}, near the top of the \texttt{thesis-example.tex}
+file.
+
+The thesis example file (\texttt{thesis-example.tex}), all the chapter content
+files (\texttt{1introduction.tex} and so on), and the Aalto style file
+(\texttt{aalto-thesis.sty}) are commented with explanations on how the Aalto
+thesis works. The files also contain some examples on how to customize various
+details of the thesis layout, and of course the example text works as an
+example in itself. Please read the comments and the example text; that should
+get you well on your way!}
+
+% Abstract in Finnish
+% ------------------------------------------------------------------
+\thesisabstract{finnish}{
+Kivi on materiaali, joka muodostuu mineraaleista ja luokitellaan
+mineraalisisältönsä mukaan. Kivet luokitellaan yleensä ne muodostaneiden
+prosessien mukaan magmakiviin, sedimenttikiviin ja metamorfisiin kiviin.
+Magmakivet ovat muodostuneet kiteytyneestä magmasta, sedimenttikivet vanhempien
+kivilajien rapautuessa ja muodostaessa iskostuneita yhdisteitä, metamorfiset
+kivet taas kun magma- ja sedimenttikivet joutuvat syvällä maan kuoressa
+lämpötilan ja kovan paineen alaiseksi.
+
+Kivi on epäorgaaninen eli elottoman luonnon aine, mikä tarkoittaa ettei se
+sisällä hiiltä tai muita elollisen orgaanisen luonnon aineita. Niinpä kivestä
+tehdyt esineet säilyvät maaperässä tuhansien vuosien ajan mätänemättä. Kun
+orgaaninen materiaali jättää jälkensä kiveen, tulos tunnetaan nimellä fossiili.
+
+Suomen peruskallio on suurimmaksi osaksi graniittia, gneissiä ja
+Kaakkois-Suomessa rapakiveä.
+
+Kiveä käytetään teollisuudessa moniin eri tarkoituksiin, kuten keittiötasoihin.
+Kivi on materiaalina kalliimpaa mutta kestävämpää kuin esimerkiksi puu.}
+
+% Abstract in Swedish
+% ------------------------------------------------------------------
+\thesisabstract{swedish}{
+Lilla Vargens universum är det tredje fiktiva universumet inom huvudfäran av de
+tecknade disneyserierna - de övriga två är Kalle Ankas och Musse Piggs
+universum. Figurerna runt Lilla Vargen kommer huvudsakligen frän tre källor ---
+dels persongalleriet i kortfilmen Tre smä grisar frän 1933 och dess uppföljare,
+dels längfilmen Sängen om Södern frän 1946, och dels frän episoden ``Bongo'' i
+längfilmen Pank och fägelfri frän 1947. Framför allt de två första har
+sedermera även kommit att leva vidare, utvidgas och införlivas i varandra genom
+tecknade serier, främst sädana producerade av Western Publishing för
+amerikanska Disneytidningar under ären 1945--1984.
+
+Världen runt Lilla Vargen är, i jämförelse med den runt Kalle Anka eller Musse
+Pigg, inte helt enhetlig, vilket bland annat märks i Bror Björns skiftande
+personlighet. Den har även varit betydligt mer öppen för influenser frän andra
+Disneyvärldar, inte minst de tecknade längfilmerna. Ytterligare en skillnad är
+att varelserna i vargserierna förefaller stä närmare sina förebilder inom den
+verkliga djurvärlden. Att vargen Zeke vill äta upp grisen Bror Duktig är till
+exempel ett ständigt äterkommande tema, men om katten Svarte Petter skulle fä
+för sig att äta upp musen Musse Pigg skulle detta antagligen höja ett och annat
+ögonbryn bland läsarna.}
+
+
+% Acknowledgements
+% ------------------------------------------------------------------
+% Select the language you use in your acknowledgements
+\selectlanguage{english}
+
+% Uncomment this line if you wish acknoledgements to appear in the
+% table of contents
+%\addcontentsline{toc}{chapter}{Acknowledgements}
+
+% The star means that the chapter isn't numbered and does not
+% show up in the TOC
+\chapter*{Acknowledgements}
+
+I wish to thank all students who use \LaTeX\ for formatting their theses,
+because theses formatted with \LaTeX\ are just so nice.
+
+Thank you, and keep up the good work!
+\vskip 10mm
+
+\noindent Espoo, \DATE
+\vskip 5mm
+\noindent\AUTHOR
+
+% Acronyms
+% ------------------------------------------------------------------
+% Use \cleardoublepage so that IF two-sided printing is used
+% (which is not often for masters theses), then the pages will still
+% start correctly on the right-hand side.
+\cleardoublepage
+% Example acronyms are placed in a separate file, acronyms.tex
+% \input{acronyms}
+
+\addcontentsline{toc}{chapter}{Abbreviations and Acronyms}
+\chapter*{Abbreviations and Acronyms}
+
+% The longtable environment should break the table properly to multiple pages,
+% if needed
+
+\noindent
+\begin{longtable}{@{}p{0.25\textwidth}p{0.7\textwidth}@{}}
+2k/4k/8k mode & COFDM operation modes \\
+3GPP & 3rd Generation Partnership Project \\
+ESP & Encapsulating Security Payload; An IPsec security protocol \\
+FLUTE  & The File Delivery over Unidirectional Transport protocol \\
+e.g.& for example (do not list here this kind of common acronymbs or abbreviations, but only those that are essential for understanding the content of your thesis. \\
+note & Note also, that this list is not compulsory, and should be omitted if you have only few abbreviations
+
+\end{longtable}
+
+
+% Table of contents
+% ------------------------------------------------------------------
+\cleardoublepage
+% This command adds a PDF bookmark that links to the contents.
+% You can use \addcontentsline{} as well, but that also adds contents
+% entry to the table of contents, which is kind of redundant.
+% The text ``Contents'' is shown in the PDF bookmark.
+\pdfbookmark[0]{Contents}{bookmark.0.contents}
+\tableofcontents
+
+% List of tables
+% ------------------------------------------------------------------
+% You only need a list of tables for your thesis if you have very
+% many tables. If you do, uncomment the following two lines.
+% \cleardoublepage
+% \listoftables
+
+% Table of figures
+% ------------------------------------------------------------------
+% You only need a list of figures for your thesis if you have very
+% many figures. If you do, uncomment the following two lines.
+% \cleardoublepage
+% \listoffigures
+
+% The following label is used for counting the prelude pages
+\label{pages-prelude}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%% The main content starts here %%%%%%%%%%%%%%%%%%%%%
+% ------------------------------------------------------------------
+% This command is defined in aalto-thesis.sty. It controls the page
+% numbering based on whether the doublenumbering option is specified
+\startfirstchapter
+
+% Add headings to pages (the chapter title is shown)
+\pagestyle{headings}
+
+% The contents of the thesis are separated to their own files.
+% Edit the content in these files, rename them as necessary.
+% ------------------------------------------------------------------
+
+% \input{1introduction.tex}
+
+\chapter{Introduction}
+\label{chapter:intro}
+
+This is my master's thesis, and I am very proud of it.  Of course,
+when I write my \emph{real} master's thesis, I will not use the
+singular pronoun \emph{I}, but rather try to avoid referring to myself
+and speak of the research \emph{we} have conducted---I rarely work
+alone, after all.  Yet, both \emph{I} and \emph{we} are correct, and
+it depends on the instructor and the supervisor (of course from you,
+too), which one they would prefer. Anyway, the tense should be active,
+and passive sentenses should be avoided (especially, writing sentences
+where the subject is presented with by preposition), so often you
+cannot avoid choosing between the pronouns. Life is strange, but there
+you have it.
+
+By the way, the preferred order of writing your master's thesis is
+about the same as the outline of the thesis: you first discover your
+problem and write about that, then you find out what methods you
+should use and write about that.  Then you do your implementation, and
+document that, and so on.  However, the abstract and introduction are
+often easiest to write last.  This is because these really cover the
+entire thesis, and there is no way you could know what to put in your
+abstract before you have actually done your implementation and
+evaluation. Rarely anyone write the thesis from the beginning to the
+end just one time, but the writing is more like process, where every
+piece of text is written at least twice. Be also prepared to delete
+your own text. In the first phase, you can hide it into comments that
+are started with \% but during the writing, the many comments should be
+visible for your helpers, the instructor and supervisor.
+
+The introduction in itself is rarely very long; two to five pages often
+suffice.
+
+
+\section{Problem statement}
+
+Undergraduate students studying technical subjects do not consider typography
+very interesting these days, and therefore the typographical quality of many
+theses is unacceptably low.
+We plan to rectify this situation somewhat by providing a decent-quality
+example thesis outline for students.
+We expect that the typographical quality of the master's theses will
+dramatically increase as the new thesis outline is taken into use.
+
+\section{Helpful hints}
+
+Read the information from the university master's thesis
+pages~\cite{ThesisInstructions} before starting the thesis.  You
+should also go through the thesis grading
+instructions~\cite{ThesisGrading} together with your instructor and/or
+supervisor in the beginning of your work.
+
+\section{Structure of the Thesis}
+\label{section:structure}
+
+You should use transition in your text, meaning that you should help
+the reader follow the thesis outline. Here, you tell what will be in
+each chapter of your thesis.
+
+
+
+% \input{2background.tex}
+
+\chapter{Background}
+\label{chapter:background}
+
+The problem must have some background, otherwise it is not
+interesting.  You can explain the background here. Probably you should
+change the title to something that describes more the content of this
+chapter. Background consists of information that help other masters of
+the same degree program to understand the rest of the thesis.
+
+Transitions mentioned in Section~\ref{section:structure} are used also
+in the chapters and sections. For example, next in this chapter we
+tell how to use English language, how to find and refer to sources,
+and enlight different ways to include graphics in the thesis.
+
+\section{Language and Structure}
+
+Moreover, the transitions are also used in the paragraph and the
+sentence level meaning that all the text is linked together. For example,
+the word ``moreover'' here is one way, but of course you should use
+variation in the text. Examples of transitional devices (words) and
+their use can be found from writing guides, e.g. from the Online
+Writing Lab
+(OWL)\footnote{http://owl.english.purdue.edu/owl/resource/574/02/} of
+Purdue University or Strunk's Elements of
+Style\footnote{http://www.bartleby.com/141/}. Remember that footnotes
+are additional information, and they are seldom used.  If you refer to a source, you do no
+not use footnote. The right command for the references is \emph{cite}.
+
+The language used in the thesis should be technical (or
+scientifical). For example, the abreviations aren't used but all them
+are written open (i.e. ``are not''). Since the content itself is often
+hard to understand (and explain), the sentences should not be very
+long, use complex language with several examples embedded in the same
+sentence, and, also, seldom used words and weird euphemism or paraphrases
+can make the sentence hard to follow and to read it with only one
+time, and making everything even harder to understand all this without
+any punctuation marks makes the instructor cry and finally after
+trying to correct the language, you will get boomerang, and everyone's
+time has just been wasted.
+
+Please use proofreaders before sending even your unfinished version to
+the instructor and/or supervisor. You will get better comments when
+they do not need first proofread your text. Moreover, they can
+consentrate to the content better if the language and spelling
+mistakes are not distracting the reading. Several editors have their
+own proofreading tools, e.g. ispell in emacs. You can also use
+Microsoft Word to proofread your thesis: it can correct also some
+grammatical errors and not just misspelled words.
+
+Note also that if you have a section or a subsection, you have to have
+at least two of them, or otherwise the section or subsection title is
+unnecessary. Same with the paragraphs an: you should not have sections
+with only one paragraphe, and single sentence paragraph. Furthermore,
+always write some text after the title before the next level title.
+
+\section{Finding and referring to sources}
+
+Never ever copy anything into your theses from somebody else's text
+(nor your own previously published text). Never. Not even for starting
+point to be rewritten later. The risk is that you forgot the copied
+text to your thesis and end up to be accused of plagiarism. Plagiarism
+is a serious crime in studies and science and can ruin your career
+even its beginning. To repeate: never cut and paste text into your
+thesis!
+
+\subsection{Finding sources}
+
+All work is based on someone else's work. You should find the relevant
+sources of your field and choose the best of them. Also, you should
+refer to the original source where a fact has been mentioned first
+time. Remember source evaluation (criticism) with all sources you
+find.
+
+Good starting points for finding references in computer science are:
+\begin{itemize}
+% You can use this command to set the items in the list closer to each other
+% (ITEM SEParation, the vertical space between the list items)
+\setlength{\itemsep}{0pt}
+\item Nelli Portal (Aalto Library): \url{http://www.nelliportaali.fi}
+\item ACM Digital library: \url{http://portal.acm.org/}
+\item IEEExplore: \url{http://ieeexplore.ieee.org}
+\item ScienceDirect: \url{http://www.sciencedirect.com/}
+\item \ldots although Google Scholar (\url{http://scholar.google.com/}) will
+find links to most of the articles from the abovementioned sources, if you
+search from within the university network
+\end{itemize}
+
+Some of the publishers do not offer all the text of the articles
+freely, but the library has agreed on the rights to use the whole
+text. Thus, you should sometimes use computers in the domain of the
+university in order to get the full text. Sometimes the Nelli Portal
+can also help getting the whole article instead of just the abstract.
+The library has also brief instrucions how to find
+information~\cite{howfindinfo}.
+
+Instead of normal Google, use Google Scholar
+(\url{http://scholar.google.fi/}). It finds academic publications whereas
+normal Google find too much commercial advertisements or otherwise
+biased information. Wikipedia articles should be referred to in the master
+thesis only very, very seldomly. You can use Wikipedia for understanding
+some basics and finding more sources, but often you cannot be sure if
+the article is correct and unbiased.
+
+One important part of the sources that you have found is the reference
+list. This way you can find the original sources that all the other
+research of the field refer. Often you can also find more information
+with the name of the researchers that are often referred in the
+articles.
+
+\subsection{Referring to sources}
+
+The main point in referring to sources is to separate your own
+thinking and text from that of others. Facts of the research area can
+be given without reference, but otherwise you should refer to
+sources. This means two things: marking the source in the text where
+it has been used, and listing the sources usually in the end of the
+thesis in a way that help the reader to find the original source.
+
+There are several bibliography styles, meaning how to form the
+bibliography in the end of the thesis. Aalto's library has good
+instructions for many styles~\cite{bibinstructions}. You should ask
+from your supervisor or instructors which style you should use. This
+thesis template uses the number style that is often used in software
+engineering. The other style also used in the CS field,
+e.g. usability, is the Harvard style where instead of numbers, the
+reference is marked into the text with author's name and publishing
+year. Other areas use also many other styles for making the lists and
+marking the references.
+
+In addition to the list in the end of the thesis, you have to mark the
+source in the text where the source is used. There are three places
+for the reference: in a sentence before the period, in the end of a
+sentence after the period, or in the end of a paragraph. All of them
+have different meaning. The main point is that first you paraphrase
+the source using your own words and then mark the source. Next, we
+give short examples that are marked with \emph{emphasised text}.
+
+\emph{Haapasalo~\cite{HaapasaloThesis} researched database algorithms
+  that allows use of previous versions of the content stored in the
+  database.} This kind of marking means that this paragraph (or until
+the next reference is given) is based on the source mentioned in the
+beginning.  Giving the source you should use only the family name of
+the first author of the article, and not give any hints about what is
+the type of the article that is referred.
+
+\emph{B+-trees offers one way to index data that is stored in to a
+  database. Multiversion B+-trees (MVBT) offer also a way to restore
+  the data from previous versions of the database. Concurrent MVBT
+  allows many simultaneous updates to the database that is was not
+  possible with MVBT.~\cite{HaapasaloThesis}} When the marking is
+after the period, the reference is retrospective: all the paragraph
+(or after previous reference marking) is based on the source given in
+its end. If the content is very broad, you can start with saying
+\emph{According to Haapasalo}, then continue referring the source with
+several separate sentences, and in the end put the marking of your
+source \emph{ that shows that CMVBT are the
+  best. ~\cite{HaapasaloThesis}}.
+
+If your paragraph has several sources, the above mentioned styles are
+not proper. The reader of your thesis cannot know which of your
+sources give which of the statements. In this case, it is better to
+use more finegraded refering where the reference markings that are
+embedded in the sentences. For example, \emph{the multiversion B+-tree
+  (MVBT) index of Becker et al.~\cite{becker:1996:mvbt} allows database
+  users to query old versions of the database, but the index is not
+  transactional.
+  It's successor, the transactional MBVT (TMVBT), allows a single transaction
+  running in its own thread or process to update the database concurrently
+  with other transactions that only read the
+  database~\cite{haapasalo:2009:tmvbt}.
+  Further development, titled the concurrent MBVT (CMVBT),
+  allows several transactions to perform updates to the database at the same
+  time~\cite{HaapasaloThesis}}.
+  Here, the references are marked before
+  the period in the sentences where they are used.
+
+Finally, direct quotes are allowed. However, often you should avoid
+them since they do not usually fit in to your text very well. Using
+direct quotes has two tricks: quotation marks and the source.  \emph{
+  ``Even though deletions in a multiversion index must not physically
+  delete the history of the data items, queries and range scans can
+  become more efficient, if the leaf pages of the index structure are
+  merged to retain optimality.''~\cite{HaapasaloThesis}} Quotes are
+hard to make neatly since you should use only as much as needed
+without changing the text. Moreover, you often do not really
+understand what the author has mentioned with his wordings if you
+cannot write the same with your own words. Remember also that never
+cut and paste anything without marking the quotation marks right away,
+and in general, never cut and paste anything at all!
+
+Sometimes getting the original source can be almost impossible. In an
+extremely desperate situation, you can refer with structure \emph{mr
+  X~[\ldots] according to ms Y~[\ldots] defined that}, if you find a
+source that refers to the original source. Note also that the
+reference marking is never used as sentence element (example of how
+\textbf{not} to do it: \emph{\cite{HaapasaloThesis} describes
+an optimal algorithm for indexing multiversiond databases.}).
+
+
+
+% \input{3environment.tex}
+
+\chapter{Environment}
+\label{chapter:environment}
+
+A problem instance is rarely totally independent of its environment.
+Most often you need to describe the environment you work in, what
+limits there are and so on. This is a good place to do that. First we
+tell you about the LaTeX working environments and then is an example
+from an thesis written some years ago.
+
+
+\section{LaTeX working environments}
+\label{sec:environments}
+
+To create \LaTeX\ documents you need two things: a \LaTeX\ environment for
+compiling your documents and a text editor for writing them.
+
+\subsection{Environment}
+
+Fortunately \LaTeX\ can nowadays be found for any (modern) computer
+environment, be it Linux, Windows, or Macintosh.
+For Linuxes (and other Unix clones) and Macs, I'd recommend \emph{TeX
+Live}~\cite{TeXLive}, which is the current default \LaTeX\ distribution for
+many Linux flavors such as Fedora, Debian, Ubuntu, and Gentoo.
+TeX Live is the replacement for the older \emph{teTeX}, which is
+no longer developed.
+
+TeX Live works also for Windows machines (at least according to their web
+site); however, I have used \emph{MiKTeX}~\cite{MiKTeX} and can recommend it
+for Windows.
+MiKTeX has a nice package manager and automatically fetches missing packages
+for you.
+
+\subsection{Editor}
+
+You can write \LaTeX\ documents with any text editor you like, but having
+syntax coloring options and such really helps a lot.
+My personal favourite for editing \LaTeX\ is the
+\emph{TeXlipse}~\cite{TeXlipse} plugin for the Eclipse IDE~\cite{Eclipse}.
+Eclipse is an open-source integrated development environment (IDE) initially
+created for writing Java code, but it currently has support for editing
+languages such as C, C++, JavaScript, XML, HTML, and many more.
+The TeXlipse plugin allows you to edit and compile \LaTeX\ documents directly
+in Eclipse, and compilation errors and warnings are shown in the Eclipse
+\emph{Problems} dialog so that you can locate and fix the issues easily.
+The plugin also supports reference traversal so that you can locate the source
+line where a label or a citation is defined.
+
+Eclipse is an entire development environment, so it may feel a bit heavy-weight
+for editing a document.
+If you are looking for a more light-weight option, check out TeXworks.
+TeXworks is a \LaTeX\ editor that is packaged with the newer MiKTeX
+distributions, and it can be acquired from \url{http://www.tug.org/texworks/}.
+
+And if you are attached to your \emph{emacs} or \emph{vim} editor, you
+can of course edit your \LaTeX\ documents with them.
+Emacs at least has syntax coloring and you can compile your document with a key
+binding, so this may be a good option if you prefer working with the standard
+Linux text editors.
+
+\section{Graphics}
+
+When you use \texttt{pdflatex} to render your thesis, you can include PDF images
+directly, as shown by Figure~\ref{fig:indica_model} below.
+
+\begin{figure}[ht]
+  \begin{center}
+    \includegraphics[width=\textwidth]{example_indica_model.pdf}
+    \caption{The INDICA two-layered value chain model.}
+    \label{fig:indica_model}
+  \end{center}
+\end{figure}
+
+You can also include JPEG or PNG files, as shown by Figure~\ref{fig:eeyore}.
+
+\begin{figure}[ht]
+  \begin{center}
+    \includegraphics[width=9cm]{example_ihaa.jpg}
+    \caption{Eeyore, or Ihaa, a very sad donkey.}
+    \label{fig:eeyore}
+  \end{center}
+\end{figure}
+
+You can create PDF files out of practically anything.
+In Windows, you can download PrimoPDF or CutePDF (or some such) and install a
+printing driver so that you can print directly to PDF files from any
+application. There are also tools that allow you to upload documents in common
+file formats and convert them to the PDF format.
+If you have PS or EPS files, you can use the tools \texttt{ps2pdf} or
+\texttt{epspdf} to convert your PS and EPS files to PDF\@.
+
+% Comment: If your sentence ends in a capital letter, like here, you should
+% write \@ before the period; otherwise LaTeX will assume that this is not
+% really an end of the sentence and will not put a large enough space after the
+% period. That is, LaTeX assumes that you are (for example), enumerating using
+% capital roman numerals, like I. do something, II. do something else. In this
+% case, the periods do not end the sentence.
+
+% Similarly, if you do need a normal space after a period (instead of
+% the longer sentence separator), use \  (backslash and space) after the
+% period. Like so: a.\ first item, b.\ second item.
+
+Furthermore, most newer editor programs allow you to save directly to the PDF
+format. For vector editing, you could try Inkscape, which is a new open source
+WYSIWYG vector editor that allows you to save directly to PDF\@.
+For graphs, either export/print your graphs from OpenOffice Calc/Microsoft
+Excel to PDF format, and then add them; or use \texttt{gnuplot}, which can
+create PDF files directly (at least the new versions can).
+The terminal type is \emph{pdf}, so the first line of your plot file should be
+something like \texttt{set term pdf \ldots}.
+
+To get the most professional-looking graphics, you can encode them using the
+TikZ package (TikZ is a frontend for the PGF graphics formatting system).
+You can create practically any kind of technical images with TikZ, but it has a
+rather steep learning curve. Locate the manual (\texttt{pgfmanual.pdf}) from
+your \LaTeX\ distribution and check it out. An example of TikZ-generated
+graphics is shown in Figure~\ref{fig:page-merge}.
+
+\begin{figure}[ht]
+  \begin{center}
+    \input{example_page-merge.tex}
+    \caption{Example of a multiversion database page merge. This figure has
+    been taken from the PhD thesis of Haapasalo~\cite{HaapasaloThesis}.}
+    \label{fig:page-merge}
+  \end{center}
+\end{figure}
+
+Another example of graphics created with TikZ is shown in
+Figure~\ref{fig:tikz-examples}.
+These show how graphs can be drawn and labeled.
+You can consult the example images and the PGF manual for more examples of what
+kinds figures you can draw with TikZ.
+
+% These definitions are only used in the example images; you will not
+% need them for your thesis...
+\newlength{\graphdotsize}
+\setlength{\graphdotsize}{1.7pt}
+\newlength{\graphgridsize}
+\setlength{\graphgridsize}{1.2em}
+\begin{figure}[ht]
+\begin{center}
+\subfigure[Examples of obstruction graphs for the Ferry Problem]{
+  \input{example_obstruction-grouped.tex}
+}
+\subfigure[Examples of star graphs]{
+  \input{example_general-star-graphs.tex}
+}
+\caption{Examples of graphs draw with TikZ. These figures have been taken from a
+course report for the graph theory course~\cite{FerryProblem}.}
+\label{fig:tikz-examples}
+\end{center}
+\end{figure}
+
+
+
+% \input{4methods.tex}
+
+\chapter{Methods}
+\label{chapter:methods}
+
+You have now stated your problem, and you are ready to do something
+about it!  \emph{How} are you going to do that? What methods do you
+use?  You also need to review existing literature to justify your
+choices, meaning that why you have chosen the method to be applied in
+your work.
+
+% An example of a traditional LaTeX table
+% ------------------------------------------------------------------
+% A note on underfull/overfull table cells and tables:
+% ------------------------------------------------------------------
+% In professional typography, the width of the text in a page is always a lot
+% less than the width of the page. If you are accustomed to the (too wide) text
+% areas used in Microsoft Word's standard documents, the width of the text in
+% this thesis layout may suprise you. However, text in a book needs wide
+% margins. Narrow text is easier to read and looks nicer. Longer lines are
+% hard to read, because the start of the next line is harder to locate when
+% moving from line to the next.
+% However, tables that are in the middle of the text often would require a wider
+% area. By default, LaTeX will complain if you create too wide tables with
+% ``overfull'' error messages, and the table will not be positioned properly
+% (not centered). If at all possible, try to make the table narrow enough so
+% that it fits to the same space as the text (total width = \textwidth).
+% If you do need more space, you can either
+% 1) ignore the LaTeX warnings
+% 2) use the textpos-package to manually position the table (read the package
+%    documentation)
+% 3) if you have the table as a PDF document (of correct size, A4), you can use
+%    the pdfpages package to include the page. This overrides the margin
+%    settings for this page and LaTeX will not complain.
+% ------------------------------------------------------------------
+% Another note:
+% ------------------------------------------------------------------
+% If your table fits to \textwidth, but the cells are so narrow that the text
+% in p{..}-formatted cells does not flow nicely (you get underfull warnings
+% because LaTeX tries to justify the text in the cells) you can manually set
+% the text to unjustified by using the \raggedright command for each cell
+% that you do not want to be justified (see the example below). \raggedleft
+% is also possible, of course...
+% ------------------------------------------------------------------
+% If you need to have linefeeds (\\) inside a cell, you must create a new
+% paragraph-formatting environment inside the cell. Most common ones are
+% the minipage-environment and the \parbox command (see LaTeX documentation
+% for details; or just google for ``LaTeX minipage'' and ``LaTeX parbox'').
+\begin{table}
+\begin{tabular}{|p{2cm}|p{3.8cm}|p{4.5cm}|p{1.1cm}|}
+% Alignment of sells: l=left, c=center, r=right.
+% If you want wrapping lines, use p{width} exact cell widths.
+% If you want vertical lines between columns, write | above between the letters
+% Horizontal lines are generated with the \hline command:
+\hline % The line on top of the table
+\textbf{Code} & \textbf{Name} & \textbf{Methods} & \textbf{Area} \\
+\hline
+% Place a & between the columns
+% In the end of the line, use two backslashes \\ to break the line,
+% then place a \hline to make a horizontal line below the row
+T-110.6130 & Systems Engineering for Data Communications
+    Software & \raggedright Computer simulations, mathematical modeling,
+  experimental research, data analysis, and network service business
+  research methods, (agile method) & T-110 \\
+\hline
+\multicolumn{2}{|p{6.25cm}|}{Mat-2.3170 Simulation (here is an example of
+ multicolumn for tables)}& Details of how to build simulations & T-110 \\
+% The multicolumn command takes the following 3 arguments:
+% the number of cells to merge, the cell formatting for the new cell, and the
+% contents of the cell
+\hline
+S-38.3184 & Network Traffic Measurements and Analysis
+& \raggedright How to measure and analyse network
+  traffic & T-110 \\ \hline
+\end{tabular} % for really simple tables, you can just use tabular
+% You can place the caption either below (like here) or above the table
+\caption{Research methodology courses}
+% Place the label just after the caption to make the link work
+\label{table:courses}
+\end{table} % table makes a floating object with a title
+
+If you have not yet done any (real) metholodogical courses (but chosen
+introduction courses of different areas that are listed in the
+methodological courses list), now is the time to do so or at least
+check through material of suitable methodological courses. Good
+methodologial courses that consentrates especially to methods are
+presented in Table~\ref{table:courses}. Remember to explain the
+content of the tables (as with figures). In the table, the last column
+gives the research area where the methods are often used. Here we used
+table to give an example of tables. Abbreviations and Acronyms is also
+a long table. The difference is that longtables can continue to next
+page.
+
+
+
+% \input{5implementation.tex}
+
+\chapter{Implementation}
+\label{chapter:implementation}
+
+You have now explained how you are going to tackle your problem.
+Go do that now! Come back when the problem is solved!
+
+Now, how did you solve the problem?
+Explain how you implemented your solution, be it a software component, a
+custom-made FPGA, a fried jelly bean, or whatever.
+Describe the problems you encountered with your implementation work.
+
+
+
+% \input{6evaluation.tex}
+
+\chapter{Evaluation}
+\label{chapter:evaluation}
+
+You have done your work, but that's\footnote{By the way, do \emph{not} use
+shorthands like this in your text! It is not professional! Always write out all
+the words: ``that is''.} not enough.
+
+You also need to evaluate how well your implementation works.  The
+nature of the evaluation depends on your problem, your method, and
+your implementation that are all described in the thesis before this
+chapter.  If you have created a program for exact-text matching, then
+you measure how long it takes for your implementation to search for
+different patterns, and compare it against the implementation that was
+used before.  If you have designed a process for managing software
+projects, you perhaps interview people working with a waterfall-style
+management process, have them adapt your management process, and
+interview them again after they have worked with your process for some
+time. See what's changed.
+
+The important thing is that you can evaluate your success somehow.
+Remember that you do not have to succeed in making something spectacular; a
+total implementation failure may still give grounds for a very good master's
+thesis---if you can analyze what went wrong and what should have been done.
+
+
+
+
+% \input{7discussion.tex}
+
+\chapter{Discussion}
+\label{chapter:discussion}
+
+At this point, you will have some insightful thoughts on your implementation
+and you may have ideas on what could be done in the future.
+This chapter is a good place to discuss your thesis as a whole and to show your
+professor that you have really understood some non-trivial aspects of the
+methods you used\ldots
+
+
+
+% \input{8conclusions.tex}
+
+\chapter{Conclusions}
+\label{chapter:conclusions}
+
+Time to wrap it up!
+Write down the most important findings from your work.
+Like the introduction, this chapter is not very long.
+Two to four pages might be a good limit.
+
+
+
+% Load the bibliographic references
+% ------------------------------------------------------------------
+% You can use several .bib files:
+% \bibliography{thesis_sources,ietf_sources}
+\bibliography{ref}
+
+
+% Appendices go here
+% ------------------------------------------------------------------
+% If you do not have appendices, comment out the following lines
+\appendix
+% \input{appendices.tex}
+
+\chapter{First appendix}
+\label{chapter:first-appendix}
+
+This is the first appendix. You could put some test images or verbose data in an
+appendix, if there is too much data to fit in the actual text nicely.
+
+For now, the Aalto logo variants are shown in Figure~\ref{fig:aaltologo}.
+
+\begin{figure}
+\begin{center}
+\subfigure[In English]{\includegraphics[width=.8\textwidth]{aalto-logo-en}}
+\subfigure[Suomeksi]{\includegraphics[width=.8\textwidth]{aalto-logo-fi}}
+\subfigure[Pä svenska]{\includegraphics[width=.8\textwidth]{aalto-logo-se}}
+\caption{Aalto logo variants}
+\label{fig:aaltologo}
+\end{center}
+\end{figure}
+
+
+% End of document!
+% ------------------------------------------------------------------
+% The LastPage package automatically places a label on the last page.
+% That works better than placing a label here manually, because the
+% label might not go to the actual last page, if LaTeX needs to place
+% floats (that is, figures, tables, and such) to the end of the
+% document.
+\end{document}

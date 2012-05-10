@@ -12,16 +12,19 @@
             'click #create_dippa': 'createDippa',
             'click #step1_done': 'step1Done',
             'click #step2_done': 'step2Done',
-            'click #step3_done': 'step3Done'
+            'click #step3_done': 'step3Done',
+            'click #step4_done': 'step4Done'
         },
         elements: {
             '#github_instructions': 'instructions',
             '#step1': 'step1',
             '#step2': 'step2',
             '#step3': 'step3',
+            '#step4': 'step4',
             '#repository_url': 'repositoryUrl',
             '#repository_url_container': 'repositoryUrlContainer',
-            '#admin_link': 'adminLink'
+            '#admin_link': 'adminLink',
+            '#template_list': 'templateList'
         },
         proxied: ['createRequest'],
 
@@ -34,7 +37,7 @@
 
         step1Done: function() {
             this.inactivate(this.step1);
-            this.activate(this.step2);
+            this.activate(this.step4);
         },
 
         step2Done: function() {
@@ -53,6 +56,19 @@
 
             this.inactivate(this.step2);
             this.activate(this.step3);
+        },
+
+        step3Done: function() {
+            this.inactivate(this.step3);
+            this.activate(this.step4);
+        },
+
+        step4Done: function() {
+            this.template = this.templateList.val();
+            this.hideInstructions(this.proxy(function() {
+                $('#loader').show();
+                this.createRequest();
+            }));
         },
 
         hideInstructions: function(callback) {
@@ -75,13 +91,6 @@
             }));
         },
 
-        step3Done: function() {
-            this.hideInstructions(this.proxy(function() {
-                $('#loader').show();
-                this.createRequest();
-            }));
-        },
-
         activate: function(el) {
             el.animate({opacity: 1});
             el.find('p').slideDown();
@@ -98,7 +107,7 @@
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',
-                data: JSON.stringify({repo: this.repositoryInfo}),
+                data: JSON.stringify({repo: this.repositoryInfo, template: this.template, isDemo: true}),
                 error: function(err) {
                     // FIXME
                 },
@@ -673,14 +682,14 @@
         }
     });
 
-global.Hero = Hero;
-global.PreviewButton = PreviewButton;
-global.SaveButtonClass = SaveButtonClass;
-global.EditorClass = EditorClass;
-global.FilePreview = FilePreview;
-global.FileItem = FileItem;
-global.Files = Files;
-global.TabStack = TabStack;
-global.ControllerStack = ControllerStack;
+    global.Hero = Hero;
+    global.PreviewButton = PreviewButton;
+    global.SaveButtonClass = SaveButtonClass;
+    global.EditorClass = EditorClass;
+    global.FilePreview = FilePreview;
+    global.FileItem = FileItem;
+    global.Files = Files;
+    global.TabStack = TabStack;
+    global.ControllerStack = ControllerStack;
 
 })(Dippa);

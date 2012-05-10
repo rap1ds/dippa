@@ -100,6 +100,20 @@
 					Go to the admin section of your repository. <a id="admin_link" href="" target="_blank">You find the admin section here.</a> Type "dippa" to the input field and click add.
 				</p>
 			</div>
+
+			<div id="step4" class="step inactive">
+				<h2><span style="font-size: 35px;">4.</span> Choose a template</h2>
+				<p>
+					<a id="step4_done" class="btn btn-success" style="float: right">Done</a>
+					Choose a template for you document:
+
+					<select id="template_list">
+						<option value="basic-essay">Basic essay</option>
+						<option value="aalto-university-publication-series">Aalto Univertisy publication series</option>
+						<option value="aalto">Aalto University School of Science Master's Thesis</option>
+					</select>
+				</p>
+			</div>
 		</div>
 	</div>
 
@@ -349,6 +363,7 @@
 
 				$('#step2').css('opacity', 0.25).find('p').hide();
 				$('#step3').css('opacity', 0.25).find('p').hide();
+				$('#step4').css('opacity', 0.25).find('p').hide();
 
 				$('#editor_container').hide();
 				$('.editor_buttons').fadeOut('slow');

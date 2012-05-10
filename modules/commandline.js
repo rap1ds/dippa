@@ -139,6 +139,7 @@ CommandLine.Output.prototype.getOutput = function() {
 }
 
 CommandLine.Command = function(cmd, workingDir) {
+    this.origCmd = cmd;
     var splitted = CommandLine._splitCmd(cmd);
     this.cmd = splitted.cmd;
     this.args = splitted.args;

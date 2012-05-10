@@ -1,0 +1,72 @@
+\newlength{\oggs}
+\setlength{\oggs}{1.2\graphgridsize}
+\begin{tikzpicture}[x=\oggs,y=\oggs,every pin edge/.style={draw,dotted},pin distance=0.5\oggs,area/.style={ellipse,draw,dashed}] 
+
+% The graph (0,0,5,0)
+% o = origo
+\coordinate (o) at (0,0);
+\coordinate[left=1 of o,pin=100:$q_1$] (q1);
+\coordinate[right=1 of o,pin=80:$q_2$] (q2);
+\fill[black] (q1) circle (\graphdotsize);
+\fill[black] (q2) circle (\graphdotsize);
+\foreach \d in {-2, -1, ..., 2} {
+  \coordinate (tmp) at ($(o) + (0,\d)$);
+  \draw (q1) -- (tmp);
+  \draw (q2) -- (tmp);
+  \fill[black] (tmp) circle (\graphdotsize);
+}
+\node[area,minimum height=5.3\oggs,minimum width=0.8\oggs,pin=94:$X_3$] at (o) {};  
+
+% The graph (1,0,3,0)
+\coordinate[right=5 of o] (o);
+\coordinate[left=1 of o,pin=260:$q_1$] (q1);
+\coordinate[left=2 of o] (q1v);
+\coordinate[right=1 of o,pin=280:$q_2$] (q2);
+\fill[black] (q1) circle (\graphdotsize);
+\fill[black] (q2) circle (\graphdotsize);
+\fill[black] (q1v) circle (\graphdotsize);
+\draw (q1) -- (q1v);
+\foreach \d in {-1, 0, 1} {
+  \coordinate (tmp) at ($(o) + (0,\d)$);
+  \draw (q1) -- (tmp);
+  \draw (q2) -- (tmp);
+  \fill[black] (tmp) circle (\graphdotsize);
+}
+\node[area,minimum height=3.3\oggs,minimum width=0.8\oggs,pin=266:$X_3$] at (o) {};  
+\node[area,minimum height=0.8\oggs,minimum width=0.8\oggs,pin=260:$X_1$] at (q1v) {};  
+
+
+% The graph (0,1,3,0)
+\coordinate[right=4 of o] (o);
+\coordinate[left=1 of o,pin=100:$q_1$] (q1);
+\coordinate[right=1 of o,pin=80:$q_2$] (q2);
+\coordinate[right=2 of o] (q2v);
+\fill[black] (q1) circle (\graphdotsize);
+\fill[black] (q2) circle (\graphdotsize);
+\fill[black] (q2v) circle (\graphdotsize);
+\draw (q2) -- (q2v);
+\foreach \d in {-1, 0, 1} {
+  \coordinate (tmp) at ($(o) + (0,\d)$);
+  \draw (q1) -- (tmp);
+  \draw (q2) -- (tmp);
+  \fill[black] (tmp) circle (\graphdotsize);
+}
+\node[area,minimum height=3.3\oggs,minimum width=0.8\oggs,pin=94:$X_3$] at (o) {};  
+\node[area,minimum height=0.8\oggs,minimum width=0.8\oggs,pin=80:$X_2$] at (q2v) {};  
+
+% The graph (0,0,3,1)
+\coordinate[right=5 of o] (o);
+\coordinate[left=1 of o,pin=260:$q_1$] (q1);
+\coordinate[right=1 of o,pin=290:$q_2$] (q2);
+\fill[black] (q1) circle (\graphdotsize);
+\fill[black] (q2) circle (\graphdotsize);
+\draw (q1) -- (q2);
+\foreach \d in {-1, 1, 2} {
+  \coordinate (tmp) at ($(o) + (0,\d)$);
+  \draw (q1) -- (tmp);
+  \draw (q2) -- (tmp);
+  \fill[black] (tmp) circle (\graphdotsize);
+}
+\node[area,minimum height=4.3\oggs,minimum width=0.8\oggs,pin=266:$X_3$] at ($(o) + (0,0.5)$) {};  
+
+\end{tikzpicture}

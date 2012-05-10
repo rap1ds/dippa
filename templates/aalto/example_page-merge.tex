@@ -1,0 +1,155 @@
+\newcommand*{\actver}{\smash{\ensuremath{v_{\text{\textit{active}}}}}}
+
+\tikzstyle{lbl}=[font=\scriptsize,midway,sloped]
+\tikzstyle{opendash}=[densely dotted,thick] 
+\tikzstyle{opendeco}=[decoration={zigzag,amplitude=0.1em,segment length=0.6em}]
+\tikzstyle{actverline}=[dashed]
+\tikzstyle{entryline}=[densely dotted]
+\tikzstyle{area}=[ellipse,draw,dashed]
+\tikzstyle{liveentry}=[entryline,postaction={%
+  decorate,%
+  decoration={%
+    markings,%
+    mark=at position .5pt with{\arrowreversed[line width=.35pt]{|}};,
+    mark=at position 1 with{%
+      \arrow[line width=.8pt]{stealth}};%
+  }%
+}]
+\tikzstyle{deadentry}=[entryline,postaction={%
+  decorate,%
+  decoration={%
+    markings,%
+    mark=at position .5pt with{\arrowreversed[line width=.35pt]{|}};,
+    mark=at position 1 with{%
+      \arrow[line width=.8pt]{stealth}};%
+%      \arrow[line width=.35pt,black,fill=white]{*}};% 
+  }%
+}]
+\tikzstyle{pageborder}=[thick]
+\tikzstyle{pagename}=[anchor=center,text=black!50,font=\huge]
+\newlength{\spexx}
+\setlength{\spexx}{1.2cm}
+\newlength{\spexy}
+\setlength{\spexy}{.5cm}
+
+\subfigure[Before]{
+\begin{tikzpicture}[x=\spexx,y=\spexy,%
+  every pin edge/.style={draw,dotted},%
+  pin distance=.5\spexx]
+  \small
+  \coordinate (lo) at (0,-5);
+  \coordinate (o) at (0,0);
+  \coordinate (hi) at (0,7);
+  \coordinate (loact) at (3,-5);
+  \coordinate (oact) at (3,0);
+  \coordinate (hiact) at (3,7);
+  \coordinate (loinf) at (4,-5);
+  \coordinate (oinf) at (4,0);
+  \coordinate (hiinf) at (4,7);
+  
+  \draw[->] (lo) -- node[below,lbl] {Versions} ($(loinf) + (1em,0)$);
+  \draw[->] (lo) -- node[above,lbl] {Keys} ($(hi) + (0,1em)$);
+
+  \draw[pageborder] (lo) -- (o) -- (hi);
+  \draw[pageborder] (lo) -- (loinf);
+  \draw[pageborder] (hi) -- (hiinf);
+  \draw[pageborder] (o) -- (oinf);
+
+  \draw[opendash] decorate [opendeco] { (loinf) -- (oinf) };
+  \draw[opendash] decorate [opendeco] { (oinf) -- (hiinf) };
+
+  \node[pagename] at (2,3.5) {$p$};
+  \node[pagename] at (2,-2.5) {$s$};
+
+  \draw[actverline] ($(loact) + (0,-1em)$) node[below=.4em] {\actver} --
+    ($(hiact) + (0,1em)$);
+
+  % Page p contents
+  \draw[deadentry] (0,6) -- (1,6);
+  \draw[deadentry] (1,6) -- (2,6);
+  \draw[deadentry] (2,6) -- (3,6);
+  \draw[liveentry] (0,5) -- (4,5);
+  \draw[deadentry] (0,4) -- (2,4);
+  \draw[deadentry] (1,3) -- (3,3);
+  \draw[deadentry] (0,2) -- (1,2);
+  \draw[deadentry] (2,2) -- (3,2);
+  \draw[deadentry] (0,1) -- (2,1);
+  \draw[deadentry] (2,1) -- (3,1);
+
+  % Page s contents
+  \draw[liveentry] (0,-1) -- (4,-1);
+  \draw[deadentry] (0,-2) -- (2,-2);
+  \draw[deadentry] (0,-3) -- (3,-3);
+  \draw[liveentry] (3,-4) -- (4,-4);
+
+  \node[area,minimum width=4.5\spexx,minimum height=.6\spexy,pin=178:{$1$}]
+    at (2,5) {};
+  \node[area,minimum width=4.5\spexx,minimum height=.6\spexy,pin=182:{$2$}]
+    at (2,-1) {};
+  \node[area,minimum width=1.5\spexx,minimum height=.6\spexy,pin=330:{$3$}]
+    at (3.5,-4) {};
+
+\end{tikzpicture}}
+\subfigure[After]{
+\begin{tikzpicture}[x=\spexx,y=\spexy,%
+  every pin edge/.style={draw,dotted},%
+  pin distance=.5\spexx]
+  \small
+  \coordinate (lo) at (0,-5);
+  \coordinate (o) at (0,0);
+  \coordinate (hi) at (0,7);
+  \coordinate (loact) at (3,-5);
+  \coordinate (oact) at (3,0);
+  \coordinate (hiact) at (3,7);
+  \coordinate (loinf) at (4,-5);
+  \coordinate (oinf) at (4,0);
+  \coordinate (hiinf) at (4,7);
+
+  \draw[->] (lo) -- node[lbl,below] {Versions} ($(loinf) + (1em,0)$);
+  \draw[->] (lo) -- node[lbl,above] {Keys} ($(hi) + (0,1em)$);
+
+  \draw[pageborder] (lo) -- (o) -- (hi);
+  \draw[pageborder] (lo) -- (loinf);
+  \draw[pageborder] (hi) -- (hiinf);
+  \draw[pageborder] (o) -- (oact);
+
+  \draw[opendash] decorate [opendeco] { (loinf) -- (oinf) };
+  \draw[opendash] decorate [opendeco] { (oinf) -- (hiinf) };
+
+  \node[pagename] at (1.5,3.5) {$p$};
+  \node[pagename] at (1.5,-2.5) {$s$};
+  \node[pagename] at (3.5,1) {$p'$};
+
+  \draw[actverline] ($(loact) + (0,-1em)$) node[below=.4em] {\actver} -- (loact);
+  \draw[pageborder] (loact) -- (hiact);
+  \draw[actverline] (hiact) -- ($(hiact) + (0,1em)$);
+
+  % Page p contents
+  \draw[deadentry] (0,6) -- (1,6);
+  \draw[deadentry] (1,6) -- (2,6);
+  \draw[deadentry] (2,6) -- (3,6);
+  \draw[deadentry] (0,5) -- (3,5);
+  \draw[deadentry] (0,4) -- (2,4);
+  \draw[deadentry] (1,3) -- (3,3);
+  \draw[deadentry] (0,2) -- (1,2);
+  \draw[deadentry] (2,2) -- (3,2);
+  \draw[deadentry] (0,1) -- (2,1);
+  \draw[deadentry] (2,1) -- (3,1);
+
+  % Page s contents
+  \draw[deadentry] (0,-1) -- (3,-1);
+  \draw[deadentry] (0,-2) -- (2,-2);
+  \draw[deadentry] (0,-3) -- (3,-3);
+
+  % Page p' contents
+  \draw[liveentry] (3,5) -- (4,5);
+  \draw[liveentry] (3,-1) -- (4,-1);
+  \draw[liveentry] (3,-4) -- (4,-4);
+
+  \node[area,minimum width=1.5\spexx,minimum height=.6\spexy,pin=10:{$1$}]
+    at (3.5,5) {};
+  \node[area,minimum width=1.5\spexx,minimum height=.6\spexy,pin=3:{$2$}]
+    at (3.5,-1) {};
+  \node[area,minimum width=1.5\spexx,minimum height=.6\spexy,pin=330:{$3$}]
+    at (3.5,-4) {};
+\end{tikzpicture}}

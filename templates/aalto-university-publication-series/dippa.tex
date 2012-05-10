@@ -1,0 +1,91 @@
+%% Select the report mode on (the default mode)
+% See the documentation for more information about the available class options
+% If you give option 'draft' or 'draft*', the draft mode is set on
+\documentclass{aaltoseries}
+\usepackage[utf8]{inputenc}
+% Lipsum package generates bullshit
+\usepackage{lipsum}
+% Uncomment and give the correct language option if you are not writing in English
+%\usepackage[<language>]{babel}
+
+% The authors of the report
+\author{John Doe and John Smith}
+% The title of the report
+\title{The Title of the Report}
+
+\begin{document}
+
+%% The abstract of the report
+% Use this command!
+\draftabstract{\lipsum[1-3]}
+% If you want to include another abstract for the draft in another language,
+% uncomment and give the language name as the optional argument
+%\draftabstract[<language>]{\lipsum[4-6]}
+
+%% Preface
+% If you write this somewhere else than in Helsinki, use the optional location.
+\begin{preface}%[Optional location (if not defined, Helsinki)]
+\lipsum[1-4]
+\end{preface}
+
+%% Table of contents of the whole report
+\tableofcontents
+
+%% The main matter, one can obviously use \input or \include
+\chapter{Chapter Heading}
+\section{Section Heading}
+\lipsum[1-4]
+\section{Section Heading}
+\lipsum[5-6]
+\subsection{Subsection Heading}
+\lipsum[7-8]
+\subsection{Subsection Heading}
+\lipsum[9-10]
+\section{Section Heading}
+\lipsum[11-12]
+
+%% An example of setting the chapter author
+\chapterauthor{John Doe}
+
+\chapter{Chapter Heading 2}
+\section{Section Heading}
+\lipsum[1-4]
+\section{Section Heading}
+\lipsum[5-6]
+\subsection{Subsection Heading}
+\lipsum[7-8]
+\subsection{Subsection Heading}
+\lipsum[9-10]
+\section{Section Heading}
+\lipsum[11-12]
+
+%% An example for playing with the headers:
+% the optional argument goes to the table of contents, the argument to the running header
+\chapter[Alternative Chapter 3 Heading]{Chapter Heading 3}
+\section{Section Heading}
+\lipsum[1-4]
+\section{Section Heading}
+\lipsum[5-6]
+\subsection{Subsection Heading}
+\lipsum[7-8]
+\subsection{Subsection Heading}
+\lipsum[9-10]
+\section{Section Heading}
+\lipsum[11-12]
+
+%% Another example of setting the chapter author
+\chapterauthor{John Smith}
+
+\chapter{Chapter Heading 4}
+\section{Section Heading}
+\lipsum[1-4]
+\section{Section Heading}
+\lipsum[5-6]
+\subsection{Subsection Heading}
+\lipsum[7-8]
+\subsection{Subsection Heading}
+\lipsum[9-10]
+\section{Section Heading}
+\lipsum[11-12]
+
+\end{document}

@@ -2,10 +2,13 @@ var Directory = require('../modules/directory');
 var _ = require('underscore');
 var fs = require('fs');
 var Promise = require("promised-io/promise").Promise;
+var CommandLine = require('../modules/commandline');
+var path = require('path');
 
 // Helpers
 var CommonHelpers = require('./helpers').Common;
 var waitsForPromise = CommonHelpers.waitsForPromise;
+var spyOnPromise = CommonHelpers.spyOnPromise;
 
 describe('Directory', function (){
 
@@ -170,6 +173,60 @@ describe('Directory', function (){
 
             expect(Directory.readReferenceFile(1234)).toBePromise();
             expect(Directory.readFile).toHaveBeenCalledWith(1234, 'ref.bib');
+        });
+    });
+
+    describe('compile', function() {
+        beforeEach(function() {
+            this.runAllPromise = spyOnPromise(CommandLine, 'runAll').andCallRealSuccess("> commandline output");
+        });
+
+        it('calls commandline command to compile pdf', function() {
+            var repoDir = '/home/mikko/repository';
+
+            var promise = Directory.compile(repoDir);
+
+            expect(promise).toBePromise();
+            var commands = CommandLine.runAll.argsForCall[0][0];
+
+            expect(commands[0].origCmd).toEqual('pdflatex --interaction=nonstopmode dippa');
+            expect(commands[0].cwd).toEqual('/home/mikko/repository');
+            expect(commands[1].origCmd).toEqual('bibtex dippa', '/home/mikko/repository');
+            expect(commands[1].cwd).toEqual('/home/mikko/repository');
+            expect(commands[2].origCmd).toEqual('pdflatex --interaction=nonstopmode dippa');
+            expect(commands[2].cwd).toEqual('/home/mikko/repository');
+            expect(commands[3].origCmd).toEqual('bibtex dippa', '/home/mikko/repository');
+            expect(commands[3].cwd).toEqual('/home/mikko/repository');
+            expect(commands[4].origCmd).toEqual('pdflatex --interaction=nonstopmode dippa');
+            expect(commands[4].cwd).toEqual('/home/mikko/repository');
+
+            waitsForPromise(promise);
+
+            runs(function() {
+                expect(promise.resolved).toBeTruthy();
+                expect(promise.result[0]).toEqual("> commandline output");
+            })
+        });
+    });
+
+    describe('templateCommands', function() {
+
+        beforeEach(function() {
+            Directory.templatesAvailable = ['basic-essay', 'helsinki-university', 'aalto'];
+            Directory.profile = {repoDir: '/home/mikko/repository', templateDir: './templates/'};
+            spyOn(path, 'resolve').andCallFake(function(templateDir, template) {
+                return path.normalize('/home/mikko/' + templateDir + '/' + template);
+            });
+        });
+
+        it('returns template dir', function() {
+            var templateDir = Directory.resolveTemplatePath('aalto');
+            expect(templateDir).toEqual('/home/mikko/templates/aalto');
+        });
+
+        it('returns default (first) template dir if template is not given', function() {
+            var templateDir = Directory.resolveTemplatePath(null);
+            expect(templateDir).toEqual('/home/mikko/templates/basic-essay');
         });
     });
 

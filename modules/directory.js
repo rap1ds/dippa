@@ -1,25 +1,34 @@
-
 var commandline = require('../modules/commandline');
-var Command = require('../modules/commandline').Command;
+var Command = commandline.Command;
 var path = require('path');
 var Promise = require("promised-io/promise").Promise;
 var fs = require('fs');
 var wrench = require('wrench');
+var _ = require('underscore');
 
 var REPOSITORY_DIR = "./public/repositories/";
-var TEMPLATE_DIR = "./templates/";
 
 var Directory = {
 
+    // First in the array is the default
+    templatesAvailable: [
+        'basic-essay',
+        'aalto-university-publication-series',
+        'aalto'
+    ],
+
     profiles: {
-        dev: {repoDir: "./public/repositories/"},
-        test: {repoDir: "./public/repositories_test/"},
-        staging: {repoDir: "./public/repositories/"},
-        production: {repoDir: "./public/repositories/"}
+        dev: {repoDir: "./public/repositories/", templateDir: "./templates/"},
+        test: {repoDir: "./public/repositories_test/", templateDir: "./templates/"},
+        staging: {repoDir: "./public/repositories/", templateDir: "./templates/"},
+        production: {repoDir: "./public/repositories/", templateDir: "./templates/"}
     },
 
     init: function(profile) {
+        _.bindAll(this);
+
         profile = profile || this.profiles.dev;
+        this.profile = profile;
 
         REPOSITORY_DIR = profile.repoDir;
     },
@@ -46,39 +55,88 @@ var Directory = {
         return promise;
     },
 
-    create: function(id, name, owner, noGithub) {
+    create: function(opts) {
+        var id = opts.id;
+        var name = opts.name;
+        var owner = opts.owner;
+        var noGithub = opts.noGithub;
+        var template = opts.template;
+
         var promise = new Promise();
 
         var repoDir = path.resolve(REPOSITORY_DIR, id);
-        var texTemplate = path.resolve(TEMPLATE_DIR, "template.tex");
-        var refTemplate = path.resolve(TEMPLATE_DIR, "template_ref.bib");
 
         var mkdir = new Command('mkdir -p ' + repoDir);
         var init = new Command('git init', repoDir);
         var config = new Command('git config user.email mikko.koski@aalto.fi');
         var remote = new Command('git remote add origin ssh://dippa.github.com/' + owner + '/' + name + '.git', repoDir);
         var pull = new Command('git pull');
-        var cpDoc = new Command('cp ' + texTemplate + ' ./dippa.tex', repoDir);
-        var cpRef = new Command('cp ' + refTemplate + ' ./ref.bib', repoDir);
         var add = new Command('git add dippa.tex ref.bib', repoDir);
         var commit = new Command('git commit -m FirstCommit', repoDir);
         var push = new Command('git push -u origin master', repoDir);
 
-        var commandsToRun, isDemo;
+        // Commands
+        var initCmd, pushCmd;
+        var templatePath = this.resolveTemplatePath(template);
 
         if(noGithub) {
-            commandsToRun = [mkdir, cpDoc, cpRef];
+            initCmd = [mkdir];
+            pushCmd = [];
         } else {
-            commandsToRun = [mkdir, init, config, remote, pull, cpDoc, cpRef, add, commit, push];
+            initCmd = [mkdir, init, config, remote, pull];
+            pushCmd = [add, commit, push];
         }
 
-        commandline.runAll(commandsToRun).then(function() {
-            promise.resolve();
-        }, function() {
-            promise.reject();
+        this.templateCommands(templatePath, repoDir).then(function(templateCmd) {
+            var commandsToRun = initCmd.concat(templateCmd, pushCmd);
+
+            commandline.runAll(commandsToRun).then(function() {
+                promise.resolve(repoDir);
+            }, function() {
+                promise.reject();
+            });
         });
 
         return promise;
+    },
+
+    resolveTemplatePath: function(template) {
+        template = this.templatesAvailable.indexOf(template) !== -1 ? template : this.templatesAvailable[0];
+        template = path.resolve(this.profile.templateDir, template);
+        return template;
+    },
+
+    templateCommands: function(templatePath, repoDir) {
+        var promise = new Promise();
+
+        var commands = [];
+        fs.readdir(templatePath, function(err, files) {
+            if(err) {
+                promise.reject();
+            }
+            files.forEach(function(file) {
+                commands.push(new Command('cp ' + templatePath + '/' + file + ' ' + repoDir));
+            });
+            promise.resolve(commands);
+        });
+
+        return promise;
+    },
+
+    compile: function(repoDir) {
+        var compilePromise = new Promise();
+
+        var pdflatex1 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
+        var bibtex1 = new Command('bibtex dippa', repoDir);
+        var pdflatex2 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
+        var bibtex2 = new Command('bibtex dippa', repoDir);
+        var pdflatex3 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
+
+        commandline.runAll([pdflatex1, bibtex1, pdflatex2, bibtex2, pdflatex3]).then(function(output) {
+            compilePromise.resolve(output);
+        });
+
+        return compilePromise;
     },
 
     readFile: function(id, filename) {
