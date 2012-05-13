@@ -37,7 +37,7 @@
 
         step1Done: function() {
             this.inactivate(this.step1);
-            this.activate(this.step4);
+            this.activate(this.step2);
         },
 
         step2Done: function() {
