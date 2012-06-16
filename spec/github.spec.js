@@ -42,6 +42,10 @@ describe('Github', function() {
             expectParse('https://rap1ds@github.com/rap1ds/dippa!.git');
         });
 
+        it('should parse https url without username', function() {
+            expectParse('https://github.com/rap1ds/dippa.git', 'rap1ds', 'dippa');
+        });
+
         it('should parse ssh url', function() {
             var url = "git@github.com:rap1ds/dippa.git";
 
@@ -50,7 +54,11 @@ describe('Github', function() {
             expectParse('git@github.com:rap%!&1ds/dippa.git');
             expectParse('git@github.com:rap1ds!/dippa.git');
             expectParse('git@github.com:rap1ds/dippa!.git');
-        })
+        });
+
+        it('should parse git read-only', function() {
+            expectParse('git://github.com/rap1ds/dippa.git', 'rap1ds', 'dippa');
+        });
 
     });
 });
