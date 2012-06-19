@@ -14,6 +14,7 @@ var shortId = require('shortid');
 var fs = require('fs');
 var Directory = require('../modules/directory');
 var _ = require('underscore');
+var log = require('../modules/log');
 
 var REPOSITORY_DIR = "./public/repositories/";
 var TEMPLATE_DIR = "./templates/";
@@ -21,7 +22,7 @@ var TEMPLATE_DIR = "./templates/";
 var API = {
 
     start: function(profile) {
-        console.log('Staring the API again...');
+        log('Staring the API again...');
 
         var started = new Promise();
         var configured = this.configure();
@@ -43,7 +44,7 @@ var API = {
         }
 
         profileResolved.then(function(profile) {
-            console.log('Profile: ' + profile);
+            log('Current profile: ' + profile);
 
             this.profile = profile;
 
@@ -61,10 +62,11 @@ var API = {
 
             Mongo.init(this.mongoProfile);
             Directory.init(this.directoryProfile);
-            console.log('About to listen port ' + this.port);
+            log('About to listen port ' + this.port);
             app.listen(this.port);
 
-            console.log('Listening port ' + this.port);
+            log('Listening port ' + this.port);
+            log('Application successfully started');
             started.resolve();
 
         }.bind(this));
@@ -75,12 +77,16 @@ var API = {
     configure: function() {
         var promise = new Promise();
 
-        app.configure('staging', function(){
-            promise.resolve('staging');
-        });
-
         app.configure('development', function(){
             promise.resolve('development');
+        });
+
+        app.configure('testing', function(){
+            promise.resolve('testing');
+        });
+
+        app.configure('staging', function(){
+            promise.resolve('staging');
         });
 
         app.configure('production', function(){
@@ -150,10 +156,13 @@ var API = {
             res.send({msg: 'Missing filename or id'}, 400);
         }
 
+        log('DELETE Uploaded file', id, filename);
+
         Directory.deleteFile(id, filename).then(function success() {
             res.send(204);
         }, function error(err) {
             res.send({msg: 'An error occured while deleting file'}, 500);
+            log.error('DELETE Failed to delete file', id, filename);
         });
     },
 
@@ -171,6 +180,7 @@ var API = {
             res.send(response);
         }, function error() {
             res.send({msg: 'An error occured while reading content'}, 500);
+            log.error('GET Failed to load', id);
         });
     },
 
@@ -185,6 +195,7 @@ var API = {
 
         if(!isDemo && !(owner && name)) {
             // Send error message
+            log.error('POST Create failed: Not deme, but still no owner & name', owner, name);
             res.send('Error');
             return;
         }
@@ -197,8 +208,10 @@ var API = {
         var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo);
 
         p.all(createdAndCompiled, mongoCreated).then(function() {
+            log('POST Created new Dippa', directoryOptions);
             res.send(id);
         }, function(error) {
+            log.error('POST Failed to create new Dippa', directoryOptions);
             res.send(error);
         });
     }
@@ -229,9 +242,6 @@ app.post('/save/:id', function(req, res){
     var repoDir = path.resolve(REPOSITORY_DIR, id);
     var texFile = path.resolve(repoDir, 'dippa.tex');
     var refFile = path.resolve(repoDir, 'ref.bib');
-
-    console.log('tex: ' + texFile);
-    console.log('ref: ' + refFile);
 
     var docContent = req.body.documentContent;
     var refContent = req.body.referencesContent;
@@ -269,7 +279,7 @@ app.post('/save/:id', function(req, res){
 
         mongoReady.then(function(result) {
             if(result.isDemo) {
-                console.log('Demo, not pushing');
+                log('Demo, not pushing');
                 return;
             }
 
@@ -280,8 +290,12 @@ app.post('/save/:id', function(req, res){
             var pull = new Command('git pull', repoDir);
             var push = new Command('git push', repoDir);
 
-            commandline.runAll([addtex, addref, commit, pull, push]).then(function() {
-                // Nothing here
+            commandline.runAll([addtex, addref, commit, pull, push]).then(function(allOutputs) {
+                // Log all Git output
+                (allOutputs || []).forEach(function(output) {
+                    output = output || {};
+                    log(output.type + ": " + output.value);
+                });
             });
 
         });
@@ -343,7 +357,7 @@ app.post('/upload/:id', function(req, res, next) {
     var allFilesCopied = PromisedIO.all(copyPromises);
 
     allFilesCopied.then(function() {
-        console.log('All files copied', resultMessage);
+        log('All files copied', resultMessage);
         res.send(JSON.stringify(resultMessage));
     });
 });

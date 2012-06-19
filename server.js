@@ -4,6 +4,7 @@ var path = require('path');
 var Mongo = require('./modules/mongo');
 var API = require('./modules/api');
 var _ = require('underscore');
+var log = require('./modules/log');
 
 API.start();
 
@@ -16,22 +17,22 @@ _.delay(function removeOldDemos() {
     Mongo.findOldDemos().then(function(oldDemos) {
         oldDemos = oldDemos || [];
 
-        console.info('Found ' + oldDemos.length + ' old demos ready to be removed');
+        log('Found ' + oldDemos.length + ' old demos ready to be removed');
 
         oldDemos.forEach(function(oldDemo) {
             var repoDir = path.resolve(REPOSITORY_DIR, oldDemo.shortId);
             commandsToRun.push(new Command('rm -r ' + repoDir));
 
-            console.info('About to remove dir ' + repoDir);
+            log('About to remove dir ' + repoDir);
         });
 
         commandline.runAll(commandsToRun).then(function() {
-            console.log('Old demo directories removed. Done!');
+            log('Old demo directories removed. Done!');
 
             Mongo.removeOldDemos().then(function() {
-                console.log('Removed old demos from DB');
+                log('Removed old demos from DB');
             }, function(e) {
-                console.error('Failed to remove old demos from DB');
+                log.error('Failed to remove old demos from DB');
             });
         });
     });

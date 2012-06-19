@@ -2,6 +2,7 @@ var spawn = require('child_process').spawn;
 var p = require("promised-io/promise");;
 var when = p.when;
 var Promise = p.Promise;
+var log = require('../modules/log');
 
 var CommandLine = {
 
@@ -121,7 +122,6 @@ CommandLine.Output.prototype.flushStderr = function(forceEmpty) {
     for(var i = 0; i < len - 1; i++) {
         var line = lines.shift();
         this.allOutputs.push({type: "stderr", output: line});
-        console.log('OUT' + line);
     }
 
     // Last line

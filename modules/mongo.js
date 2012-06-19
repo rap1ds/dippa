@@ -2,7 +2,8 @@ var mongoose = require('mongoose')
     , p = require("promised-io/promise")
     , DateUtils = require('./dateutils')
     , Fixtures = require('../fixtures/fixtures')
-    , _ = require('underscore');
+    , _ = require('underscore')
+    , log = require('../modules/log');
 
 var Mongo = {
 
@@ -48,7 +49,7 @@ var Mongo = {
 
                 dippa.save(function(error) {
                     if(error) {
-                        console.error(error);
+                        log.error(error);
                         newDippaAdded.reject(error);
                     } else {
                         newDippaAdded.resolve();
