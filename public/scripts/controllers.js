@@ -107,7 +107,7 @@
                 type: 'POST',
                 dataType: 'json',
                 contentType: 'application/json',
-                data: JSON.stringify({repo: this.repositoryInfo, template: this.template, isDemo: true}),
+                data: JSON.stringify({repo: this.repositoryInfo, template: this.template}),
                 error: function(err) {
                     // FIXME
                 },
