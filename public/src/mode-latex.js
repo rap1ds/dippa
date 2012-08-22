@@ -52,11 +52,11 @@ oop.inherits(Mode, TextMode);
     };
 
     this.createWorker = function(session) {
-            debugger;
-            var worker = new WorkerClient(["ace"], "src/worker.js", "ace/mode/latex_worker", "LatexWorker");
+            var worker = new WorkerClient(["ace"], "ace/mode/latex_worker", "LatexWorker");
             worker.attachToDocument(session.getDocument());
 
             worker.on("outline", function(e) {
+                debugger;
                 session._emit("outline", e.data);
             });
 

@@ -17,7 +17,8 @@
  * limitations under the License.
  * ============================================================ */
 
-!function( $ ){
+define(['jquery'],
+    function($) {
 
   "use strict"
 
@@ -59,4 +60,4 @@
     })
   })
 
-}( window.jQuery || window.ender );
+});

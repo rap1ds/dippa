@@ -17,8 +17,9 @@
  * limitations under the License.
  * ========================================================== */
 
-
-!function( $ ){
+define(['jquery'
+    , 'bootstrap-transition'],
+    function($) {
 
   "use strict"
 
@@ -157,5 +158,4 @@
       e.preventDefault()
     })
   })
-
-}( window.jQuery );
+});

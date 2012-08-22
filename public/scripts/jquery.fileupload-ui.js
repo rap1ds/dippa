@@ -18,9 +18,10 @@
         // Register as an anonymous AMD module:
         define([
             'jquery',
-            'tmpl',
-            'load-image',
-            './jquery.fileupload-ip'
+            'jquery.fileupload'
+            // 'tmpl',
+            // 'load-image',
+            // './jquery.fileupload-ip'
         ], factory);
     } else {
         // Browser globals:
