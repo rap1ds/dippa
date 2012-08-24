@@ -1,4 +1,7 @@
 define(['spine/spine', 'app/model/file', 'app/controller/file-item'], function(Spine, File, FileItem) {
+
+    console.log('app/controller/files.js');
+
     var Files = Spine.Controller.sub({
         el: $('#filelist'),
 

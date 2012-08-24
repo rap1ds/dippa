@@ -1,6 +1,8 @@
 define(['jquery', 'spine/spine', 'app/controller/editor', 'app/controller/preview-button', 'app/session'], function($, Spine, Editor, PreviewButton, session) {
     "use strict";
 
+    console.log('app/utils/save-button.js');
+
     var SaveButton = Spine.Controller.sub({
         el: $('#save_button'),
         state: "disabled",

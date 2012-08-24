@@ -291,27 +291,9 @@
 	<a class="section" style="margin-left: {{indent}}" href="#"><span class="section-title">{{title}}</span></a>
 </script>
 
-<script data-main="scripts/main.js" src="scripts/require.js"></script>
-<script type="text/javascript">
-	require.config({
-		shim: {
-			'spine/spine': {
-				exports: 'Spine'
-			},
-			'spine/manager': ['spine/spine'],
-			'spine/route': ['spine/spine'],
-			'handlebars': {
-				exports: 'Handlebars'
-			},
-			'jquery.iframe-transport': ['jquery'],
-			'jquery.fileupload': ['jquery'],
-			'jquery.fileupload-ui': ['jquery']
-		},
-		paths: {
-			'jquery.ui.widget': 'jquery-ui'
-		}
-	});
-</script>
+<script src="scripts/ace/ace-unmin.js" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/ace/mode-latex.js" type="text/javascript" charset="utf-8"></script>
+<script data-main="scripts/main.js" src="scripts/require-jquery.js"></script>
 
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> -->
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script> -->

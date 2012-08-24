@@ -1,6 +1,8 @@
 define(['jquery', 'spine/spine', 'handlebars', 'app/controller/file-preview', 'app/session'], function($, Spine, Handlebars, FilePreview, session) {
     "use strict";
 
+    console.log('app/controller/file-item.js');
+
     var FileItem = Spine.Controller.sub({
 
         // Delegate the click event to a local handler

@@ -1,6 +1,8 @@
 define(['jquery', 'spine/spine', 'app/app', 'app/controller/editor', 'app/session'], function($, Spine, App, Editor, session) {
     "use strict";
 
+    console.log('app/controller/preview-button.js');
+
     var PreviewButton = Spine.Controller.create({
         el: $('#preview_button'),
 

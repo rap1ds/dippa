@@ -1,6 +1,7 @@
 define(['jquery', 'spine/spine', 'app/controller/hero', 'app/basepath'], function($, Spine, Hero, basepath) {
     "use strict";
 
+    console.log('app/controller/demo-button.js');
 
     var DemoButton = Spine.Controller.sub({
         el: $('#demo_button'),

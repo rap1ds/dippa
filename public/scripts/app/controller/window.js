@@ -1,5 +1,7 @@
 define(['jquery', 'spine/spine', 'handlebars', 'app/controller/editor'], function($, Spine, Handlebars, Editor) {
 
+    console.log('app/controller/window.js');
+
     window.onbeforeunload = function (e) {
 
         if(!Editor.instance.hasChanged()) {

@@ -1,6 +1,8 @@
 define(['jquery', 'spine/spine'], function($, Spine) {
     "use strict";
 
+    console.log('app/model/file.js');
+
     var File = Spine.Model.sub();
     File.configure('File', 'filename');
 

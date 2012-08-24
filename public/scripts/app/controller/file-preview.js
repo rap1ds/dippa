@@ -1,6 +1,8 @@
 define(['jquery', 'spine/spine', 'app/session'], function($, Spine, session) {
     "use strict";
 
+    console.log('app/controller/file-preview.js');
+
     var FilePreview = Spine.Controller.sub({
         el: $('#file-preview'),
 

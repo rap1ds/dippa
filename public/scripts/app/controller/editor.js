@@ -1,5 +1,7 @@
-define(['spine/spine', 'ace/ace', 'app/ace/mode/latex', 'app/controller/outline'], function(Spine, ace, Latex, Outline) {
+define(['spine/spine', 'app/controller/outline'], function(Spine, Outline) {
     "use strict";
+
+    console.log('app/controller/editor.js');
 
     var Editor = Spine.Controller.sub({
 
@@ -10,7 +12,7 @@ define(['spine/spine', 'ace/ace', 'app/ace/mode/latex', 'app/controller/outline'
         initializeEditor: function() {
             this.editor = ace.edit('editor');
             this.session = this.editor.getSession();
-            var LatexMode = Latex.Mode;
+            var LatexMode = ace.require("ace/mode/latex").Mode;
 
             this.session.setMode(new LatexMode());
             this.session.setUseWrapMode(true);

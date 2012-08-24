@@ -1,23 +1,29 @@
-define([
-    'spine/spine',
-    'spine/manager',
-    'app/controller/tab/document',
-    'app/controller/tab/references',
-    'app/controller/tab/files',
-    'app/controller/tab/output'],
+define(['spine/spine'
+    , 'app/controller/tab/document'
+    , 'app/controller/tab/references'
+    , 'app/controller/tab/files'
+    , 'app/controller/tab/output'],
 
-    function(Spine, SpineManager, DocumentTab, ReferencesTab, FilesTab, OutputTab) {
+    function(Spine, DocumentTab, ReferencesTab, FilesTab, OutputTab) {
+
+        console.log('app/stack/tabs.js');
 
         "use strict";
 
-        var TabStack = Spine.Stack.sub({
-            el: '#nav',
-
-            controllers: {
+        function getControllers() {
+            return {
                 doc: DocumentTab,
                 ref: ReferencesTab,
                 files: FilesTab,
                 output: OutputTab
+            }
+        }
+
+        var TabStack = Spine.Stack.sub({
+            el: '#nav',
+
+            init: function() {
+                this.controllers = getControllers();
             },
 
             'default': 'doc',

@@ -1,4 +1,7 @@
 define(function() {
+
+    console.log('app/utils/github.js')
+
     var Github = Object.freeze({
 
         /**

@@ -1,6 +1,8 @@
 define(['jquery', 'spine/spine', 'app/basepath', 'app/session', 'app/utils/github'], function($, Spine, basepath, session, Github) {
     "use strict";
 
+    console.log('app/controller/hero.js');
+
     var Hero = Spine.Controller.sub({
 
         el: $('#hero'),

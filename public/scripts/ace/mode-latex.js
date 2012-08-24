@@ -1,14 +1,12 @@
-define('app/ace/mode/latex', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/tokenizer', 'ace/mode/latex_highlight_rules', 'ace/range'], function(require, exports, module) {
+ace.define('ace/mode/latex', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/tokenizer', 'ace/mode/latex_highlight_rules', 'ace/range'], function(require, exports, module) {
 "use strict";
 
-debugger;
-
-var oop = require("../.././lib/oop");
-var TextMode = require("../.././mode/text").Mode;
-var Tokenizer = require("../.././tokenizer").Tokenizer;
-var LatexHighlightRules = require("../.././mode/latex_highlight_rules").LatexHighlightRules;
-var Range = require("../.././range").Range;
-var WorkerClient = require("./worker_client").WorkerClient;
+var oop = require("../lib/oop");
+var TextMode = require("./text").Mode;
+var Tokenizer = require("../tokenizer").Tokenizer;
+var LatexHighlightRules = require("./latex_highlight_rules").LatexHighlightRules;
+var Range = require("../range").Range;
+var WorkerClient = require("../worker/worker_client").WorkerClient;
 
 var Mode = function()
 {
@@ -54,8 +52,7 @@ oop.inherits(Mode, TextMode);
     };
 
     this.createWorker = function(session) {
-        debugger;
-        var worker = new WorkerClient(["ace"], "./latex_worker", "LatexWorker");
+            var worker = new WorkerClient(["ace"], "ace/mode/latex_worker", "LatexWorker");
             worker.attachToDocument(session.getDocument());
 
             worker.on("outline", function(e) {
@@ -70,7 +67,8 @@ oop.inherits(Mode, TextMode);
 exports.Mode = Mode;
 
 });
-define('ace/mode/latex_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
+
+ace.define('ace/mode/latex_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text_highlight_rules'], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
@@ -126,11 +124,10 @@ exports.LatexHighlightRules = LatexHighlightRules;
 });
 ;
             (function() {
-                window.require(["ace/ace"], function(a) {
+                window.ace.require(["ace/ace"], function(a) {
                     if (!window.ace)
                         window.ace = {};
                     for (var key in a) if (a.hasOwnProperty(key))
                         ace[key] = a[key];
                 });
             })();
-        

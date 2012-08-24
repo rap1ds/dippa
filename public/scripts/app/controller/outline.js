@@ -1,5 +1,7 @@
 define(['require', 'jquery', 'spine/spine', 'handlebars'], function(require, $, Spine, Handlebars) {
 
+    console.log('app/controller/outline.js');
+
     var OutlineItem = Spine.Controller.sub({
         events: {"click": "goto"},
 

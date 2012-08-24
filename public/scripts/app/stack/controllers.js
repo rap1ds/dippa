@@ -12,15 +12,17 @@ define([
         OutputView,
         FilesView) {
 
-   "use strict";
+        "use strict";
 
-    var ControllersStack = Spine.Stack.sub({
-        controllers: {
-            doc: EditorView,
-            output: OutputView,
-            files: FilesView
-        }
+        console.log('app/stack/controllers.js');
+
+        var ControllersStack = Spine.Stack.sub({
+            controllers: {
+                doc: EditorView,
+                output: OutputView,
+                files: FilesView
+            }
+        });
+
+        return ControllersStack;
     });
-
-    return ControllersStack;
-});

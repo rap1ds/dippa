@@ -1,42 +1,34 @@
 define(['jquery'
     , 'spine/spine'
-    , 'ace/ace'
-    , 'app/controller/editor'
     , 'app/controller/files'
     , 'app/stack/controllers'
     , 'app/stack/tabs'
-    , 'app/controller/hero'
-    , 'app/controller/demo-button'
     , 'app/model/content'
     , 'app/model/file'
     , 'app/basepath'
     , 'app/session'
-    , 'jquery.iframe-transport',
- 	, 'jquery.fileupload',
- 	, 'jquery.fileupload-ui'
+    , 'app/controller/editor'
     , 'app/controller/save-button'
     , 'app/controller/preview-button'
     , 'bootstrap-buttons'
     , 'bootstrap-transition'
     , 'app/controller/outline'
     , 'app/controller/window'
-    , 'underscore'
+    , 'jquery.fileupload'
     ],
 
     function($
         , Spine
-        , ace
-        , Editor
         , Files
         , ControllersStack
         , TabStack
-        , Hero
-        , DemoButton
         , Content
         , File
         , basepath
         , session
-        , _) {
+        , Editor) {
+
+        console.log('app/app.js');
 
         var App = Spine.Controller.sub({
 

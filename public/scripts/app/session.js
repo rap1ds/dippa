@@ -1,6 +1,8 @@
 define(function() {
     "use strict";
 
+    console.log('app/session.js');
+
     var sessionId;
 
     function createSession(id) {
