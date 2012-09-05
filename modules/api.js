@@ -15,6 +15,7 @@ var fs = require('fs');
 var Directory = require('../modules/directory');
 var _ = require('underscore');
 var log = require('../modules/log');
+var git = require('../modules/git');
 
 var REPOSITORY_DIR = "./public/repositories/";
 var TEMPLATE_DIR = "./templates/";
@@ -283,18 +284,11 @@ app.post('/save/:id', function(req, res){
                 return;
             }
 
-            var commitMessage = "Update";
-            var addtex = new Command('git add dippa.tex', repoDir);
-            var addref = new Command('git add ref.bib', repoDir);
-            var commit = new Command('git commit --all --message="' + commitMessage + '"', repoDir);
-            var pull = new Command('git pull', repoDir);
-            var push = new Command('git push', repoDir);
-
-            commandline.runAll([addtex, addref, commit, pull, push]).then(function(allOutputs) {
+            git.pushChanges(repoDir).then(function(allOutputs) {
                 // Log all Git output
                 (allOutputs || []).forEach(function(output) {
                     output = output || {};
-                    log(output.type + ": " + output.value);
+                    log(output.type + ": " + output.output);
                 });
             });
 

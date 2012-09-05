@@ -58,7 +58,7 @@ var consoleLogger = {
 
 log.profiles = {
     development: consoleLogger,
-    testing: consoleLogger,
+    test: consoleLogger,
     staging: logglyLogger,
     production: logglyLogger
 };
