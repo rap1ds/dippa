@@ -68,7 +68,7 @@ define(['jquery'
                             autoUpload: true,
                             url: basepath.getPath() + 'upload/' + session.sessionId,
                             done: function(e, data) {
-                                data.result.forEach(function(filename) {
+                                JSON.parse(data.result).forEach(function(filename) {
                                     File.class.create(filename);
                                 });
                             }
