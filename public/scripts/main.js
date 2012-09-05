@@ -50,7 +50,7 @@ require(['require'
 
         $(function() {
 
-            console.log('loading main.js');
+            console.log('main.js');
 
             function loadHome() {
                 $('#hero').show();
@@ -82,9 +82,7 @@ require(['require'
 
                 $('#nav').fadeIn('slow');
 
-                require(['app/app'], function(App) {
-                    App.instance.load();
-                });
+                require(['app/app']);
             }
 
             var homeRegexp = new RegExp(basepath.getPath() + '$');

@@ -1,3 +1,5 @@
+console.log('Loading file app/app.js');
+
 define(['jquery'
     , 'spine/spine'
     , 'app/controller/files'
@@ -8,12 +10,10 @@ define(['jquery'
     , 'app/basepath'
     , 'app/session'
     , 'app/controller/editor'
-    , 'app/controller/save-button'
     , 'app/controller/preview-button'
     , 'bootstrap-buttons'
     , 'bootstrap-transition'
     , 'app/controller/outline'
-    , 'app/controller/window'
     , 'jquery.fileupload'
     ],
 
@@ -28,7 +28,7 @@ define(['jquery'
         , session
         , Editor) {
 
-        console.log('app/app.js');
+        console.log('Defining module app/app.js');
 
         var App = Spine.Controller.sub({
 
@@ -40,12 +40,6 @@ define(['jquery'
 
                 // Initialize sub editors
                 Editor.instance.initializeEditor();
-
-                // Init routes
-                // var homeRegexp = new RegExp(basepath.getPath() + '$');
-                // Spine.Route.add(homeRegexp, this.proxy(this.home));
-                // var idRegExp = new RegExp('.*' + basepath.getPath() + '(.*)#?$');
-                // Spine.Route.add(idRegExp, this.proxy(this.loadId));
             },
 
             load: function() {
@@ -79,9 +73,16 @@ define(['jquery'
             }
         });
 
-        return {
+        var exports = {
             class: App,
             instance: new App()
         };
+
+        // Load other modules
+        require(['app/controller/window', 'app/controller/save-button'], function() {
+            exports.instance.load();
+        });
+
+        return exports;
 
     });

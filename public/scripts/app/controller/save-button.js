@@ -1,11 +1,14 @@
-define(['jquery'
+define(['require'
+    , 'jquery'
     , 'underscore'
     , 'spine/spine'
     , 'app/controller/editor'
     , 'app/controller/preview-button'
     , 'app/session'],
 
-    function($, _, Spine, Editor, PreviewButton, session) {
+    function(require, $, _, Spine, Editor, PreviewButton, session) {
+
+        debugger;
 
         "use strict";
 
@@ -110,9 +113,10 @@ define(['jquery'
             },
 
             sendRequest: function() {
-                Editor.instance.updateContent();
+                var editor = require('app/controller/editor').instance;
+                editor.updateContent();
 
-                var value = JSON.stringify({documentContent: Editor.instance.docContent.value, referencesContent: Editor.instance.refContent.value});
+                var value = JSON.stringify({documentContent: editor.docContent.value, referencesContent: editor.refContent.value});
 
                 $.ajax({
                     type: "POST",
@@ -124,7 +128,7 @@ define(['jquery'
                     complete: this.proxy(function(response) {
                         this.stateComplete();
                         PreviewButton.instance.buttonReset();
-                        Editor.instance.setChanged(false);
+                        editor.setChanged(false);
                     }),
                     success: this.proxy(function(response) {
                         var $console = $('#console');

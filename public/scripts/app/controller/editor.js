@@ -1,7 +1,14 @@
-define(['spine/spine', 'app/controller/outline'], function(Spine, Outline) {
+console.log('Loading file app/controller/editor.js');
+
+define(['require'
+    , 'spine/spine'
+    , 'app/controller/outline'],
+
+    function(require, Spine, Outline, SaveButton) {
+
     "use strict";
 
-    console.log('app/controller/editor.js');
+    console.log('Defining module app/controller/editor.js');
 
     var Editor = Spine.Controller.sub({
 
@@ -28,11 +35,13 @@ define(['spine/spine', 'app/controller/outline'], function(Spine, Outline) {
                     sender: 'editor'
                 },
                 exec: function(env, args, request) {
-                    SaveButton.save();
+                    var saveButton = require('app/controller/save-button').instance;
+                    saveButton.save();
                 }
             });
 
             this.session.on('change', this.proxy(function() {
+                debugger;
                 Spine.trigger('change');
                 this.setChanged(true);
             }));
