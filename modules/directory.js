@@ -1,13 +1,41 @@
 var commandline = require('../modules/commandline');
 var Command = commandline.Command;
 var path = require('path');
+var when = require("promised-io/promise");
 var Promise = require("promised-io/promise").Promise;
 var fs = require('fs');
 var wrench = require('wrench');
 var _ = require('underscore');
 var git = require('../modules/git');
+var log = require('../modules/log');
 
 var REPOSITORY_DIR = "./public/repositories/";
+
+function ensureEmptyRepository(workingDir, allowedFiles) {
+    allowedFiles = allowedFiles || [];
+    workingDir = path.resolve(workingDir);
+
+    var promise = new Promise();
+    readContent(workingDir).then(function(files) {
+        var isEmpty = _.all(files, function(file) {
+
+            return _.include(allowedFiles, file);
+        });
+        log('Is empty repository? ' + isEmpty + ', files: ' + JSON.stringify(files) + ', allowed: ' + JSON.stringify(allowedFiles));
+        promise.resolve(isEmpty);
+    });
+    return promise;
+}
+
+function readContent(directory) {
+    var promise = new Promise();
+
+    var files = fs.readdir(directory, function(err, files) {
+        promise.resolve(files);
+    });
+
+    return promise;
+}
 
 var Directory = {
 
@@ -78,16 +106,25 @@ var Directory = {
             pushCommand = git.initialPush(repoDir);
         }
 
-        templateCommandsPromise.then(function(templateCmd) {
-            var commandsToRun = createDirectory.concat(cloneCommand, templateCmd, pushCommand);
+        var initializeCommands = createDirectory.concat(cloneCommand);
 
-            commandline.runAll(commandsToRun).then(function() {
-                promise.resolve(repoDir);
-            }, function() {
-                promise.reject();
+        commandline.runAll(initializeCommands).then(function() {
+            ensureEmptyRepository(repoDir, ['.git', 'README.md', '.gitignore']).then(function(isEmpty) {
+                templateCommandsPromise.then(function(templateCmd) {
+                    var commandsToRun = templateCmd.concat(pushCommand);
+
+                    commandline.runAll(commandsToRun).then(function() {
+                        promise.resolve(repoDir);
+                    }, function() {
+                        promise.reject();
+                    });
+                });
             });
-        });
 
+        }, function() {
+            promise.reject();
+        });
+        
         return promise;
     },
 
