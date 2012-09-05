@@ -5,6 +5,7 @@ var Promise = require("promised-io/promise").Promise;
 var fs = require('fs');
 var wrench = require('wrench');
 var _ = require('underscore');
+var git = require('../modules/git');
 
 var REPOSITORY_DIR = "./public/repositories/";
 
@@ -66,29 +67,19 @@ var Directory = {
 
         var repoDir = path.resolve(REPOSITORY_DIR, id);
 
-        var mkdir = new Command('mkdir -p ' + repoDir);
-        var init = new Command('git init', repoDir);
-        var config = new Command('git config user.email mikko.koski@aalto.fi');
-        var remote = new Command('git remote add origin ssh://dippa.github.com/' + owner + '/' + name + '.git', repoDir);
-        var pull = new Command('git pull');
-        var add = new Command('git add dippa.tex ref.bib', repoDir);
-        var commit = new Command('git commit -m FirstCommit', repoDir);
-        var push = new Command('git push -u origin master', repoDir);
-
-        // Commands
-        var initCmd, pushCmd;
         var templatePath = this.resolveTemplatePath(template);
+        var createDirectory = [new Command('mkdir -p ' + repoDir)];
+        var templateCommandsPromise = this.templateCommands(templatePath, repoDir);
+        var cloneCommand = [];
+        var pushCommand = [];
 
-        if(noGithub) {
-            initCmd = [mkdir];
-            pushCmd = [];
-        } else {
-            initCmd = [mkdir, init, config, remote, pull];
-            pushCmd = [add, commit, push];
+        if(!noGithub) {
+            cloneCommand = [git.clone(owner, name, repoDir)];
+            pushCommand = git.initialPush(repoDir);
         }
 
-        this.templateCommands(templatePath, repoDir).then(function(templateCmd) {
-            var commandsToRun = initCmd.concat(templateCmd, pushCmd);
+        templateCommandsPromise.then(function(templateCmd) {
+            var commandsToRun = createDirectory.concat(cloneCommand, templateCmd, pushCommand);
 
             commandline.runAll(commandsToRun).then(function() {
                 promise.resolve(repoDir);

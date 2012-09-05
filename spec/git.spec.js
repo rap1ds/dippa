@@ -29,8 +29,15 @@ describe('git.js', function() {
         it('push()', function() {
             var cmd = git.push('/users/mikko/dippa');
 
-            expect(cmd.origCmd).toEqual('git push');
+            expect(cmd.origCmd).toEqual('git push -u origin master');
             expect(cmd.cwd).toEqual('/users/mikko/dippa');
+        });
+
+        it('clone()', function() {
+            var cmd = git.clone('dippa', 'testdippa', '/Users/dippa/repoId1234');
+
+            expect(cmd.origCmd).toEqual('git clone ssh://dippa.github.com/dippa/testdippa.git .');
+            expect(cmd.cwd).toEqual('/Users/dippa/repoId1234');
         });
     });
 
@@ -51,7 +58,7 @@ describe('git.js', function() {
             expect(commands[1].origCmd).toEqual('git add ref.bib');
             expect(commands[2].origCmd).toEqual('git commit --all --message="Update"');
             expect(commands[3].origCmd).toEqual('git pull --rebase');
-            expect(commands[4].origCmd).toEqual('git push');
+            expect(commands[4].origCmd).toEqual('git push -u origin master');
 
             commands.forEach(function(command) {
                 expect(command.cwd).toEqual('/users/mikko/dippa');

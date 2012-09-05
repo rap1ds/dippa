@@ -4,6 +4,11 @@ var when = p.when;
 var Promise = p.Promise;
 var log = require('../modules/log');
 
+function logOutput(output) {
+    output = output || {};
+    log('[' + output.type + ']' + ' ' + output.output);
+}
+
 var CommandLine = {
 
     _splitCmd: function(cmd) {
@@ -51,6 +56,7 @@ var CommandLine = {
                 });
                 commandToRun.run();
             } else {
+                (allOutputs || []).forEach(logOutput);
                 promise.resolve(allOutputs);
             }
         }
@@ -150,6 +156,7 @@ CommandLine.Command = function(cmd, workingDir) {
 }
 
 CommandLine.Command.prototype.run = function() {
+    log("Running commend: " + this.origCmd + " in a working dir: " + this.cwd);
     CommandLine._run(this.promise, this.cmd, this.args, this.cwd);
 }
 

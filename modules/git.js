@@ -18,11 +18,25 @@ function commit(message, workingDir) {
 }
 
 function push(workingDir) {
-    return new Command('git push', workingDir);
+    return new Command('git push -u origin master', workingDir);
 }
 
 function pull(workingDir) {
     return new Command('git pull --rebase', workingDir);
+}
+
+function clone(user, repository, workingDir) {
+    return new Command('git clone ssh://dippa.github.com/' + user + '/' + repository + '.git .', workingDir);
+}
+
+function initialPush(workingDir) {
+    // TODO Consider running the commands
+    return [
+        add('dippa.tex', workingDir),
+        add('ref.bib', workingDir),
+        commit('Initialize', workingDir),
+        push(workingDir)
+    ];
 }
 
 function pushChanges(workingDir) {
@@ -40,5 +54,7 @@ module.exports = Object.freeze({
     commit: commit,
     push: push,
     pull: pull,
-    pushChanges: pushChanges
+    clone: clone,
+    pushChanges: pushChanges,
+    initialPush: initialPush
 });
