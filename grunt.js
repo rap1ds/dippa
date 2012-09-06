@@ -59,7 +59,7 @@ module.exports = function(grunt) {
             }
         });
     });
-
+    
     grunt.registerTask('backup-repositories', 'Backup repositories', function(dest) {
         if (arguments.length > 1) {
             grunt.log.error(this.name + ": Give max one argument, destination path");
@@ -67,7 +67,8 @@ module.exports = function(grunt) {
         }
 
         function createBackupFilename() {
-            return "backup_repositories_" + (new Date()).toISOString() + ".tar.gz";
+            var timestamp = (new Date()).toISOString().replace(/\:/g, '.'); // Linux can't handle ':'
+            return "backup_repositories_" + timestamp + ".tar.gz";
         }
 
         var dest = path.resolve(dest);
@@ -76,7 +77,7 @@ module.exports = function(grunt) {
         grunt.log.writeln('Backing up repositories from ' + repositoryPath + ' ' + dest);
 
         var backupFilename = createBackupFilename();
-        var cmd = 'tar zcvf ' + backupFilename + ' ' + repositoryPath;
+        var cmd = 'tar zcvf "' + backupFilename + '" "' + repositoryPath + '"';
         var cwd = path.resolve();
         var done = this.async();
 
@@ -85,6 +86,7 @@ module.exports = function(grunt) {
         require('child_process').exec(cmd, {cwd: cwd}, function (error, stdout, stderr) {
             if (error) {
                 grunt.log.writeln(stdout);
+                grunt.log.writeln(stderr);
                 grunt.log.error('Error creating tar.gz package');
                 done(false);
             } else {
