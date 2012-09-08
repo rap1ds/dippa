@@ -1,0 +1,12 @@
+*** Settings ***
+
+Documentation  Common variables
+Library        SeleniumLibrary
+
+
+*** Variables ***
+
+${SERVER}       localhost:5555
+${MAIN_PAGE}    http://${SERVER}/
+${BROWSER}      googlechrome
+${DELAY}        0

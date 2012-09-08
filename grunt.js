@@ -105,7 +105,43 @@ module.exports = function(grunt) {
                 done();
             }
         });
+    });
 
+    grunt.registerTask('create-repository', 'Create a new Github repository', function(repoName) {
+        var GitHubApi = require("github");
+        var done = this.async();
+
+        var github = new GitHubApi({
+            version: "3.0.0"
+        });
+
+        github.authenticate({
+            type: "basic",
+            username: "<user>",
+            password: "<password>"
+        });
+
+        github.repos.create({
+            name: repoName
+        }, function(err, newRepo) {
+            if(err) {
+                done(false);
+                return;
+            }
+
+            github.repos.addCollaborator({
+                user: 'rap1ds-testing',
+                repo: repoName,
+                collabuser: 'dippa'
+            }, function(err, res) {
+                if(err) {
+                    done(false);
+                    return;
+                }
+                grunt.log.writeln(newRepo.html_url);
+                done();
+            })
+        });
     });
 
     // Default task.

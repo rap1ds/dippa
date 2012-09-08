@@ -1,0 +1,92 @@
+*** Settings ***
+
+Library         OperatingSystem
+Resource        common_resource.txt
+Suite Teardown  Close Browser
+
+*** Keywords ***
+
+Open Browser To Main Page
+    Set Selenium Timeout  30
+    Open Browser  ${MAIN_PAGE}  ${BROWSER}
+    Title Should Be  Dippa editor
+
+Create New Demo
+    Open Browser To Main Page
+    Click Button  demo_button
+    Sleep  2s
+    ${DEMO_URL} =  Execute Javascript  window.document.location
+    [Return]  ${DEMO_URL}
+
+Set Text To Editor  [ARGUMENTS]  ${TEXT}
+    Execute Javascript  window.require('app/controller/editor').instance.setValue('${TEXT}');
+
+Get Text From Editor
+    ${EDITOR_VALUE} =  Execute Javascript  window.require('app/controller/editor').instance.getValue();
+    [Return]  ${EDITOR_VALUE}
+
+Wait For Saved
+    Wait For Condition  window.$('#save_button').text() === 'Saved!'
+
+Save
+    Click Button  save_button  don't wait
+    Wait For Saved
+
+Preview
+    Click Button  preview_button
+
+Editor Value Should Equal  [ARGUMENTS]  ${TEXT}
+    ${EDITOR_VALUE} =  Get Text From Editor
+    Should Be Equal As Strings  ${EDITOR_VALUE}  ${TEXT}
+
+Login To Github  [Arguments]  ${USERNAME}  ${PASSWORD}
+    Open Browser  http://www.github.com  ${BROWSER}
+
+Create Repository
+    ${REPO_NAME} =  Execute Javascript  'dippa_' + (new Date()).getTime()
+    Run  grunt create-repository:${REPO_NAME}
+    ${REPO_URL}  Set Variable  https://github.com/rap1ds-testing/${REPO_NAME}
+    [Return]  ${REPO_URL}
+
+Wait For Element Visible  [Arguments]  ${ID}
+    Wait For Condition  window.$('#${ID}').is(':visible')
+
+*** Test Cases ***
+
+# Open Demo
+#   ${DEMO_URL} =  Create New Demo
+#   Set Suite Variable  ${DEMO_URL}
+#
+#Update content and save
+#   Sleep  1s
+#   Set Text To Editor  This is the new text content
+#   Save
+#   Reload Page
+#   Editor Value Should Equal  This is the new text content
+
+# Preview
+#    Open Browser  http://localhost:5555/ee3W5qpLl  ${BROWSER}
+#    Sleep  1s
+#    Preview
+
+Open Dippa
+   Open Browser To Main Page
+   ${REPO_URL} =  Create Repository
+   Sleep  2s
+   Click Link  create_dippa  don't wait
+   Wait For Element Visible  step1_done
+   Click Link  step1_done  don't wait
+   Input Text  repository_url  ${REPO_URL}
+   Wait For Element Visible  step2_done
+   Click Link  step2_done  don't wait
+   Wait For Element Visible  step3_done
+   Click Link  step3_done  don't wait
+   Wait For Element Visible  step4_done
+   Click Link  step4_done
+
+Save Dippa
+   Sleep  3s
+   Set Text To Editor  This is the new text content
+   Save
+   Reload Page
+   Editor Value Should Equal  This is the new text content
