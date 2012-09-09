@@ -2,24 +2,33 @@
 
 Library         OperatingSystem
 Resource        common_resource.txt
-Suite Teardown  Close Browser
+Suite Setup     Test Suite Setup
+Suite Teardown  Test Suite Teardown
 
 *** Keywords ***
 
-Open Browser To Main Page
-    Set Selenium Timeout  30
+Test Suite Setup
+    Remove Directory  ${WORKSPACE}  recursive
+    Create Directory  ${WORKSPACE}
+    Set Selenium Timeout  15
     Open Browser  ${MAIN_PAGE}  ${BROWSER}
     Title Should Be  Dippa editor
 
+Test Suite Teardown
+    Close Browser
+
+Go To Main Page
+    Go To  ${MAIN_PAGE}
+    Title Should Be  Dippa editor
+
 Create New Demo
-    Open Browser To Main Page
     Click Button  demo_button
     Sleep  2s
     ${DEMO_URL} =  Execute Javascript  window.document.location
     [Return]  ${DEMO_URL}
 
 Set Text To Editor  [ARGUMENTS]  ${TEXT}
-    Execute Javascript  window.require('app/controller/editor').instance.setValue('${TEXT}');
+    Execute Javascript  window.require('app/controller/editor').instance.setValue(${TEXT});
 
 Get Text From Editor
     ${EDITOR_VALUE} =  Execute Javascript  window.require('app/controller/editor').instance.getValue();
@@ -39,10 +48,11 @@ Editor Value Should Equal  [ARGUMENTS]  ${TEXT}
     ${EDITOR_VALUE} =  Get Text From Editor
     Should Be Equal As Strings  ${EDITOR_VALUE}  ${TEXT}
 
-Login To Github  [Arguments]  ${USERNAME}  ${PASSWORD}
-    Open Browser  http://www.github.com  ${BROWSER}
+Editor Value Should Contain  [ARGUMENTS]  ${TEXT}
+    ${EDITOR_VALUE} =  Get Text From Editor
+    Should Contain  ${EDITOR_VALUE}  ${TEXT}
 
-Create Repository
+Create Github Repository
     ${REPO_NAME} =  Execute Javascript  'dippa_' + (new Date()).getTime()
     Run  grunt create-repository:${REPO_NAME}
     ${REPO_URL}  Set Variable  https://github.com/rap1ds-testing/${REPO_NAME}
@@ -51,42 +61,93 @@ Create Repository
 Wait For Element Visible  [Arguments]  ${ID}
     Wait For Condition  window.$('#${ID}').is(':visible')
 
+Click Link And Wait Element Visible  [Arguments]  ${BUTTON}  ${WAIT_ELEMENT}
+    Click Link  ${BUTTON}  don't wait
+    Wait For Element Visible  ${WAIT_ELEMENT}
+
+Click Create New Dippa
+    Click Link And Wait Element Visible  create_dippa  step1_done
+
+Click Step One Done
+    Click Link And Wait Element Visible  step1_done  step2_done
+
+Click Step Two Done
+    Click Link And Wait Element Visible  step2_done  step3_done
+
+Click Step Three Done
+    Click Link And Wait Element Visible  step3_done  step4_done
+
+Click Step Four Done
+    Click Link  step4_done
+
+Type Github Repository URL  [Arguments]  ${REPO_URL}
+    Input Text  repository_url  ${REPO_URL}
+
+Get Dippa Id
+    ${ID} =  Execute Javascript  window.location.pathname.split('/')[1]
+    [Return]  ${ID}
+
+Get PDF Url
+    ${ID} =  Get Dippa Id
+    ${PDF_URL}  Set Variable  http://${SERVER}/repositories/${ID}/dippa.pdf
+    [Return]  ${PDF_URL}
+
+Download File  [Arguments]  ${URL}
+    Run  wget -O ${WORKSPACE}/wget_download ${URL}
+    [Return]  ${WORKSPACE}/wget_download
+
+Get PDF Text Content  [Arguments]  ${PDF_FILE}
+    Run  pdftotext -enc UTF-8 ${PDF_FILE} ${WORKSPACE}/pdftotext_output.txt
+    ${TEXT_CONTENT}  Get File  ${WORKSPACE}/pdftotext_output.txt
+    [Return]  ${TEXT_CONTENT}
+
+Get Fixture File  [Arguments]  ${FILE}
+    ${FIXTURE_FILE}  Set Variable  ${FIXTURES}/${FILE}
+    ${FILE_CONTENT}  Get File  ${FIXTURE_FILE}
+    [Return]  ${FILE_CONTENT}
+
+Download Preview PDF File
+    ${PDF_URL}  Get PDF Url
+    ${DOWNLOADED_FILE}  Download File  ${PDF_URL}
+    [Return]  ${DOWNLOADED_FILE}
+
+Should PDF Contain  [Arguments]  ${PDF_FILE}  ${EXPECTED_TEXT}
+    ${PDF_TEXT}  Get PDF Text Content  ${PDF_FILE}
+    Should Contain  ${PDF_TEXT}  ${EXPECTED_TEXT}
+
 *** Test Cases ***
 
-# Open Demo
-#   ${DEMO_URL} =  Create New Demo
-#   Set Suite Variable  ${DEMO_URL}
-#
-#Update content and save
-#   Sleep  1s
-#   Set Text To Editor  This is the new text content
-#   Save
-#   Reload Page
-#   Editor Value Should Equal  This is the new text content
+Open Demo
+    ${DEMO_URL} =  Create New Demo
+    Set Suite Variable  ${DEMO_URL}
 
-# Preview
-#    Open Browser  http://localhost:5555/ee3W5qpLl  ${BROWSER}
-#    Sleep  1s
-#    Preview
-
-Open Dippa
-   Open Browser To Main Page
-   ${REPO_URL} =  Create Repository
-   Sleep  2s
-   Click Link  create_dippa  don't wait
-   Wait For Element Visible  step1_done
-   Click Link  step1_done  don't wait
-   Input Text  repository_url  ${REPO_URL}
-   Wait For Element Visible  step2_done
-   Click Link  step2_done  don't wait
-   Wait For Element Visible  step3_done
-   Click Link  step3_done  don't wait
-   Wait For Element Visible  step4_done
-   Click Link  step4_done
+Create Dippa
+    Go To Main Page
+    ${REPO_URL}  Create Github Repository
+    Set Suite Variable  ${REPO_URL}
+    Sleep  1s
+    Click Create New Dippa
+    Click Step One Done
+    Type Github Repository URL  ${REPO_URL}
+    Click Step Two Done
+    Click Step Three Done
+    Click Step Four Done
 
 Save Dippa
-   Sleep  3s
-   Set Text To Editor  This is the new text content
-   Save
-   Reload Page
-   Editor Value Should Equal  This is the new text content
+    Sleep  1s
+    ${SAMPLE_JS_CONTENT} =  Get Fixture File  sample_dippa_content.js.tex
+    Set Text To Editor  ${SAMPLE_JS_CONTENT}
+    Save
+    Reload Page
+    Editor Value Should Contain  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+PDF Preview
+    Sleep  1s
+    ${PDF_FILE}  Download Preview PDF File
+    Should PDF Contain  ${PDF_FILE}  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+Save To Github
+    Sleep  5s
+    Run  git clone ${REPO_URL} ${WORKSPACE}/github_repository
+    ${DIPPA_TEX}  Get File  ${WORKSPACE}/github_repository/dippa.tex
+    Should Contain  ${DIPPA_TEX}  Lorem ipsum dolor sit amet, consectetur adipiscing elit.

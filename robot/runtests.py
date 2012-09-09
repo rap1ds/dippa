@@ -25,9 +25,9 @@ except ImportError:
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 def run_tests(args):
-    start_selenium_server()
+    # start_selenium_server()
     call(['pybot'] + args, shell=(os.sep == '\\'))
-    stop_selenium_server()
+    # stop_selenium_server()
 
 def start_selenium_server():
     logfile = open(os.path.join(ROOT, 'selenium_log.txt'), 'w')

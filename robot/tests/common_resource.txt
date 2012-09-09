@@ -10,3 +10,5 @@ ${SERVER}       localhost:5555
 ${MAIN_PAGE}    http://${SERVER}/
 ${BROWSER}      googlechrome
 ${DELAY}        0
+${FIXTURES}     fixtures
+${WORKSPACE}    workspace
