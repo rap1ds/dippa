@@ -107,7 +107,7 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.registerTask('create-repository', 'Create a new Github repository', function(repoName) {
+    grunt.registerTask('create-repository', 'Create a new Github repository', function(repoName, username, password) {
         var GitHubApi = require("github");
         var done = this.async();
 
@@ -117,8 +117,8 @@ module.exports = function(grunt) {
 
         github.authenticate({
             type: "basic",
-            username: "<user>",
-            password: "<password>"
+            username: username,
+            password: password
         });
 
         github.repos.create({

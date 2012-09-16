@@ -2,19 +2,19 @@
 
 Library         OperatingSystem
 Resource        common_resource.txt
-Suite Setup     Test Suite Setup
-Suite Teardown  Test Suite Teardown
+Test Setup      Test Case Setup
+Test Teardown   Test Case Teardown
 
 *** Keywords ***
 
-Test Suite Setup
+Test Case Setup
     Remove Directory  ${WORKSPACE}  recursive
     Create Directory  ${WORKSPACE}
     Set Selenium Timeout  15
     Open Browser  ${MAIN_PAGE}  ${BROWSER}
     Title Should Be  Dippa editor
 
-Test Suite Teardown
+Test Case Teardown
     Close Browser
 
 Go To Main Page
@@ -54,7 +54,7 @@ Editor Value Should Contain  [ARGUMENTS]  ${TEXT}
 
 Create Github Repository
     ${REPO_NAME} =  Execute Javascript  'dippa_' + (new Date()).getTime()
-    Run  grunt create-repository:${REPO_NAME}
+    Run  grunt create-repository:${REPO_NAME}:${GITHUB_USERNAME}:${GITHUB_PASSWORD}
     ${REPO_URL}  Set Variable  https://github.com/rap1ds-testing/${REPO_NAME}
     [Return]  ${REPO_URL}
 
@@ -115,8 +115,6 @@ Should PDF Contain  [Arguments]  ${PDF_FILE}  ${EXPECTED_TEXT}
     ${PDF_TEXT}  Get PDF Text Content  ${PDF_FILE}
     Should Contain  ${PDF_TEXT}  ${EXPECTED_TEXT}
 
-*** Test Cases ***
-
 Open Demo
     ${DEMO_URL} =  Create New Demo
     Set Suite Variable  ${DEMO_URL}
@@ -151,3 +149,16 @@ Save To Github
     Run  git clone ${REPO_URL} ${WORKSPACE}/github_repository
     ${DIPPA_TEX}  Get File  ${WORKSPACE}/github_repository/dippa.tex
     Should Contain  ${DIPPA_TEX}  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+*** Test Cases ***
+
+Test Demo
+    Open Demo
+    Save Dippa
+    PDF Preview
+
+Test Github  [Tags]  github
+    Create Dippa
+    Save Dippa
+    PDF Preview
+    Save To Github
