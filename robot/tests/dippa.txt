@@ -137,6 +137,7 @@ Save Dippa
     Set Text To Editor  ${SAMPLE_JS_CONTENT}
     Save
     Reload Page
+    Sleep  2s
     Editor Value Should Contain  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 PDF Preview
