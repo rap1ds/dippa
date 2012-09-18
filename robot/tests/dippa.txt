@@ -115,6 +115,12 @@ Should PDF Contain  [Arguments]  ${PDF_FILE}  ${EXPECTED_TEXT}
     ${PDF_TEXT}  Get PDF Text Content  ${PDF_FILE}
     Should Contain  ${PDF_TEXT}  ${EXPECTED_TEXT}
 
+Should Save Button Be Enabled
+    Wait For Condition  !(window.$('#save_button').attr('disabled'))
+
+Should Save Button Be Disabled
+    Wait For Condition  !!(window.$('#save_button').attr('disabled'))
+
 Open Demo
     ${DEMO_URL} =  Create New Demo
     Set Suite Variable  ${DEMO_URL}
@@ -151,15 +157,30 @@ Save To Github
     ${DIPPA_TEX}  Get File  ${WORKSPACE}/github_repository/dippa.tex
     Should Contain  ${DIPPA_TEX}  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
+Change To References Tab
+    Click Element  tab_ref  don't wait
+    Sleep  1s
+
+Test Save Enable
+    Should Save Button Be Disabled
+    Set Text To Editor  "Jee Jee"
+    Should Save Button Be Enabled
+    Save
+    Should Save Button Be Disabled
+    Change To References Tab
+    Should Save Button Be Disabled
+
 *** Test Cases ***
 
 Test Demo
     Open Demo
     Save Dippa
     PDF Preview
+    # Test Save Enable
 
 Test Github  [Tags]  github
     Create Dippa
     Save Dippa
     PDF Preview
     Save To Github
+    # Test Save Enable
