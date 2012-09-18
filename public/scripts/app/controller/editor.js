@@ -41,7 +41,6 @@ define(['require'
             });
 
             this.session.on('change', this.proxy(function() {
-                debugger;
                 Spine.trigger('change');
                 this.setChanged(true);
             }));

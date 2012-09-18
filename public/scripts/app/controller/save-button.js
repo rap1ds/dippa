@@ -4,11 +4,10 @@ define(['require'
     , 'spine/spine'
     , 'app/controller/editor'
     , 'app/controller/preview-button'
-    , 'app/session'],
+    , 'app/session'
+    , 'app/module/ajax'],
 
-    function(require, $, _, Spine, Editor, PreviewButton, session) {
-
-        debugger;
+    function(require, $, _, Spine, Editor, PreviewButton, session, ajax) {
 
         "use strict";
 
@@ -118,25 +117,17 @@ define(['require'
 
                 var value = JSON.stringify({documentContent: editor.docContent.value, referencesContent: editor.refContent.value});
 
-                $.ajax({
-                    type: "POST",
-                    url: 'save/' + session.sessionId,
-                    dataType: 'json',
-                    contentType: 'application/json',
-                    data: value,
-                    processData: false,
-                    complete: this.proxy(function(response) {
-                        this.stateComplete();
-                        PreviewButton.instance.buttonReset();
-                        editor.setChanged(false);
-                    }),
-                    success: this.proxy(function(response) {
-                        var $console = $('#console');
-                        $console.empty();
-                        $.each(response, function(key, value) {
-                            $console.append('<span>' + value.output + '</span><br />');
-                        });
-                    })
+                var controller = this;
+
+                ajax.save(session.sessionId, value).done(function(response) {
+                    controller.stateComplete();
+                    PreviewButton.instance.buttonReset();
+                    editor.setChanged(false);
+                    var $console = $('#console');
+                    $console.empty();
+                    $.each(response, function(key, value) {
+                        $console.append('<span>' + value.output + '</span><br />');
+                    });
                 });
             }
         });
