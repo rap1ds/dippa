@@ -5,9 +5,10 @@ define(['require'
     , 'app/controller/editor'
     , 'app/controller/preview-button'
     , 'app/session'
-    , 'app/module/ajax'],
+    , 'app/module/ajax'
+    , 'app/module/datamanager'],
 
-    function(require, $, _, Spine, Editor, PreviewButton, session, ajax) {
+    function(require, $, _, Spine, Editor, PreviewButton, session, ajax, datamanager) {
 
         "use strict";
 
@@ -97,38 +98,7 @@ define(['require'
             },
 
             save: function() {
-                var $saveButton = $(this);
-                var $previewButton = $('#preview_button');
-
-                this.stateSaving();
-                PreviewButton.instance.buttonLoading();
-
-                $('#console').empty();
-                $('#console').append('<span>Saving and compiling document</span><br />');
-                $('#console').append('<span></span><br />');
-                $('#console').append('<span>Please wait a moment...</span><br />');
-
-                this.sendRequest();
-            },
-
-            sendRequest: function() {
-                var editor = require('app/controller/editor').instance;
-                editor.updateContent();
-
-                var value = JSON.stringify({documentContent: editor.docContent.value, referencesContent: editor.refContent.value});
-
-                var controller = this;
-
-                ajax.save(session.sessionId, value).done(function(response) {
-                    controller.stateComplete();
-                    PreviewButton.instance.buttonReset();
-                    editor.setChanged(false);
-                    var $console = $('#console');
-                    $console.empty();
-                    $.each(response, function(key, value) {
-                        $console.append('<span>' + value.output + '</span><br />');
-                    });
-                });
+                datamanager.save();
             }
         });
 

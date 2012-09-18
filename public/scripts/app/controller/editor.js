@@ -35,8 +35,8 @@ define(['require'
                     sender: 'editor'
                 },
                 exec: function(env, args, request) {
-                    var saveButton = require('app/controller/save-button').instance;
-                    saveButton.save();
+                    var datamanager = require('app/module/datamanager');
+                    datamanager.save();
                 }
             });
 
