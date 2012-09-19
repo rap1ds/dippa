@@ -10,6 +10,7 @@ define(['jquery'
     , 'app/basepath'
     , 'app/session'
     , 'app/controller/editor'
+    , 'app/module/datamanager'
     , 'app/controller/preview-button'
     , 'bootstrap-buttons'
     , 'bootstrap-transition'
@@ -26,7 +27,8 @@ define(['jquery'
         , File
         , basepath
         , session
-        , Editor) {
+        , Editor
+        , datamanager) {
 
         console.log('Defining module app/app.js');
 
@@ -40,6 +42,7 @@ define(['jquery'
 
                 // Initialize sub editors
                 Editor.instance.initializeEditor();
+                Editor.instance.onChange(datamanager.setEditorContent);
             },
 
             load: function() {
@@ -56,7 +59,17 @@ define(['jquery'
                         file.loadFromServer(session.sessionId);
                         editor.changeType('doc');
                         editor.setChanged(false);
-                        Spine.trigger('initialLoading');
+
+                        var document = require('app/module/document');
+                        document.setDocumentContent(content.documentContent);
+                        document.setReferenceContent(content.referencesContent);
+                        document.flush();
+
+                        var saveButton = require('app/controller/save-button').instance;
+                        saveButton.stateDisable();
+
+
+                        // Spine.trigger('initialLoading');
 
                         $('#fileupload').fileupload({
                             autoUpload: true,

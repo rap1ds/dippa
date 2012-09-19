@@ -1,5 +1,7 @@
-define(['require', 'jquery', 'app/module/ajax', 'app/session', 'app/module/console'], function(require, $, ajax, session) {
+define(['require', 'jquery', 'app/module/ajax', 'app/session', 'app/module/console', 'app/module/document'], function(require, $, ajax, session) {
     "use strict";
+
+    var activeDocument = 'document'; // values: document, references
 
     function getEditorContent() {
         var editor = require('app/controller/editor').instance;
@@ -61,6 +63,32 @@ define(['require', 'jquery', 'app/module/ajax', 'app/session', 'app/module/conso
         setSaveButtonToCompleteState();
         setEditorChangedToFalse();
         setResponseToConsole(response);
+        var document = require('app/module/document');
+        document.flush();
+    }
+
+    function updateSaveButton(changed) {
+        var saveButton = require('app/controller/save-button').instance;
+
+        if(changed) {
+            saveButton.stateEnable();
+        } else {
+            saveButton.stateDisable();
+        }
+    }
+
+    function setEditorContent(value) {
+        var document = require('app/module/document');
+
+        if (activeDocument === 'document') {
+            document.setDocumentContent(value);
+        }
+
+        if(activeDocument === 'references') {
+            document.setReferenceContent(value);
+        }
+
+        updateSaveButton(document.hasChanged());
     }
 
     function save() {
@@ -76,7 +104,15 @@ define(['require', 'jquery', 'app/module/ajax', 'app/session', 'app/module/conso
     }
 
     var exports = Object.freeze({
-        save: save
+        save: save,
+        setEditorContent: setEditorContent,
+        setActiveDocument: function(value) {
+            if(value !== 'document' && value !== 'references') {
+                throw 'Illegal active document value ' + value;
+            }
+
+            activeDocument = value;
+        }
     });
 
     return exports;

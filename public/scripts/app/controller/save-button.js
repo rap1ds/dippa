@@ -23,7 +23,7 @@ define(['require'
             },
 
             init: function() {
-                Spine.bind('change', this.proxy(this.documentChanged));
+                // Spine.bind('change', this.proxy(this.documentChanged));
                 Spine.bind('initialLoading', this.proxy(this.initialLoading));
             },
 
