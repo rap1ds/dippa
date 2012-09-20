@@ -121,6 +121,11 @@ Should Save Button Be Enabled
 Should Save Button Be Disabled
     Wait For Condition  !!(window.$('#save_button').attr('disabled'))
 
+Should Page Be Reloadable
+    Reload Page
+    Sleep  2s
+
+
 Open Demo
     ${DEMO_URL} =  Create New Demo
     Set Suite Variable  ${DEMO_URL}
@@ -169,6 +174,8 @@ Test Save Enable
     Should Save Button Be Disabled
     Change To References Tab
     Should Save Button Be Disabled
+    Should Page Be Reloadable
+    Should Save Button Be Disabled
 
 *** Test Cases ***
 
@@ -176,11 +183,11 @@ Test Demo
     Open Demo
     Save Dippa
     PDF Preview
-    # Test Save Enable
+    Test Save Enable
 
 Test Github  [Tags]  github
     Create Dippa
     Save Dippa
     PDF Preview
     Save To Github
-    # Test Save Enable
+    Test Save Enable
