@@ -3,13 +3,6 @@ define(['require', 'jquery', 'app/module/ajax', 'app/session', 'app/module/conso
 
     var activeDocument = 'document'; // values: document, references
 
-    function getEditorContent() {
-        var editor = require('app/controller/editor').instance;
-        editor.updateContent();
-
-        return JSON.stringify({documentContent: editor.docContent.value, referencesContent: editor.refContent.value});
-    }
-
     function setEditorChangedToFalse() {
         var editor = require('app/controller/editor').instance;
         editor.setChanged(false);
@@ -75,6 +68,15 @@ define(['require', 'jquery', 'app/module/ajax', 'app/session', 'app/module/conso
         } else {
             saveButton.stateDisable();
         }
+    }
+
+    function getEditorContent() {
+        var document = require('app/module/document');
+
+        return JSON.stringify({
+            documentContent: document.getDocumentContent(),
+            referencesContent: document.getReferenceContent()
+        });
     }
 
     function setEditorContent(value) {
