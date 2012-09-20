@@ -1,10 +1,11 @@
-define(['jquery', 'spine/spine', 'handlebars', 'app/controller/editor'], function($, Spine, Handlebars, Editor) {
+define(['require'], function(require) {
 
     console.log('app/controller/window.js');
 
     window.onbeforeunload = function (e) {
+        var document = require('app/module/document');
 
-        if(!Editor.instance.hasChanged()) {
+        if(!document.hasChanged()) {
             return;
         }
 
