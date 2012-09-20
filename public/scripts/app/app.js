@@ -53,23 +53,18 @@ define(['jquery'
                         var editor = Editor.instance;
                         var file = File.class;
 
-                        editor.docContent = new Content({type: 'doc', value: content.documentContent});
-                        editor.refContent = new Content({type: 'ref', value: content.referencesContent});
-
                         file.loadFromServer(session.sessionId);
-                        editor.changeType('doc');
-                        editor.setChanged(false);
 
                         var document = require('app/module/document');
                         document.setDocumentContent(content.documentContent);
                         document.setReferenceContent(content.referencesContent);
                         document.flush();
 
+                        datamanager.setActiveDocument('document');
+                        editor.setValue(document.getDocumentContent());
+
                         var saveButton = require('app/controller/save-button').instance;
                         saveButton.stateDisable();
-
-
-                        // Spine.trigger('initialLoading');
 
                         $('#fileupload').fileupload({
                             autoUpload: true,

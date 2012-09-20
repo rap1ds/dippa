@@ -72,43 +72,8 @@ define(['require'
                 return this.changed;
             },
 
-            changeType: function(type) {
-                if(type === 'doc') {
-                    this.setContent(this.docContent);
-                } else if (type === 'ref') {
-                    this.setContent(this.refContent);
-                } else {
-                    throw "Illegal type " + type;
-                }
-            },
-
             gotoLine: function(lineNumber) {
                 this.editor.gotoLine(lineNumber);
-            },
-
-            setContent: function(newContent) {
-                if(this.content === newContent) {
-                    return;
-                }
-
-                // Update value
-                this.updateContent();
-                this.content = newContent;
-                this.setValue(this.content.value);
-
-                // Set cursor
-                if(this.content.cursor) {
-                    this.setCursorPosition(this.content.cursor);
-                }
-            },
-
-            updateContent: function() {
-                if(!this.content) {
-                    return;
-                }
-
-                this.content.value = this.getValue();
-                this.content.cursor = this.getCursorPosition();
             },
 
             setCursorPosition: function(pos) {

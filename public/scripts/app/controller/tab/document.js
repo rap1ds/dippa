@@ -8,7 +8,6 @@ define(['require', 'app/controller/tab/tab', 'app/controller/editor'], function(
         click: function() {
             var datamanager = require('app/module/datamanager');
             datamanager.setActiveDocument('document');
-            Editor.instance.changeType('doc');
             this.stack.controllerStack.doc.active();
             this.stack.doc.active();
         }

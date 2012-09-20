@@ -93,6 +93,25 @@ define(['require', 'jquery', 'app/module/ajax', 'app/session', 'app/module/conso
         updateSaveButton(document.hasChanged());
     }
 
+    function setActiveDocument(value) {
+        if(value !== 'document' && value !== 'references') {
+            throw 'Illegal active document value ' + value;
+        }
+
+        activeDocument = value;
+
+        var document = require('app/module/document');
+        var editor = require('app/controller/editor').instance;
+
+        if (activeDocument === 'document') {
+            editor.setValue(document.getDocumentContent());
+        }
+
+        if(activeDocument === 'references') {
+            editor.setValue(document.getReferenceContent());
+        }
+    }
+
     function save() {
         beforeSave();
 
@@ -108,13 +127,7 @@ define(['require', 'jquery', 'app/module/ajax', 'app/session', 'app/module/conso
     var exports = Object.freeze({
         save: save,
         setEditorContent: setEditorContent,
-        setActiveDocument: function(value) {
-            if(value !== 'document' && value !== 'references') {
-                throw 'Illegal active document value ' + value;
-            }
-
-            activeDocument = value;
-        }
+        setActiveDocument: setActiveDocument
     });
 
     return exports;
