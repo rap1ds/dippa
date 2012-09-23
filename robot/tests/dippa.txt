@@ -142,10 +142,13 @@ Create Dippa
     Click Step Three Done
     Click Step Four Done
 
-Save Dippa
-    Sleep  1s
+Set Fixture Text To Editor
     ${SAMPLE_JS_CONTENT} =  Get Fixture File  sample_dippa_content.js.tex
     Set Text To Editor  ${SAMPLE_JS_CONTENT}
+
+Save Dippa
+    Sleep  1s
+    Set Fixture Text To Editor
     Save
     Reload Page
     Sleep  2s
@@ -162,6 +165,10 @@ Save To Github
     ${DIPPA_TEX}  Get File  ${WORKSPACE}/github_repository/dippa.tex
     Should Contain  ${DIPPA_TEX}  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
+Change To Document Tab
+    Click Element  tab_doc  don't wait
+    Sleep  1s
+
 Change To References Tab
     Click Element  tab_ref  don't wait
     Sleep  1s
@@ -176,6 +183,30 @@ Test Save Enable
     Should Save Button Be Disabled
     Should Page Be Reloadable
     Should Save Button Be Disabled
+    Set Fixture Text To Editor
+    Save
+
+Should Cursor Be In Line  [Arguments]  ${LINE_NUMBER}
+    ${CURRENT_CURSOR_POSITION} =  Get Cursor Position
+    Should Be Equal As Integers  ${CURRENT_CURSOR_POSITION}  ${LINE_NUMBER}
+
+Set Cursor Position To  [Arguments]  ${LINE_NUMBER}
+    Execute Javascript  window.require('app/controller/editor').instance.setCursorPosition({column: 0, row: ${LINE_NUMBER}});
+    Should Cursor Be In Line  ${LINE_NUMBER}
+
+Get Cursor Position
+    ${POSITION} =  Execute Javascript  window.require('app/controller/editor').instance.getCursorPosition().row;
+    [Return]  ${POSITION}
+
+Test Cursor Position
+    Change To Document Tab
+    Set Cursor Position To  12
+    Change To References Tab
+    Set Cursor Position To  3
+    Change To Document Tab
+    Should Cursor Be In Line  12
+    Change To References Tab
+    Should Cursor Be In Line  3
 
 *** Test Cases ***
 
@@ -184,6 +215,7 @@ Test Demo
     Save Dippa
     PDF Preview
     Test Save Enable
+    Test Cursor Position
 
 Test Github  [Tags]  github
     Create Dippa
@@ -191,3 +223,4 @@ Test Github  [Tags]  github
     PDF Preview
     Save To Github
     Test Save Enable
+    Test Cursor Position
