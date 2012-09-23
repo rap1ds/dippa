@@ -56,6 +56,12 @@ define(['require'
                 }.bind(this));
             },
 
+            onCursorChange: function(callback) {
+                this.session.selection.on('changeCursor', function(e) {
+                    callback(this.editor.getCursorPosition());
+                }.bind(this));
+            },
+
             getValue: function() {
                 return this.session.getValue();
             },

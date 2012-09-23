@@ -1,4 +1,13 @@
-define(['require', 'jquery', 'app/module/ajax', 'app/session', 'app/module/console', 'app/module/document'], function(require, $, ajax, session) {
+define(['require'
+    , 'jquery'
+    , 'app/module/ajax'
+    , 'app/session'
+    , 'app/module/console'
+    , 'app/module/document'
+    , 'app/module/cursor'],
+
+    function(require, $, ajax, session, console, document, cursor) {
+
     "use strict";
 
     var activeDocument = 'document'; // values: document, references
@@ -79,6 +88,18 @@ define(['require', 'jquery', 'app/module/ajax', 'app/session', 'app/module/conso
         });
     }
 
+    function onEditorCursorChange(value) {
+        var cursor = require('app/module/cursor');
+
+        if (activeDocument === 'document') {
+            cursor.setDocumentCursorPosition(value);
+        }
+
+        if(activeDocument === 'references') {
+            cursor.setReferenceCursorPosition(value);
+        }
+    }
+
     function setEditorContent(value) {
         var document = require('app/module/document');
 
@@ -100,15 +121,20 @@ define(['require', 'jquery', 'app/module/ajax', 'app/session', 'app/module/conso
 
         activeDocument = value;
 
+        var cursor = require('app/module/cursor');
         var document = require('app/module/document');
         var editor = require('app/controller/editor').instance;
 
         if (activeDocument === 'document') {
+            var documentCursorPos = cursor.getDocumentCursorPosition();
             editor.setValue(document.getDocumentContent());
+            editor.setCursorPosition(documentCursorPos);
         }
 
         if(activeDocument === 'references') {
+            var referenceCursorPos = cursor.getReferenceCursorPosition();
             editor.setValue(document.getReferenceContent());
+            editor.setCursorPosition(referenceCursorPos);
         }
     }
 
@@ -127,8 +153,10 @@ define(['require', 'jquery', 'app/module/ajax', 'app/session', 'app/module/conso
     var exports = Object.freeze({
         save: save,
         setEditorContent: setEditorContent,
-        setActiveDocument: setActiveDocument
+        setActiveDocument: setActiveDocument,
+        onEditorCursorChange: onEditorCursorChange
     });
 
     return exports;
-});
+}
+);
