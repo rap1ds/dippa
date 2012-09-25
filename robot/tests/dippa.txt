@@ -38,8 +38,11 @@ Wait For Saved
     Wait For Condition  window.$('#save_button').text() === 'Saved!'
 
 Save
-    Click Button  save_button  don't wait
+    Save Without Waiting
     Wait For Saved
+
+Save Without Waiting
+    Click Button  save_button  don't wait
 
 Preview
     Click Button  preview_button
@@ -176,6 +179,12 @@ Change To References Tab
 Test Save Enable
     Should Save Button Be Disabled
     Set Text To Editor  "Jee Jee"
+    Should Save Button Be Enabled
+    Save Without Waiting
+    Should Save Button Be Disabled
+    Set Text To Editor  "Jee Jee Jee"
+    Should Save Button Be Disabled
+    Wait For Saved
     Should Save Button Be Enabled
     Save
     Should Save Button Be Disabled
