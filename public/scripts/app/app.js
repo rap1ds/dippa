@@ -64,8 +64,8 @@ define(['jquery'
                         datamanager.setActiveDocument('document');
                         editor.setValue(document.getDocumentContent());
 
-                        var saveButton = require('app/controller/save-button').instance;
-                        saveButton.stateDisable();
+                        var saveButton = require('app/controller/save-button');
+                        saveButton.setChanged(false);
 
                         $('#fileupload').fileupload({
                             autoUpload: true,

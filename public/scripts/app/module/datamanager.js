@@ -23,8 +23,8 @@ define(['require'
         }
 
         function setSaveButtonToSavingState() {
-            var saveButton = require('app/controller/save-button').instance;
-            saveButton.stateSaving();
+            var saveButton = require('app/controller/save-button');
+            saveButton.startSaving();
         }
 
         function prepareConsoleToSaving() {
@@ -41,8 +41,8 @@ define(['require'
         }
 
         function setSaveButtonToCompleteState() {
-            var saveButton = require('app/controller/save-button').instance;
-            saveButton.stateComplete();
+            var saveButton = require('app/controller/save-button');
+            saveButton.endSaving();
         }
 
         function setResponseToConsole(response) {
@@ -81,13 +81,9 @@ define(['require'
         }
 
         function updateSaveButton(changed) {
-            var saveButton = require('app/controller/save-button').instance;
+            var saveButton = require('app/controller/save-button');
 
-            if(changed) {
-                saveButton.stateEnable();
-            } else {
-                saveButton.stateDisable();
-            }
+            saveButton.setChanged(changed);
         }
 
         function updateSaveButtonState() {

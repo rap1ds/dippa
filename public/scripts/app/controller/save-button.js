@@ -1,113 +1,93 @@
 define(['require'
     , 'jquery'
     , 'underscore'
-    , 'spine/spine'
-    , 'app/controller/editor'
-    , 'app/controller/preview-button'
-    , 'app/session'
-    , 'app/module/ajax'
-    , 'app/module/datamanager'
-    , 'app/module/document'],
+    , 'app/module/datamanager'],
 
-    function(require, $, _, Spine, Editor, PreviewButton, session, ajax, datamanager, document) {
+    function(require, $, _, datamanager) {
 
         "use strict";
 
-        console.log('app/utils/save-button.js');
-
-        var SaveButton = Spine.Controller.sub({
-            el: $('#save_button'),
-            state: "disabled",
-
-            events: {
-                'click': 'save'
-            },
-
-            init: function() {
-                // Spine.bind('change', this.proxy(this.documentChanged));
-                Spine.bind('initialLoading', this.proxy(this.initialLoading));
-            },
-
-            initialLoading: function() {
-                this.initialLoadingDone = true;
-                this.stateDisable();
-            },
-
-            documentChanged: function() {
-                this.changed = true;
-                if(this.initialLoadingDone && this.state === "disabled") {
-                    this.stateEnable();
-                }
-            },
-
-            /**
-             * Enables button. This happens when document is changed
-             */
-            stateEnable: function() {
-                this.state = "enabled";
-                this.changed = false;
-                this.el.button('enable');
-
-                // Enable button
-                this.enabled = true;
-                this.el.removeClass('disabled');
-                this.el.removeAttr('disabled');
-            },
-
-            /**
-             * Resets buttons state to the default (disabled) state
-             */
-            stateDisable: function() {
-                this.state = "disabled";
-                this.el.button('reset');
-                this.disableButton();
-            },
-
-            /**
-             * Changes text to saving text
-             */
-            stateSaving: function() {
-                this.changed = false;
-                this.state = "saving";
-                this.el.button('saving');
-                this.disableButton();
-            },
-
-            /**
-             * Changes text to "complete" for some seconds
-             */
-            stateComplete: function(timeout) {
-                var document = require('app/module/document');
-
-                this.state = "complete";
-                timeout = timeout || 1000;
-
-                this.el.button('complete');
-                this.disableButton();
-
-                _.delay(function() {
-                    if(document.hasChanged()) {
-                        this.stateEnable();
-                    } else {
-                        this.stateDisable();
-                    }
-                }.bind(this), timeout);
-            },
-
-            disableButton: function() {
-                this.enabled = false;
-                this.el.addClass('disabled');
-                this.el.attr('disabled', 'disabled');
-            },
-
-            save: function() {
-                datamanager.save();
-            }
+        $('#save_button').click(function() {
+            var datamanager = require('app/module/datamanager');
+            datamanager.save();
         });
 
-        return {
-            class: SaveButton,
-            instance: new SaveButton
+        var savingState = (function() {
+            var clbk = _.identity;
+            var isSaving = false;
+
+            return Object.freeze({
+                setSaving: function(newSavingStatus) {
+                    debugger;
+                    newSavingStatus = !!newSavingStatus;
+                    if(isSaving === newSavingStatus) {
+                        // Nothing changed
+                        return;
+                    }
+
+                    isSaving = newSavingStatus;
+
+                    if(!isSaving) {
+                        clbk();
+                        clbk = _.identity;
+                    }
+                },
+                run: function(fn) {
+                    if(!isSaving) {
+                        // Run immediately, if not saving
+                        fn();
+                    } else {
+                        // Run when saving complete
+                        clbk = fn;
+                    }
+                }
+            });
+        })();
+
+        function disable(el) {
+            el.addClass('disabled');
+            el.attr('disabled', 'disabled');
         }
 
+        function enable(el) {
+            el.removeClass('disabled');
+            el.removeAttr('disabled');
+        }
+
+        function startSaving(el) {
+            el.button('saving');
+            disable(el);
+
+            savingState.setSaving(true);
+        }
+
+        function endSaving(el) {
+            el.button('complete');
+            disable(el);
+
+            _.delay(function() {
+                el.button('reset');
+                savingState.setSaving(false);
+            }, 3000);
+        }
+
+        function setChanged(el, changed) {
+            if(changed) {
+                savingState.run(enable.bind(null, el));
+            } else {
+                savingState.run(disable.bind(null, el));
+            }
+        }
+
+        var exports = (function() {
+            var $button = $('#save_button');
+
+            return Object.freeze({
+                startSaving: startSaving.bind(null, $button),
+                endSaving: endSaving.bind(null, $button),
+                setChanged: setChanged.bind(null, $button)
+            });
+        })();
+
+        return exports;
     });
