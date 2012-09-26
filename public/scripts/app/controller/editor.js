@@ -62,6 +62,10 @@ define(['require'
                 }.bind(this));
             },
 
+            getSession: function() {
+                return this.session;
+            },
+
             getValue: function() {
                 return this.session.getValue();
             },

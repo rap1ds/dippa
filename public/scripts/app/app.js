@@ -42,11 +42,11 @@ define(['jquery'
 
                 // Initialize sub editors
                 Editor.instance.initializeEditor();
-                Editor.instance.onChange(datamanager.setEditorContent);
                 Editor.instance.onCursorChange(datamanager.onEditorCursorChange);
             },
 
             load: function() {
+                datamanager.load();
                 $.ajax({
                     url: 'load/' + session.sessionId,
                     dataType: 'json',

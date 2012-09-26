@@ -6,9 +6,10 @@ define(['require'
     , 'app/controller/preview-button'
     , 'app/session'
     , 'app/module/ajax'
-    , 'app/module/datamanager'],
+    , 'app/module/datamanager'
+    , 'app/module/document'],
 
-    function(require, $, _, Spine, Editor, PreviewButton, session, ajax, datamanager) {
+    function(require, $, _, Spine, Editor, PreviewButton, session, ajax, datamanager, document) {
 
         "use strict";
 
@@ -76,6 +77,8 @@ define(['require'
              * Changes text to "complete" for some seconds
              */
             stateComplete: function(timeout) {
+                var document = require('app/module/document');
+
                 this.state = "complete";
                 timeout = timeout || 1000;
 
@@ -83,7 +86,7 @@ define(['require'
                 this.disableButton();
 
                 _.delay(function() {
-                    if(this.changed) {
+                    if(document.hasChanged()) {
                         this.stateEnable();
                     } else {
                         this.stateDisable();

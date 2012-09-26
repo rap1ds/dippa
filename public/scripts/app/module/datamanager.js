@@ -55,9 +55,15 @@ define(['require'
         }
 
         function beforeSave() {
+            var document = require('app/module/document');
+            document.flush();
+
             setPreviewButtonToSavingState();
             setSaveButtonToSavingState();
             prepareConsoleToSaving();
+
+            var editor = require('app/controller/editor').instance;
+            editor.getSession().removeListener('change', updateSaveButtonState);
         }
 
         function afterSave(response) {
@@ -65,8 +71,13 @@ define(['require'
             setSaveButtonToCompleteState();
             setEditorChangedToFalse();
             setResponseToConsole(response);
+
+            var editor = require('app/controller/editor').instance;
+            editor.getSession().on('change', updateSaveButtonState);
+
             var document = require('app/module/document');
-            document.flush();
+
+            updateSaveButton(document.hasChanged());
         }
 
         function updateSaveButton(changed) {
@@ -77,6 +88,12 @@ define(['require'
             } else {
                 saveButton.stateDisable();
             }
+        }
+
+        function updateSaveButtonState() {
+            var document = require('app/module/document');
+
+            updateSaveButton(document.hasChanged());
         }
 
         function getEditorContent() {
@@ -100,8 +117,11 @@ define(['require'
             }
         }
 
-        function setEditorContent(value) {
+        function updateDocumentContent(value) {
             var document = require('app/module/document');
+
+            var editor = require('app/controller/editor').instance;
+            var value = editor.getValue();
 
             if (activeDocument === 'document') {
                 document.setDocumentContent(value);
@@ -110,8 +130,6 @@ define(['require'
             if(activeDocument === 'references') {
                 document.setReferenceContent(value);
             }
-
-            updateSaveButton(document.hasChanged());
         }
 
         function setActiveDocument(value) {
@@ -150,9 +168,17 @@ define(['require'
             return deferred;
         }
 
+        function load() {
+            // Implement
+            var editor = require('app/controller/editor').instance;
+
+            editor.getSession().on('change', updateDocumentContent);
+            editor.getSession().on('change', updateSaveButtonState);
+        }
+
         var exports = Object.freeze({
+            load: load,
             save: save,
-            setEditorContent: setEditorContent,
             setActiveDocument: setActiveDocument,
             onEditorCursorChange: onEditorCursorChange
         });
