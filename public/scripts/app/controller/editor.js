@@ -2,9 +2,10 @@ console.log('Loading file app/controller/editor.js');
 
 define(['require'
     , 'spine/spine'
-    , 'app/controller/outline'],
+    , 'app/controller/outline'
+    , 'app/module/tex-analyzer'],
 
-    function(require, Spine, Outline, SaveButton) {
+    function(require, Spine, Outline) {
 
         "use strict";
 
@@ -45,7 +46,9 @@ define(['require'
                     this.setChanged(true);
                 }));
 
-                this.session.on('outline', function(outline) {
+                this.session.on('parsed', function(parsed) {
+                    var texAnalyzer = require('app/module/tex-analyzer');
+                    var outline = texAnalyzer.outline(parsed);
                     Outline.update(outline);
                 });
             },

@@ -55,8 +55,8 @@ oop.inherits(Mode, TextMode);
             var worker = new WorkerClient(["ace"], "ace/mode/latex_worker", "LatexWorker");
             worker.attachToDocument(session.getDocument());
 
-            worker.on("outline", function(e) {
-                session._emit("outline", e.data);
+            worker.on("parsed", function(e) {
+                session._emit("parsed", e.data);
             });
 
             return worker;
