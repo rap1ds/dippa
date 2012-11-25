@@ -54,8 +54,10 @@
 							<li id="tab_files"><a href="#">Files</a></li>
 							<li id="tab_out"><a href="#">Output</a></li>
 						</ul>
+                        
 						<button id="save_button" class="btn btn-danger editor_buttons" data-complete-text="Saved!" data-enable-text="Save" data-saving-text="saving document...">Save</button>
 						<button id="preview_button" class="btn btn-info editor_buttons" data-loading-text="Preview">Preview</button>
+                        <button id="spellcheck_button" class="btn btn-inverse editor_buttons">Enable spellchecking</button>
 					</div>
 				</div>
 			</div>
@@ -292,9 +294,10 @@
 	<a class="section" style="margin-left: {{indent}}" href="#"><span class="section-title">{{title}}</span></a>
 </script>
 
+<script src="scripts/typo.js"></script>
 <script src="scripts/ace/ace-unmin.js" type="text/javascript" charset="utf-8"></script>
-<script src="scripts/ace/mode-latex.js" type="text/javascript" charset="utf-8"></script>
 <script data-main="scripts/main.js" src="scripts/require-jquery.js"></script>
+<script src="scripts/ace/mode-latex.js" type="text/javascript" charset="utf-8"></script>
 
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script> -->
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script> -->

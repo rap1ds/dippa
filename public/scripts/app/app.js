@@ -14,6 +14,7 @@ define(['jquery'
     , 'app/controller/preview-button'
     , 'bootstrap-buttons'
     , 'bootstrap-transition'
+    , 'bootstrap-dropdown'
     , 'app/controller/outline'
     , 'jquery.fileupload'
     ],

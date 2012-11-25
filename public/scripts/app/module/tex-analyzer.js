@@ -11,8 +11,6 @@ define(['underscore'], function(underscore) {
             "subsubsubsection"
         ];
 
-        debugger;
-
         var minLevel = null;
 
         return _.chain(parsed.elements)

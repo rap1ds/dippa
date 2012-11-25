@@ -34,18 +34,19 @@ body, html {
 
 #save_button {
     margin: 6px 40px 6px 0px;
-    float: right;
-}
-
-#preview_button {
-    margin: 6px 10px 6px 0px;
-    float: right;
+    
 }
 
 .editor_buttons {
     display: none;
+    float: right;
+    margin: 6px 10px 6px 0px;
 }
 
 #outline_list > li {
     word-wrap: break-word;
+}
+
+.ace_misspell {
+    border-bottom: 1px dashed red;
 }

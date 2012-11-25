@@ -13,6 +13,9 @@ require.config({
         'handlebars': {
             exports: 'Handlebars'
         },
+	'typo': {
+	    exports: 'Typo'
+	},
         'jquery.iframe-transport': ['jquery'],
         'jquery.fileupload': ['jquery'],
         'jquery.fileupload-ui': ['jquery'],
