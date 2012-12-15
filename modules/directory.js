@@ -43,7 +43,8 @@ var Directory = {
     templatesAvailable: [
         'basic-essay',
         'aalto-university-publication-series',
-        'aalto'
+        'aalto',
+        'aalto-thesis'
     ],
 
     profiles: {

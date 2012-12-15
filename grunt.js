@@ -130,7 +130,7 @@ module.exports = function(grunt) {
             }
 
             github.repos.addCollaborator({
-                user: 'rap1ds-testing',
+                user: username,
                 repo: repoName,
                 collabuser: 'dippa'
             }, function(err, res) {

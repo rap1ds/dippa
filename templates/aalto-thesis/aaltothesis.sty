@@ -1,0 +1,655 @@
+%%
+%% LaTeX document style `aaltothesis', for use with LaTeX2e.
+%% This is a style for typesetting theses to be submitted for
+%% examination to Aalto University School of Electrical Engineering,
+%% which may be extended for use in other Aalto schools as well.
+%%
+%% COPYRIGHT 2012, by Luis R.J. Costa, luis.costa@aalto.fi
+%%
+%% Copying of part or all of any file in the aaltothesis.sty package is
+%% allowed under the following conditions only:
+%% (1) You may freely distribute unchanged copies of the files. Please
+%%     include the documentation (opinnaytetexpohja.tex) when you do 
+%%     so.
+%% (2) You may modify a renamed copy of any file, but only for personal
+%%     use or use within an organization.
+%% (3) You may copy fragments from the files, for personal use or for
+%%     use in a macro package for distribution, as long as credit is
+%%     given where credit is due.
+%%
+%% You are NOT ALLOWED to take money for the distribution or use of
+%% these files or modified versions or fragments thereof, except for a
+%% nominal charge for copying etc.
+%%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{aaltothesis}[2012/03/20 Version 1.6]
+\RequirePackage{ifthen}
+\RequirePackage{calc}
+\RequirePackage{color}
+\RequirePackage[latin1]{inputenc}% For scands in both Finnish and English docs
+\newboolean{English}
+\newboolean{Finnish}
+\DeclareOption{english}{\setboolean{English}{true}\setboolean{Finnish}{false}}
+\DeclareOption{finnish}{\setboolean{Finnish}{true}\setboolean{English}{false}}
+\newboolean{CHEM}
+\newboolean{BIZ}
+\newboolean{ELEC}
+\newboolean{ENG}
+\newboolean{SCI}
+\newboolean{ARTS}
+\DeclareOption{chem}{\setboolean{CHEM}{true}\setboolean{BIZ}{false}%
+  \setboolean{ELEC}{false}\setboolean{ENG}{false}%
+  \setboolean{SCI}{false}\setboolean{ARTS}{false}%
+}
+\DeclareOption{econ}{\setboolean{CHEM}{false}\setboolean{BIZ}{true}%
+  \setboolean{ELEC}{false}\setboolean{ENG}{false}%
+  \setboolean{SCI}{false}\setboolean{ARTS}{false}%
+}
+\DeclareOption{elec}{\setboolean{CHEM}{false}\setboolean{BIZ}{false}%
+  \setboolean{ELEC}{true}\setboolean{ENG}{false}%
+  \setboolean{SCI}{false}\setboolean{ARTS}{false}%
+}
+\DeclareOption{eng}{\setboolean{CHEM}{false}\setboolean{BIZ}{false}%
+  \setboolean{ELEC}{false}\setboolean{ENG}{true}%
+  \setboolean{SCI}{false}\setboolean{ARTS}{false}%
+}
+\DeclareOption{sci}{\setboolean{CHEM}{false}\setboolean{BIZ}{false}%
+  \setboolean{ELEC}{false}\setboolean{ENG}{false}%
+  \setboolean{SCI}{true}\setboolean{ARTS}{false}%
+}
+\DeclareOption{arts}{\setboolean{CHEM}{false}\setboolean{BIZ}{false}%
+  \setboolean{ELEC}{false}\setboolean{ENG}{false}%
+  \setboolean{SCI}{false}\setboolean{ARTS}{true}%
+}
+\ExecuteOptions{english}
+\ProcessOptions
+%
+\ifthenelse{\boolean{Finnish}}{%
+  \RequirePackage[finnish]{babel}%
+  \RequirePackage[T1]{fontenc}%
+%  \RequirePackage{cmlgc} % For mac users, uncomment this line
+}{}%
+%% Set up the logo
+%% Note that BIZ and ARTS still (2012-08-17) 
+%% use old logos as the aaltologo-package
+%% is not up-to-date. Hence there are calls to ECON and TAIK pic routines. 
+\ifthenelse{\boolean{CHEM}}{%
+  \RequirePackage[CHEM,Uncoated]{aaltologo}%
+}{%
+  \ifthenelse{\boolean{BIZ}}{%
+    \RequirePackage[ECON,Uncoated]{aaltologo}%
+  }{%
+    \ifthenelse{\boolean{ELEC}}{%
+      \RequirePackage[ELEC,Uncoated]{aaltologo}%
+    }{%
+      \ifthenelse{\boolean{ENG}}{%
+        \RequirePackage[ENG,Uncoated]{aaltologo}%
+      }{%
+        \ifthenelse{\boolean{SCI}}{%
+          \RequirePackage[SCI,Uncoated]{aaltologo}%
+        }{%
+          \ifthenelse{\boolean{ARTS}}{% 
+            \RequirePackage[TAIK,Uncoated]{aaltologo}%
+          }{%
+            \RequirePackage[Uncoated]{aaltologo}
+          }%
+}}}}}%
+%
+\newcommand*{\IfEnglish}[2]{\ifthenelse{\boolean{English}}{#1}{#2}}%
+\newcommand*{\IfFinnish}[2]{\ifthenelse{\boolean{Finnish}}{#1}{#2}}%
+%
+%%%%%%% Float control
+\renewcommand{\floatpagefraction}{0.1}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.9}
+%
+%%%%%%% Storage of number of pages and number of abstracts
+\newcounter{NMainPages}%
+\newcounter{NInitPages}%
+\newcounter{Abstracts} % count the number of abstracts
+\newcounter{NAbstracts} % store the number of abstracts counted
+\newcommand*{\storeinipagenumber}{%
+\immediate\write\@auxout{\string\setcounter{NInitPages}{\arabic{page}-1}}%
+}%
+\AtEndDocument{%
+\immediate\write\@auxout{\string\setcounter{NMainPages}{\thepage}}%
+\immediate\write\@auxout{\string\setcounter{NAbstracts}{\arabic{Abstracts}}}%
+}%
+%
+%%%%%%% Default fonts: Computer Modern (LC 9.3.2012)
+% This is required to overwite any fonts set elsewhere. The package 
+% aaltologo.sty sets \rmdefault to newcent, \ttdefault to txtt.
+\renewcommand{\rmdefault}{cmr}
+\renewcommand{\ttdefault}{cmtt}
+\renewcommand{\sfdefault}{cmss}
+%
+%
+%%%%%% Set up the university and school name (LC 20.3.2012)
+%% Define the necessary variables \unive@rsity, \yli@pist@, \sch@@l,
+%% and \korke@koulu. They can be explicitly set by the user via the
+%% macros \university and \school defined below.
+%
+\newcommand*{\univ@rsity}{aalto university}%
+\newcommand*{\yli@pist@}{aalto-yliopisto}%
+\newcommand*{\sch@@l}{}\newcommand*{\korke@koulu}{}% variables
+\ifthenelse{\boolean{CHEM}}{%
+\renewcommand*{\sch@@l}{School of Chemical Technology}%
+\renewcommand*{\korke@koulu}{Kemian tekniikan korkeakoulu}%
+}{}%
+\ifthenelse{\boolean{BIZ}}{%
+\renewcommand*{\sch@@l}{School of Business}%
+\renewcommand*{\korke@koulu}{Kauppakorkeakoulu}%
+}{}%
+\ifthenelse{\boolean{ELEC}}{%
+\renewcommand*{\sch@@l}{School of Electrical Engineering}%
+\renewcommand*{\korke@koulu}{S\"ahkotekniikan korkeakoulu}%
+}{}%
+\ifthenelse{\boolean{ENG}}{%
+\renewcommand*{\sch@@l}{School of Engineering}%
+\renewcommand*{\korke@koulu}{Insin\"o\"oritieteiden korkeakoulu}%
+}{}%
+\ifthenelse{\boolean{SCI}}{%
+\renewcommand*{\sch@@l}{School of Science}%
+\renewcommand*{\korke@koulu}{Perustieteiden korkeakoulu}%
+}{}%
+\ifthenelse{\boolean{ARTS}}{%
+\renewcommand*{\sch@@l}{School of Arts, Design and Architecture}%
+\renewcommand*{\korke@koulu}{Taiteiden ja suunnittelun korkeakoulu}%
+}{}%
+%
+%%%%%% Interface commands: parameters specified by user (+ necessary variables)
+%% First the straightforward ones:
+%% starting with the simplest ones
+%
+\newcommand*{\@uth@r}{}% variable
+\renewcommand*{\author}[1]{\renewcommand*{\@uth@r}{#1}}% User command
+%
+\newcommand*{\D@te}{}% variable
+\renewcommand*{\date}[1]{\renewcommand*{\D@te}{#1}}% User command
+%
+\newcommand*{\pl@ce}{}% variable
+\newcommand*{\place}[1]{\renewcommand{\pl@ce}{#1}}% User command
+%
+\newcommand*{\dateandplace}{\pl@ce{} \D@te{}}% Internal macro
+%
+\newcommand*{\Cod@}{}% variable
+\newcommand*{\code}[1]{\renewcommand{\Cod@}{#1}}% User command
+%
+% The following must be stored in BOTH English and Finnish
+% in case the abstract is required in both languages
+%
+\newcommand*{\pr@fshp}{}\newcommand*{\pr@fsuuri}{}% variables
+\newcommand*{\professorship}[2]{% User command for M.Sc. and Lic. only
+ \renewcommand*{\pr@fshp}{#1}%
+ \renewcommand*{\pr@fsuuri}{#2}%
+}%
+%
+% the appropriate variable must be returned for the cover page and abstracts
+\newcommand{\th@stitl@}{}\newcommand{\ty@nnimi}{}%  variables
+\newcommand{\thesistitle}[2]{% User command
+ \renewcommand{\th@stitl@}{#1}%
+ \renewcommand{\ty@nnimi}{#2}%
+}%
+\newcommand{\Th@sistitle}[1]{% internal macro
+ \ifthenelse{\equal{#1}{english}}{\th@stitl@}{% For the abstract: #1 specified
+ \ifthenelse{\equal{#1}{finnish}}{\ty@nnimi}{% For the abstract: #1 specified
+ \IfEnglish{\th@stitl@}{\ty@nnimi}% For the coverpage: #1 not specified
+ }}%
+}%
+%
+%
+\newcommand*{\university}[2]{% User command
+ \renewcommand*{\univ@rsity}{#1}%
+ \renewcommand*{\yli@pist@}{#2}%
+}%
+\newcommand*{\Univ@rsity}[1]{% internal macro
+ \ifthenelse{\equal{#1}{english}}{\MakeLowercase{\univ@rsity}}{% for the abstract
+ \ifthenelse{\equal{#1}{finnish}}{\MakeLowercase{\yli@pist@}}{% for the abstract
+ \IfEnglish{\univ@rsity}{\yli@pist@}% for the cover page
+ }}%
+}%
+%
+\newcommand*{\school}[2]{% User command
+ \renewcommand*{\sch@@l}{#1}%
+ \renewcommand*{\korke@koulu}{#2}%
+}%
+\newcommand*{\Sch@@l}[1]{% internal macro
+ \ifthenelse{\equal{#1}{english}}{\MakeLowercase{\sch@@l}}{% for the abstract
+ \ifthenelse{\equal{#1}{finnish}}{\MakeLowercase{\korke@koulu}}{% for the abstract
+ \IfEnglish{\sch@@l}{\korke@koulu}% for the cover page
+ }}%
+}%
+%
+\newcommand*{\dep@rtment}{}\newcommand*{\l@itos}{}% variables
+\newcommand*{\department}[2]{% User command
+ \renewcommand*{\dep@rtment}{#1}%
+ \renewcommand*{\l@itos}{#2}%
+}%
+\newcommand*{\Dep@rtment}[1]{% internal macro
+ \ifthenelse{\equal{#1}{english}}{\dep@rtment}{% for the abstract
+ \ifthenelse{\equal{#1}{finnish}}{\l@itos}{% for the abstract
+ \IfEnglish{\dep@rtment}{\l@itos}% for the cover page
+ }}%
+}%
+%
+\newcommand*{\d@gpr@g}{}\newcommand*{\tutk@hj}{}% variables
+\newcommand*{\degreeprogram}[2]{% User command
+ \renewcommand*{\d@gpr@g}{#1}%
+ \renewcommand*{\tutk@hj}{#2}%
+}%
+%
+\newcommand*{\D@gr@@Prog}[1]{% internal macro
+ \ifthenelse{\equal{#1}{english}}{\d@gpr@g}{% for the abstract
+ \ifthenelse{\equal{#1}{finnish}}{\tutk@hj}{% for the abstract
+ }}%
+}%
+%
+\newcommand*{\sup@rvis@r}{}\newcommand*{\v@lv@j@}{}% variables
+\newcommand*{\supervisor}[2]{% User command
+ \renewcommand*{\sup@rvis@r}{#1}%
+ \renewcommand*{\v@lv@j@}{#2}%
+}%
+\newcommand*{\Sup@rvisor}[1]{% internal macro
+ \ifthenelse{\equal{#1}{english}}{\sup@rvis@r}{% For abstract page
+ \ifthenelse{\equal{#1}{finnish}}{\v@lv@j@}{% For abstract page
+ \IfEnglish{\sup@rvis@r}{\v@lv@j@}% For cover page
+ }}%
+}%
+%
+% Then come the more complex macros:
+% First some boolean flags
+\newboolean{BSc}%
+\setboolean{BSc}{false}%
+\newboolean{MSc}%
+\setboolean{MSc}{false}%
+\newboolean{Lic}%
+\setboolean{Lic}{false}%
+\newcommand*{\univdegree}[1]{% User command
+ \ifthenelse{\equal{#1}{BSc}}{%
+  \setboolean{BSc}{true}\setboolean{MSc}{false}\setboolean{Lic}{false}%
+  \settowidth{\absheadleneng}{BACHELOR'S THESIS}%
+  \settowidth{\absheadlenfin}{KANDIDAATINTYON}%
+ }{%
+ \ifthenelse{\equal{#1}{MSc}}{%
+  \setboolean{BSc}{false}\setboolean{MSc}{true}\setboolean{Lic}{false}%
+  \settowidth{\absheadleneng}{MASTER'S THESIS}%
+  \settowidth{\absheadlenfin}{DIPLOMITYON}%
+ }{%
+ \ifthenelse{\equal{#1}{Lic}}{%
+  \setboolean{BSc}{false}\setboolean{MSc}{false}\setboolean{Lic}{true}%
+  \settowidth{\absheadleneng}{LICENTIATE'S THESIS}%
+  \settowidth{\absheadlenfin}{LISENSIAATINTUTKIMUKSEN}%
+ }{%
+  \PackageError{aaltothesis}%
+	       {Only BSc, MSc or Lic is allowed as parameter for degree.}%
+	       {Use BSc, MSc or Lic.}%
+ }}}%
+}%
+%
+\newcounter{instructors}%
+\newcommand*{\instr@ct@rA}{}\newcommand*{\ohj@@j@A}{}%
+\newcommand*{\instr@ct@rB}{}\newcommand*{\ohj@@j@B}{}%
+\newcommand*{\instructor}[2]{% User command
+ \stepcounter{instructors}%
+ \ifthenelse{\value{instructors}=1}{%
+  \renewcommand*{\instr@ct@rA}{#1}%
+  \renewcommand*{\ohj@@j@A}{#2}%
+ }{%
+  \renewcommand*{\instr@ct@rB}{#1}%
+  \renewcommand*{\ohj@@j@B}{#2}%
+ }%
+}%
+\newcommand*{\Instruct@r}[2]{% internal macro
+ \ifthenelse{\equal{#1}{1}}{% One instructor
+  \ifthenelse{\equal{#2}{english}}{\instr@ct@rA}{% For abstract page
+  \ifthenelse{\equal{#2}{finnish}}{\ohj@@j@A}{% For abstract page
+  \IfEnglish{\instr@ct@rA}{\ohj@@j@A}% For cover page
+  }}%
+ }{\ifthenelse{\equal{#1}{2}}{% Two instructors
+  \ifthenelse{\equal{#2}{english}}{\instr@ct@rB}{% For abstract page
+  \ifthenelse{\equal{#2}{finnish}}{\ohj@@j@B}{% For abstract page
+  \IfEnglish{\instr@ct@rB}{\ohj@@j@B}% For cover page
+  }}}{\PackageError{aaltothesis}{Something is terribly wrong.}{Dig the code.}}%
+ }%
+}%
+%%
+%% Internal macros
+%%
+%
+\newcommand*{\L@ng}[1]{% internal macro: set the language flag
+ \ifthenelse{\equal{#1}{english}}{\IfEnglish{English}{Finnish}}{%
+ \ifthenelse{\equal{#1}{finnish}}{\IfFinnish{Suomi}{Englanti}}{}}%
+}%
+% The else branch has been deliberately left unused in the following
+%
+\newcommand*{\coversupervisorname}{%
+ \ifthenelse{\equal{\sup@rvis@r}{\instr@ct@rA}}% same supervisor & instructor
+  {\setcounter{instructors}{0}%
+   \IfEnglish{Thesis supervisor and advisor:}{}%
+   \IfFinnish{\ifthenelse{\boolean{BSc}}%
+    {Vastuuopettaja ja ohjaaja:}{Ty\"on valvoja ja ohjaaja:}}{}%
+  }{%
+   \IfEnglish{Thesis supervisor:}{}%
+   \IfFinnish{\ifthenelse{\boolean{BSc}}%
+     {Vastuuopettaja:}{Ty\"on valvoja:}}{}%
+  }%
+}%
+%
+\newcommand*{\coverinstructorname}{%
+ \ifthenelse{\value{instructors}=0}{}{%
+ \ifthenelse{\value{instructors}=1}{%
+   \IfEnglish{Thesis advisor:}{}%
+   \IfFinnish{Ty\"on ohjaaja:}{}%
+ }{\ifthenelse{\value{instructors}>1}{%
+   \IfEnglish{Thesis advisors:}{}%
+   \IfFinnish{Ty\"on ohjaajat:}{}%
+ }}}%
+}%
+%
+\newcommand{\covertext}{%
+ \IfEnglish{%
+  \ifthenelse{\boolean{BSc}}{Bachelor's thesis}{}%
+  \ifthenelse{\boolean{MSc}}%
+   {Thesis submitted for examination for the degree of %
+    Master of Science in Technology.}{}%
+  \ifthenelse{\boolean{Lic}}%
+   {Thesis submitted for examination for the degree of %
+    Licentiate of Science in Technology.}{}%
+ }{}%
+ \IfFinnish{%
+  \ifthenelse{\boolean{BSc}}{Kandidaatinty\"o}{}%
+  \ifthenelse{\boolean{MSc}}%
+   {Diplomity\"o, joka on j\"atetty opinn\"aytteen\"a tarkastettavaksi %
+    diplomi-insin\"o\"orin tutkintoa varten Espoossa \D@te{}.}{}%
+  \ifthenelse{\boolean{Lic}}%
+  {Lisensiaatintutkimus, joka on j\"atetty opinn\"aytteen\"a tarkastettavaksi %
+   tekniikan lisensiaatin tutkintoa varten Espoossa \D@te{}.}{}%
+ }{}%
+}%
+%
+% user interface for logo used on the cover page
+\newcommand*{\@@ltologo}{}%
+\newcommand{\uselogo}[2]{%
+ \renewcommand*{\@@ltologo}{\AaltoLogoSmall{1}{#2}{#1}}
+}%
+%
+%%%% Do the cover page layout
+\pagenumbering{roman}%
+\newlength{\coverpageindent}%
+\setlength{\coverpageindent}{10mm}%
+\newlength{\coverindent}
+\setlength{\coverindent}{5cm}
+\newcommand{\makecoverpage}{%
+ \pagestyle{empty}%
+ \noindent% Position the author
+ \hspace*{\coverpageindent}%
+ \parbox{0.75\textwidth-\coverpageindent}{\textbf{\@uth@r}}\par%
+ \vspace{6mm}%
+ \noindent% Position the title
+ \hspace*{\coverpageindent}%
+ \parbox[t][120pt]{0.75\textwidth-\coverpageindent}{\raggedright%
+  \usefont{T1}{phv}{b}{n}\fontsize{15}{15}\selectfont{\Th@sistitle{}}}\par%
+ \vspace{20mm}
+ \noindent%
+ \hspace*{\coverpageindent}%
+ \parbox{0.75\textwidth-\coverpageindent}{\raggedright\small%
+  {\usefont{T1}{phv}{b}{n}\fontsize{9}{11.1}%
+   \selectfont{\textcolor{black}{\Sch@@l{}}}}\\[1em]% Position the school
+  \covertext% Position the degree-work text
+ }\par%
+ \vspace{1ex}%
+ \noindent%
+ \hspace*{\coverpageindent}%
+ \parbox{0.75\textwidth-\coverpageindent}{%
+  \raggedright%
+  \small%
+  \ifthenelse{\boolean{BSc}\or\boolean{English}}{\dateandplace{}\par}{}%
+  \vspace{23mm}%
+  \noindent%
+  \textbf{\coversupervisorname}\par%
+  \vspace{1em}%
+  \hspace{\coverindent}\Sup@rvisor{}\par%
+  \ifthenelse{\value{instructors}>0}{%
+   \vspace{2em}%
+   \noindent%
+   \textbf{\coverinstructorname}\par%
+   \vspace{1em}%
+   \hspace{\coverindent}\Instruct@r{1}{}%
+  }{}%
+  \ifthenelse{\value{instructors}>1}{%
+   \par%
+   \vspace{4em}%
+   \hspace{\coverindent}\Instruct@r{2}{}%
+  }{}%
+ }%
+ \vfill%
+ \noindent%
+ \hspace{\coverpageindent}%
+ \@@ltologo{}%
+ \cleardoublepage%
+ \pagestyle{myheadings}%
+}%
+%
+%%%%%% Abstract stuff begins here %%%%%%
+\newlength{\absheadleneng} % Sets width of 2nd column of eng. abstract header
+\newlength{\absheadlenfin} % Sets width of 2nd column of fin. abstract header
+\newlength{\abstractwidth}%
+\AtBeginDocument{\setlength{\abstractwidth}{\textwidth-\columnsep}}%
+\newlength{\rowsep}%
+\setlength{\rowsep}{-\columnsep}%
+\newlength{\keywdparheight}%
+\setlength{\keywdparheight}{3\baselineskip}%
+\newlength{\absheadlen}%
+\newlength{\auxwidth}%
+%
+\newcommand*{\absbreak}{\\\\[\rowsep]\hline\\[\rowsep]}%
+\newcommand{\absbox}[2]{\parbox[t][#1]{\abstractwidth}{#2}\absbreak}%
+%
+\newcommand{\absfield}[3][]{%
+ \settowidth{\auxwidth}{#2: }%
+ \parbox[t][#1]{\auxwidth}{#2: }%
+ \parbox[t][#1]{\abstractwidth-\auxwidth-\columnsep}{#3}%
+}%
+%
+%% Abstract field names in English
+\newcommand*{\authorname}{Author}%
+\newcommand*{\thesisname}{Title}%
+\newcommand*{\keywordsname}{Keywords}%
+\newcommand*{\datename}{Date}%
+\newcommand*{\langname}{Language}%
+\newcommand*{\nofpgsname}{Number of pages}%
+\newcommand*{\supervisorname}{%
+\ifthenelse{\value{instructors}=0}{Supervisor and instructor}{Supervisor}%
+}%
+\newcommand*{\instructorname}{%
+\ifthenelse{\value{instructors}=0}{}{}%
+\ifthenelse{\value{instructors}=1}{Advisor}{}%
+\ifthenelse{\value{instructors}>1}{Advisors}{}%
+}%
+\newcommand*{\degprogramname}{Degree programme}%
+\newcommand*{\professorshipname}{Professorship}%
+\newcommand*{\codename}{Code}%
+%\renewcommand*{\abstractname}{Abstract}
+\newcommand*{\absheadeng}{%
+ \ifthenelse{\boolean{BSc}}{abstract of the bachelor's thesis}{}%
+ \ifthenelse{\boolean{MSc}}{abstract of the master's thesis}{}%
+ \ifthenelse{\boolean{Lic}}{abstract of the licentiate's thesis}{}%
+}%
+%% Abstract field names in Finnish
+%\newcommand*{\tiedekuntaname}{Tiedekunta}%
+\newcommand*{\tekijaname}{Tekij\"a}%
+\newcommand*{\tyoname}{Ty\"on nimi}%
+\newcommand*{\avainsanatname}{Avainsanat}%
+\newcommand*{\paivamaaraname}{P\"aiv\"am\"a\"ar\"a}%
+\newcommand*{\kieliname}{Kieli}%
+\newcommand*{\sivumaaraname}{Sivum\"a\"ar\"a}%
+\newcommand*{\valvojaname}{\ifthenelse{\boolean{BSc}}{Vastuuopettaja}{%
+\ifthenelse{\value{instructors}=0}{Valvoja ja ohjaaja}{Valvoja}}%
+}%
+\newcommand*{\ohjaajaname}{%
+ \ifthenelse{\value{instructors}=0}{}{}%
+ \ifthenelse{\value{instructors}=1}{Ohjaaja}{}%
+ \ifthenelse{\value{instructors}>1}{Ohjaajat}{}%
+}%
+\newcommand*{\tutkohjname}{Tutkinto-ohjelma}%
+\newcommand*{\professuuriname}{Professuuri}%
+\newcommand*{\koodiname}{Koodi}%
+\newcommand*{\tiivistelmaname}{Tiivistelm\"a}%
+\newcommand*{\absheadfin}{%
+ \ifthenelse{\boolean{BSc}}{kandidaatinty\"on tiivistelm\"a}{}%
+ \ifthenelse{\boolean{MSc}}{diplomity\"on tiivistelm\"a}{}%
+ \ifthenelse{\boolean{Lic}}{lisensiaatintutkimuksen tiivistelm\"a}{}%
+}%
+%% Variables that will take either the English or Finnish values
+%\newcommand*{\F@cltn@me}{}%
+\newcommand*{\Authn@me}{}%
+\newcommand*{\Thssn@me}{}%
+\newcommand*{\Kwdn@me}{}%
+\newcommand*{\Dtn@me}{}%
+\newcommand*{\L@ngn@me}{}%
+\newcommand*{\Npgsn@me}{}%
+\newcommand*{\Sprvsrn@me}{}%
+\newcommand*{\Instrn@me}{}%
+\newcommand*{\DgPrgn@me}{}%
+\newcommand*{\Prfspn@me}{}%
+\newcommand*{\Cdn@me}{}%
+\newcommand*{\Th@sstitl@}{}%
+\newcommand*{\@bsthe@der}{}%
+\newcommand*{\tocabslang}{}%
+%
+\newcommand{\settocabslang}{% Sets value of \tocabslang, the extra text that
+% goes into the toc when there are more abstracts than one.
+% The value of \tocabslang has to be set explicitly since it is used in
+% \addcontentsline in the abstractpage environment; it may not contain any 
+% \ifthenelse commands. Making \tocabslang decide with an \ifthenelse results
+% in an error since it is part of the argument of \addcontentsline
+\ifthenelse{\value{NAbstracts}>1}{%
+\IfEnglish{\renewcommand*{\tocabslang}{(in Finnish)}}{%
+\IfFinnish{\renewcommand*{\tocabslang}{(englanniksi)}}{}}%
+}{}%
+}%
+%
+\newcommand{\Author}[1]{\absfield{\Authn@me}{#1}\vfill}%
+\newcommand{\Thesisname}[1]{\absfield{\Thssn@me}{\raggedright#1}\vfill}%
+% \newcommand{\KeyWords}[2][15mm]{\absfield[#1]{\keywordname}{#2}\\\hline}
+\newcommand*{\k@yw@rds}{}%
+\newcommand{\keywords}[1]{\renewcommand*{\k@yw@rds}{#1}}%
+%
+%% \phantomsection is the command used by hyperref to set a bookmark to 
+%% starred sections so that links have the right target, e.g. in a toc.
+%% \phantomsection is a dummy command without the hyperref package.
+\AtBeginDocument{\providecommand*{\phantomsection}{}}%
+%
+%%%% The abstract page layout
+\newenvironment{abstractpage}[1][english]{%
+ \stepcounter{Abstracts}%
+ \phantomsection%
+ \settocabslang%
+ \ifthenelse{\equal{#1}{english}}{%
+  \renewcommand*{\Authn@me}{\authorname}%
+  \renewcommand*{\Thssn@me}{\thesisname}%
+  \renewcommand*{\Kwdn@me}{\keywordsname}%
+  \renewcommand*{\Dtn@me}{\datename}%
+  \renewcommand*{\L@ngn@me}{\langname}%
+  \renewcommand*{\Npgsn@me}{\nofpgsname}%
+  \renewcommand*{\Sprvsrn@me}{\supervisorname}%
+  \renewcommand*{\Instrn@me}{\instructorname}%
+  \renewcommand*{\DgPrgn@me}{\degprogramname}%
+  \renewcommand*{\Prfspn@me}{\professorshipname}%
+  \renewcommand*{\Cdn@me}{\codename}%
+  \renewcommand*{\Th@sstitl@}{\th@stitl@}%
+  \renewcommand*{\@bsthe@der}{\absheadeng}
+  \newcommand*{\Pr@fship}{\pr@fshp}%
+  \setlength{\absheadlen}{\absheadleneng}%
+  \IfEnglish{\addcontentsline{toc}{section}{\abstractname{}}}{}%
+  \IfFinnish{\addcontentsline{toc}{section}{\tiivistelmaname{} \tocabslang}}{}%
+ }{\ifthenelse{\equal{#1}{finnish}}{%
+  \renewcommand*{\Authn@me}{\tekijaname}%
+  \renewcommand*{\Thssn@me}{\tyoname}%
+  \renewcommand*{\Kwdn@me}{\avainsanatname}%
+  \renewcommand*{\Dtn@me}{\paivamaaraname}%
+  \renewcommand*{\L@ngn@me}{\kieliname}%
+  \renewcommand*{\Npgsn@me}{\sivumaaraname}%
+  \renewcommand*{\Sprvsrn@me}{\valvojaname}%
+  \renewcommand*{\Instrn@me}{\ohjaajaname}%
+  \renewcommand*{\DgPrgn@me}{\tutkohjname}%
+  \renewcommand*{\Prfspn@me}{\professuuriname}%
+  \renewcommand*{\Cdn@me}{\koodiname}%
+  \renewcommand*{\Th@sstitl@}{\ty@nnimi}%
+  \renewcommand*{\@bsthe@der}{\absheadfin}%
+  \newcommand*{\Pr@fship}{\pr@fsuuri}%
+  \setlength{\absheadlen}{\absheadlenfin}%
+  \IfFinnish{\addcontentsline{toc}{section}{\tiivistelmaname{}}}{}%
+  \IfEnglish{\addcontentsline{toc}{section}{\abstractname{} \tocabslang}}{}%
+ }{\PackageError{aaltothesis}%
+     {Only english or finnish is allowed as optional parameter.}%
+     {Use english or finnish.}%
+ }}%
+%
+ \thispagestyle{empty}%
+ \enlargethispage{5mm}%
+ \noindent%
+ \begin{tabular}{@{}p{\abstractwidth-\absheadlen}p{\absheadlen}@{}}%
+  \parbox[t]{\abstractwidth-\absheadlen}{\textsc{\Univ@rsity{#1}\\\Sch@@l{#1}}}%
+  & \parbox[t]{\absheadlen}{\raggedleft\textsc{\@bsthe@der}}\\%
+  &\\[-2mm]%
+ \end{tabular}%
+ \par%
+ \noindent%
+ \begin{tabular}{|l|}%
+   \hline\\[\rowsep]%
+   \absbox{26mm}{\Author{\@uth@r}\Thesisname{\Th@sistitle{#1}}%
+     \Dtn@me: \D@te{} \hfill \L@ngn@me: \L@ng{#1} \hfill \Npgsn@me:%
+     \arabic{NInitPages}+\arabic{NMainPages}}%
+   \ifthenelse{\boolean{BSc}}{%
+     \absbox{5mm}{\DgPrgn@me: \D@gr@@Prog{#1}\par\vfill}%
+     \ifthenelse{\value{instructors}=0}{%
+       \absbox{5mm}{\Sprvsrn@me: \Sup@rvisor{#1}%
+       }%
+     }{%
+       \absbox{12mm}{\Sprvsrn@me: \Sup@rvisor{#1}\par\vfill%
+         \Instrn@me: \Instruct@r{1}{#1}%
+         \ifthenelse{\value{instructors}>1}{, \Instruct@r{2}{#1}}{}}%
+     }%
+   }{%
+%     \absbox{18mm}{\F@culty{#1}\par\vfill%
+     \absbox{12mm}{%
+       \Dep@rtment{#1}\par\vfill%
+       \Prfspn@me: \Pr@fship \hfill\Cdn@me: \Cod@}%
+     \ifthenelse{\value{instructors}=0}{%
+       \absbox{5mm}{\Sprvsrn@me: \Sup@rvisor{#1}%
+       }%
+     }{%
+       \absbox{12mm}{\Sprvsrn@me: \Sup@rvisor{#1}\par\vfill%
+         \Instrn@me: \Instruct@r{1}{#1}%
+         \ifthenelse{\value{instructors}>1}{, \Instruct@r{2}{#1}}{}%
+       }%
+     }%
+   }%
+   \begin{minipage}[t][133mm]{\abstractwidth}%
+ }{%
+   \end{minipage}%
+   \absbreak\absfield[\keywdparheight]{\Kwdn@me}{\k@yw@rds}\\\hline%
+  \end{tabular}%
+  \clearpage%
+ }%
+%%%%%% Abstract stuff ends here %%%%%%
+%
+%% A few more macros
+\newcommand*{\mysection}[1]{%
+\newpage%
+\section*{#1}%
+\addcontentsline{toc}{section}{#1}%
+}%
+%
+\newcommand{\thesistableofcontents}{%
+\IfFinnish{\renewcommand{\contentsname}{Sisällysluettelo}}{}
+\phantomsection%
+\addcontentsline{toc}{section}{\contentsname}%
+\tableofcontents%
+}
+%
+\AtBeginDocument{\pagestyle{myheadings}}%
+%
+\endinput
