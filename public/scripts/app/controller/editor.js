@@ -3,6 +3,7 @@ console.log('Loading file app/controller/editor.js');
 define(['require'
     , 'spine/spine'
     , 'app/controller/outline'
+    , 'app/controller/spellcheck-button'
     , 'app/module/tex-analyzer'],
 
     function(require, Spine, Outline) {
@@ -10,6 +11,7 @@ define(['require'
         "use strict";
 
         console.log('Defining module app/controller/editor.js');
+        var mode;
 
         var Editor = Spine.Controller.sub({
 
@@ -21,8 +23,9 @@ define(['require'
                 this.editor = ace.edit('editor');
                 this.session = this.editor.getSession();
                 var LatexMode = ace.require("ace/mode/latex").Mode;
-
-                this.session.setMode(new LatexMode());
+                mode = new LatexMode();
+                this.session.setMode(mode);
+                
                 this.session.setUseWrapMode(true);
                 this.editor.setShowPrintMargin(false);
 
@@ -45,6 +48,8 @@ define(['require'
                     Spine.trigger('change');
                     this.setChanged(true);
                 }));
+
+                var session = this.session;
 
                 this.session.on('parsed', function(parsed) {
                     var texAnalyzer = require('app/module/tex-analyzer');
@@ -87,6 +92,11 @@ define(['require'
 
             gotoLine: function(lineNumber) {
                 this.editor.gotoLine(lineNumber);
+            },
+
+            enableSpellchecking: function (enable) {
+                mode.enableSpellChecking(enable, this.session.getDocument());
+                this.editor.resize(true);
             },
 
             setCursorPosition: function(pos) {
