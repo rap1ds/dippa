@@ -814,6 +814,61 @@ var SpellcheckTokenizer = function(defaultRules, flag) {
 oop.implement(SpellcheckTokenizer.prototype, EventEmitter);
 var spellcheckTokenizerInstance = new SpellcheckTokenizer(new LatexHighlightRules().getRules());
 
+var regExpEscape = (function() {
+
+  var regExpChars = [
+    '\\',
+    '^',
+    '$',
+    '*',
+    '+',
+    '?',
+    '.',
+    '(',
+    ')',
+    ':',
+    '.',
+    '=',
+    '!',
+    '|',
+    '{',
+    '}',
+    ',',
+    '[',
+    ']'
+  ];
+
+  function isRegExpChar(char) {
+    return regExpChars.indexOf(char) !== -1;
+  }
+
+  function pickRegExpChars(word) {
+    return word
+      .split('')
+      .filter(isRegExpChar);
+  }
+
+  function hasNotOnlyRegExpChars(word) {
+    return pickRegExpChars(word).length !== word.length;
+  }
+
+  function escapeChar(char) {
+    return isRegExpChar(char) ? ('\\' + char) : char;
+  }
+
+  function escape(word) {
+    return word.split('')
+      .map(escapeChar)
+      .join('');
+  }
+
+  return Object.freeze({
+    hasNotOnlyRegExpChars: hasNotOnlyRegExpChars,
+    escape: escape
+  });
+
+})();
+
 var Mode = function() {
     this.$tokenizer = spellcheckTokenizerInstance;
 };
@@ -889,8 +944,15 @@ oop.inherits(Mode, TextMode);
                     })
                     .join(" ");
 
-            var splitted = splitWords(text.concat(sections))
-            var result = splitted.map(function (word) { return { word: word, correct: dict.check(word) } });
+            var splitted = splitWords(text.concat(sections));
+            var result = splitted
+              .filter(regExpEscape.hasNotOnlyRegExpChars)
+              .map(regExpEscape.escape)
+
+              // Do the spell check
+              .map(function (word) { 
+                return { word: word, correct: dict.check(word) } 
+              });
 
             var mispelled = result
                 .filter(function (res) {
