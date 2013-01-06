@@ -13,7 +13,9 @@ define(['jquery', 'spine/spine', 'app/controller/hero', 'app/basepath'], functio
         init: function() { },
 
         click: function() {
-            $('#info').fadeOut();
+          _gaq.push(['_trackEvent', 'Demo', 'Create']);
+
+          $('#info').fadeOut();
             $('#screenshots').fadeOut();
             $('#github_ribbon').fadeOut();
             Hero.instance.el.fadeOut(function() {
