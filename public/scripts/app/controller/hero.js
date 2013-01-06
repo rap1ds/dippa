@@ -34,17 +34,17 @@ define(['jquery', 'spine/spine', 'app/basepath', 'app/session', 'app/utils/githu
         },
 
         step1Done: function() {
-            gaq.push(['_trackEvent', 'Create Dippa', 'Step 1 done']);
+            _gaq.push(['_trackEvent', 'Create Dippa', 'Step 1 done']);
             this.inactivate(this.step1);
             this.activate(this.step2);
         },
 
         step2Done: function() {
-            gaq.push(['_trackEvent', 'Create Dippa', 'Step 2 done']);
+            _gaq.push(['_trackEvent', 'Create Dippa', 'Step 2 done']);
             this.repositoryInfo = Github.parseRepositoryUrl(this.repositoryUrl.val());
 
             if(!this.repositoryInfo) {
-                gaq.push(['_trackEvent', 'Create Dippa', 'Step 2 repository error']);
+                _gaq.push(['_trackEvent', 'Create Dippa', 'Step 2 repository error']);
                 this.repositoryUrlContainer.addClass('error');
                 return;
             }
@@ -60,13 +60,13 @@ define(['jquery', 'spine/spine', 'app/basepath', 'app/session', 'app/utils/githu
         },
 
         step3Done: function() {
-            gaq.push(['_trackEvent', 'Create Dippa', 'Step 3 done']);
+            _gaq.push(['_trackEvent', 'Create Dippa', 'Step 3 done']);
             this.inactivate(this.step3);
             this.activate(this.step4);
         },
 
         step4Done: function() {
-            gaq.push(['_trackEvent', 'Create Dippa', 'Step 4 done']);
+            _gaq.push(['_trackEvent', 'Create Dippa', 'Step 4 done']);
             this.template = this.templateList.val();
             this.hideInstructions(this.proxy(function() {
                 $('#loader').show();
