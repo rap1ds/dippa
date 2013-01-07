@@ -50,3 +50,12 @@ body, html {
 .ace_misspell {
     border-bottom: 1px dashed red;
 }
+
+#buttons-and-or {
+  font-size: 32px;
+}
+
+#big-or {
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}

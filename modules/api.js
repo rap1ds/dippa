@@ -201,6 +201,10 @@ var API = {
             return;
         }
 
+        if(isDemo) {
+          template = "aalto-thesis";
+        }
+        
         var id = shortId.generate();
 
         var directoryOptions = {id: id, name: name, owner: owner, noGithub: isDemo, template: template};
