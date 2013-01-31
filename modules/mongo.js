@@ -3,18 +3,14 @@ var mongoose = require('mongoose')
     , DateUtils = require('./dateutils')
     , Fixtures = require('../fixtures/fixtures')
     , _ = require('underscore')
-    , log = require('../modules/log');
+    , log = require('../modules/log')
+    , mongoProfiles = require('./mongo_profiles')
+    , mongoMigrations = require('./mongo_migrations');
 
 var Mongo = {
 
-    profiles: {
-        dev: {db: "mongodb://localhost/dippa"},
-        staging: {db: "mongodb://localhost/dippa_staging"},
-        test: {db: "mongodb://localhost/dippa_test"}
-    },
-
     init: function(profile) {
-        profile = profile || this.profiles.dev;
+        profile = profile || this.mongoProfiles.dev;
 
         mongoose.connect(profile.db);
 
@@ -24,13 +20,16 @@ var Mongo = {
             name    : String,
             email   : {type: String, index: true},
             created : Date,
-            isDemo  : Boolean
+            isDemo  : Boolean,
+            previewId: {type: String, unique: true }
         };
 
         var Dippa = new mongoose.Schema(DippaModel);
         // Dippa.index({owner: 1, name: 1}, {unique: true});
         mongoose.model('Dippa', Dippa);
         this.Dippa = mongoose.model('Dippa');
+
+        mongoMigrations(mongoose);
     },
 
     loadFixtures: function() {
@@ -70,7 +69,7 @@ var Mongo = {
         return promise;
     },
 
-    createNew: function(shortId, owner, name, email, isDemo) {
+    createNew: function(shortId, owner, name, email, isDemo, previewId) {
         isDemo = isDemo || false;
         var newDippa = new this.Dippa();
         newDippa.shortId = shortId;
@@ -78,6 +77,7 @@ var Mongo = {
         newDippa.name = name;
         newDippa.email = email;
         newDippa.isDemo = isDemo;
+        newDippa.previewId = previewId;
         newDippa.created = DateUtils.now();
 
         var promise = p.Promise();

@@ -16,6 +16,7 @@ var Directory = require('../modules/directory');
 var _ = require('underscore');
 var log = require('../modules/log');
 var git = require('../modules/git');
+var mongoProfiles = require('../modules/mongo_profiles');
 
 var REPOSITORY_DIR = "./public/repositories/";
 var TEMPLATE_DIR = "./templates/";
@@ -102,7 +103,7 @@ var API = {
         app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 
         API.port = 5555;
-        API.mongoProfile = Mongo.profiles.dev;
+        API.mongoProfile = mongoProfiles.dev;
         API.directoryProfile = Directory.profiles.dev;
     },
 
@@ -111,7 +112,7 @@ var API = {
         app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 
         API.port = 8888;
-        API.mongoProfile = Mongo.profiles.test;
+        API.mongoProfile = mongoProfiles.test;
         API.directoryProfile = Directory.profiles.test;
     },
 
@@ -120,7 +121,7 @@ var API = {
         app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 
         API.port = 7777;
-        API.mongoProfile = Mongo.profiles.staging;
+        API.mongoProfile = mongoProfiles.staging;
         API.directoryProfile = Directory.profiles.staging;
     },
 
@@ -130,7 +131,7 @@ var API = {
         app.use(express.errorHandler());
 
         API.port = 5555;
-        API.mongoProfile = Mongo.profiles.dev;
+        API.mongoProfile = mongoProfiles.dev;
         API.directoryProfile = Directory.profiles.production;
     },
 
@@ -206,14 +207,16 @@ var API = {
         }
         
         var id = shortId.generate();
+        var previewId = shortId.generate();
 
         var directoryOptions = {id: id, name: name, owner: owner, noGithub: isDemo, template: template};
 
         var createdAndCompiled = p.seq([Directory.create, Directory.compile], directoryOptions);
-        var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo);
+        var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo, previewId);
 
         p.all(createdAndCompiled, mongoCreated).then(function() {
             log('POST Created new Dippa', directoryOptions);
+            log('previewId: ' + previewId);
             res.send(id);
         }, function(error) {
             log.error('POST Failed to create new Dippa', directoryOptions);
