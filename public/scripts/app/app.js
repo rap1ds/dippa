@@ -29,7 +29,8 @@ define(['jquery'
         , basepath
         , session
         , Editor
-        , datamanager) {
+        , datamanager
+        , previewButton) {
 
         console.log('Defining module app/app.js');
 
@@ -64,7 +65,7 @@ define(['jquery'
 
                         var documentOpts = content.document;
                         var previewId = documentOpts.previewId;
-                        session.previewId = previewId;
+                        previewButton('#preview_button', 'preview/' + previewId);
 
                         datamanager.setActiveDocument('document');
                         editor.setValue(document.getDocumentContent());

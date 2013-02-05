@@ -1,32 +1,14 @@
-define(['jquery', 'spine/spine', 'app/app', 'app/controller/editor', 'app/session'], function($, Spine, App, Editor, session) {
+define(['jquery'], function($) {
     "use strict";
 
     console.log('app/controller/preview-button.js');
 
-    var PreviewButton = Spine.Controller.create({
-        el: $('#preview_button'),
-
-        events: {
-            'click': 'click'
-        },
-
-        buttonLoading: function() {
-            this.el.button('loading');
-        },
-
-        buttonReset: function() {
-            this.el.button('reset');
-        },
-
-        click: function() {
-            window.open('preview/' + session.previewId, '_newtab');
-        }
-
-    });
-
-    return {
-        class: PreviewButton,
-        instance: new PreviewButton()
+    function create(selector, url) {
+        $(selector).click(function() {
+            window.open(url, '_newtab');
+        });
     }
+
+    return create;
 
 });

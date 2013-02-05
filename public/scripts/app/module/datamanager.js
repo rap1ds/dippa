@@ -17,11 +17,6 @@ define(['require'
             editor.setChanged(false);
         }
 
-        function setPreviewButtonToSavingState() {
-            var previewButton = require('app/controller/preview-button').instance;
-            previewButton.buttonLoading();
-        }
-
         function setSaveButtonToSavingState() {
             var saveButton = require('app/controller/save-button');
             saveButton.startSaving();
@@ -33,11 +28,6 @@ define(['require'
             console.println('Saving and compiling document');
             console.println();
             console.println('Please wait a moment...');
-        }
-
-        function setPreviewButtonToIdleState() {
-            var previewButton = require('app/controller/preview-button').instance;
-            previewButton.buttonReset();
         }
 
         function setSaveButtonToCompleteState() {
@@ -58,7 +48,6 @@ define(['require'
             var document = require('app/module/document');
             document.flush();
 
-            setPreviewButtonToSavingState();
             setSaveButtonToSavingState();
             prepareConsoleToSaving();
 
@@ -67,7 +56,6 @@ define(['require'
         }
 
         function afterSave(response) {
-            setPreviewButtonToIdleState();
             setSaveButtonToCompleteState();
             setEditorChangedToFalse();
             setResponseToConsole(response);
