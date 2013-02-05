@@ -13,9 +13,9 @@ function compile(repoDir) {
         var remove = new Command('rm dippa.pdf', repoDir);
 
         var pdflatex1 = new Command('pdflatex --interaction=nonstopmode --jobname=tmp dippa', repoDir);
-        var bibtex1 = new Command('bibtex dippa', repoDir);
+        var bibtex1 = new Command('bibtex tmp', repoDir);
         var pdflatex2 = new Command('pdflatex --interaction=nonstopmode --jobname=tmp dippa', repoDir);
-        var bibtex2 = new Command('bibtex dippa', repoDir);
+        var bibtex2 = new Command('bibtex tmp', repoDir);
         var pdflatex3 = new Command('pdflatex --interaction=nonstopmode --jobname=tmp dippa', repoDir);
 
         var copy = new Command('mv tmp.pdf dippa.pdf', repoDir);
