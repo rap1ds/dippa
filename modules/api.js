@@ -17,6 +17,7 @@ var _ = require('underscore');
 var log = require('../modules/log');
 var git = require('../modules/git');
 var mongoProfiles = require('../modules/mongo_profiles');
+var pdfCompiler = require('../modules/pdf_compiler');
 
 var REPOSITORY_DIR = "./public/repositories/";
 var TEMPLATE_DIR = "./templates/";
@@ -214,7 +215,7 @@ var API = {
 
         var directoryOptions = {id: id, name: name, owner: owner, noGithub: isDemo, template: template};
 
-        var createdAndCompiled = p.seq([Directory.create, Directory.compile], directoryOptions);
+        var createdAndCompiled = p.seq([Directory.create, pdfCompiler.compile], directoryOptions);
         var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo, previewId);
 
         p.all(createdAndCompiled, mongoCreated).then(function() {
@@ -240,9 +241,9 @@ app.configure(function(){
 });
 
 app.get('/preview/:id', function(req, res, next) {
-    var id = req.params.id
-    Mongo.findByPreviewId(id).then(function(data) {
+    var previewId = req.params.id;
 
+    Mongo.findByPreviewId(previewId).then(function(data) {
         if(!data) {
             console.log('Could not find preview for previewId ' + id);
             res.sendfile('./views/index.html');
@@ -250,10 +251,15 @@ app.get('/preview/:id', function(req, res, next) {
         }
 
         var shortId = data.shortId;
+        var repoDir = path.resolve(REPOSITORY_DIR, shortId);
+        var pdfPath = path.resolve(repoDir, 'dippa.pdf');
 
-        var pdfPath = REPOSITORY_DIR + shortId + '/dippa.pdf'
-
-        res.sendfile(pdfPath);
+        if(pdfCompiler.isCompiling(repoDir)) {
+            console.log('PDF IS COMPILING');
+            res.sendfile('./views/compiling.html');
+        } else {
+            res.sendfile(pdfPath);
+        }
     });
 });
 
@@ -290,8 +296,7 @@ app.post('/save/:id', function(req, res){
     });
 
     allWritten.then(function() {
-
-        var previewPromise = Directory.compile(repoDir);
+        var previewPromise = pdfCompiler.compile(repoDir);
 
         previewPromise.then(function(output) {
             res.send(output);

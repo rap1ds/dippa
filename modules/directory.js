@@ -152,22 +152,6 @@ var Directory = {
         return promise;
     },
 
-    compile: function(repoDir) {
-        var compilePromise = new Promise();
-
-        var pdflatex1 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
-        var bibtex1 = new Command('bibtex dippa', repoDir);
-        var pdflatex2 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
-        var bibtex2 = new Command('bibtex dippa', repoDir);
-        var pdflatex3 = new Command('pdflatex --interaction=nonstopmode dippa', repoDir);
-
-        commandline.runAll([pdflatex1, bibtex1, pdflatex2, bibtex2, pdflatex3]).then(function(output) {
-            compilePromise.resolve(output);
-        });
-
-        return compilePromise;
-    },
-
     readFile: function(id, filename) {
         var promise = new Promise();
 
