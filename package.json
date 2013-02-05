@@ -4,7 +4,7 @@
     "description" : "Dippa editor",
     "author": "Mikko Koski",
     "dependencies": {
-        "express": "2.5.x",
+        "express": "3.1.x",
         "oauth": "0.9.x",
         "github": "0.0.x",
         "shortid": "1.0.x",

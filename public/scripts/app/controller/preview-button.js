@@ -19,7 +19,7 @@ define(['jquery', 'spine/spine', 'app/app', 'app/controller/editor', 'app/sessio
         },
 
         click: function() {
-            window.open('repositories/' + session.sessionId + '/dippa.pdf', '_newtab');
+            window.open('preview/' + session.previewId, '_newtab');
         }
 
     });

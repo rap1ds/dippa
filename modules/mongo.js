@@ -132,6 +132,14 @@ var Mongo = {
         return promise;
     },
 
+    findByPreviewId: function(previewId) {
+        var promise = p.Promise();
+        this.Dippa.findOne({previewId: previewId}, function(error, data) {
+            Mongo.resolvePromise(error, data, promise)
+        });
+        return promise;
+    },    
+
     findByEmail: function(email) {
         var promise = p.Promise();
         this.Dippa.find({email: email}, function(error, data) {

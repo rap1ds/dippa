@@ -62,6 +62,10 @@ define(['jquery'
                         document.setReferenceContent(content.referencesContent);
                         document.flush();
 
+                        var documentOpts = content.document;
+                        var previewId = documentOpts.previewId;
+                        session.previewId = previewId;
+
                         datamanager.setActiveDocument('document');
                         editor.setValue(document.getDocumentContent());
 

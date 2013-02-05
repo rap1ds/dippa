@@ -4,7 +4,7 @@ var Mongo = require('../modules/mongo');
 var commandline = require('../modules/commandline');
 var Command = require('../modules/commandline').Command;
 var express = require('express');
-var app = express.createServer();
+var app = express();
 var p = require("promised-io/promise");
 var path = require('path');
 var Promise = p.Promise;
@@ -136,14 +136,14 @@ var API = {
     },
 
     getIndex: function(req, res, next) {
-        res.render('index.html');
+        res.sendfile('./views/index.html');
     },
 
     getId: function(req, res, next) {
         var id = req.params.id
         Mongo.findByShortId(id).then(function(data) {
             if(data) {
-                res.render('index.html');
+                res.sendfile('./views/index.html');
             } else {
                 res.redirect('/');
             }
@@ -176,9 +176,12 @@ var API = {
         var documentRead = Directory.readDocumentFile(id);
         var referencesRead = Directory.readReferenceFile(id);
 
-        p.all([documentRead, referencesRead]).then(function(results) {
+        var mongoReady = Mongo.findByShortId(id);
+
+        p.all([documentRead, referencesRead, mongoReady]).then(function(results) {
             response.documentContent = results[0];
             response.referencesContent = results[1];
+            response.document = results[2];
             res.send(response);
         }, function error() {
             res.send({msg: 'An error occured while reading content'}, 500);
@@ -234,14 +237,23 @@ app.configure(function(){
     app.set("view options", {layout: false});
 
     app.disable('view cache');
+});
 
-    // make a custom html template
-    app.register('.html', {
-        compile: function(str, options){
-            return function(locals){
-                return str;
-            };
+app.get('/preview/:id', function(req, res, next) {
+    var id = req.params.id
+    Mongo.findByPreviewId(id).then(function(data) {
+
+        if(!data) {
+            console.log('Could not find preview for previewId ' + id);
+            res.sendfile('./views/index.html');
+            return;
         }
+
+        var shortId = data.shortId;
+
+        var pdfPath = REPOSITORY_DIR + shortId + '/dippa.pdf'
+
+        res.sendfile(pdfPath);
     });
 });
 

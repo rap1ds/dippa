@@ -4,6 +4,7 @@ define(function() {
     console.log('app/session.js');
 
     var sessionId;
+    var previewId;
 
     function createSession(id) {
         sessionId = id;
@@ -13,6 +14,10 @@ define(function() {
         createSession: {value: createSession},
         sessionId: {
             get: function() { return sessionId; }
+        },
+        previewId: {
+            set: function(id) { previewId = id; },
+            get: function() { return previewId; }
         }
     }));
 });
