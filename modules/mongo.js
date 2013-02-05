@@ -21,15 +21,16 @@ var Mongo = {
             email   : {type: String, index: true},
             created : Date,
             isDemo  : Boolean,
-            previewId: {type: String, unique: true }
+            previewId: {type: String }
         };
 
         var Dippa = new mongoose.Schema(DippaModel);
-        // Dippa.index({owner: 1, name: 1}, {unique: true});
         mongoose.model('Dippa', Dippa);
         this.Dippa = mongoose.model('Dippa');
 
         mongoMigrations(mongoose);
+
+        Dippa.index({previewId: 1}, {unique: true});
     },
 
     loadFixtures: function() {
