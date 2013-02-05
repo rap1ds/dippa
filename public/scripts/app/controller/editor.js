@@ -3,10 +3,11 @@ console.log('Loading file app/controller/editor.js');
 define(['require'
     , 'spine/spine'
     , 'app/controller/outline'
+    , 'app/controller/editor_format_keybindings'
     , 'app/controller/spellcheck-button'
     , 'app/module/tex-analyzer'],
 
-    function(require, Spine, Outline) {
+    function(require, Spine, Outline, editorFormatKeybindinds) {
 
         "use strict";
 
@@ -43,6 +44,8 @@ define(['require'
                         datamanager.save();
                     }
                 });
+
+                editorFormatKeybindinds(this.editor);
 
                 this.session.on('change', this.proxy(function() {
                     Spine.trigger('change');
