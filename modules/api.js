@@ -291,7 +291,6 @@ app.post('/save/:id', function(req, res){
         if (err) {
             throw err;
         }
-        
 
         refWritten.resolve();
     });
