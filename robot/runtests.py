@@ -38,7 +38,14 @@ def stop_selenium_server():
 
 def print_usage():
     print 'Usage: rundemo.py [test_dir]'
-    print '   or: rundemo.py selenium start|stop'
+    print '   or: rundemo.py selenium-start'
+    print '   or: rundemo.py selenium-stop'
+    print '   or: rundemo.py --exclude github tests/'
+    print '   or: rundemo.py --variable GITHUB_USERNAME:[username]'
+    print '         --variable GITHUB_PASSWORD:[password] tests/'
+    print '   or: rundemo.py --variable GITHUB_USERNAME:[username]'
+    print '         --variable GITHUB_PASSWORD:[password]'
+    print '         --variable SERVER:[server] tests/'
 
 
 if __name__ == '__main__':
