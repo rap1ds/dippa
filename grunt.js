@@ -60,6 +60,94 @@ module.exports = function(grunt) {
         });
     });
 
+    function startSelenium(callback) {
+        var cmd = './runtests.py selenium-start';
+        var cwd = path.resolve('./robot');
+
+        grunt.log.writeln('Starting selenium server...');
+
+        require('child_process').exec(cmd, {cwd: cwd}, function (error, stdout, stderr) {
+            if (error) {
+                grunt.log.writeln(stdout);
+                grunt.log.error('Could not start selenium server');
+                callback(false);
+            } else {
+                grunt.log.writeln(stdout);
+                grunt.log.ok('Selenium server started');
+                callback(true);
+            }
+        });
+    }
+
+    function stopSelenium(callback) {
+        var cmd = './runtests.py selenium-stop';
+        var cwd = path.resolve('./robot');
+
+        grunt.log.writeln('Stopping selenium server...');
+
+        require('child_process').exec(cmd, {cwd: cwd}, function (error, stdout, stderr) {
+            if (error) {
+                grunt.log.writeln(stdout);
+                grunt.log.error('Could not stop selenium server');
+                callback(false);
+            } else {
+                grunt.log.writeln(stdout);
+                grunt.log.ok('Selenium server stopped');
+                callback(true);
+            }
+        });
+    }
+
+    grunt.registerTask('test-robot', 'Run Robot tests', function(githubUsername, githubPassword, server) {
+        var done = this.async();
+
+        if(!githubUsername || !githubPassword) {
+            grunt.log.error('Provide github username and password as arguments');
+            done(false);
+        }
+
+        startSelenium(function(startSuccess) {
+            if(!startSuccess) {
+                done(false);
+            }
+
+            var cwd = path.resolve('./robot');
+
+            var cmd = ['./runtests.py'];
+            cmd.push('--variable GITHUB_USERNAME:' + githubUsername);
+            cmd.push('--variable GITHUB_PASSWORD:' + githubPassword);
+
+            if(server) {
+                cmd.push('--variable SERVER:' + server);
+            }
+
+            cmd.push('tests/');
+
+            cmd = cmd.join(' ');
+
+            grunt.log.writeln('Executing command ' + cmd + ' in directory ' + cwd);
+            require('child_process').exec(cmd, {cwd: cwd, timeout: 120000}, function (error, stdout, stderr) {
+                var failed = false;
+                if (error) {
+                    grunt.log.writeln(stdout);
+                    grunt.log.error('Tests FAILED');
+                    failed = true;
+                } else {
+                    grunt.log.writeln(stdout);
+                    grunt.log.ok('Tests passed');
+                }
+
+                stopSelenium(function(stopSuccess) {
+                    if(!stopSuccess || failed) {
+                        done(false);
+                    }
+
+                    done(true);
+                });
+            });            
+        })    
+    });
+
     grunt.registerTask('backup-repositories', 'Backup repositories', function(dest) {
         if (arguments.length > 1) {
             grunt.log.error(this.name + ": Give max one argument, destination path");

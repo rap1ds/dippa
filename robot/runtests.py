@@ -26,7 +26,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 def run_tests(args):
     # start_selenium_server()
-    call(['pybot'] + args, shell=(os.sep == '\\'))
+    return call(['pybot'] + args, shell=(os.sep == '\\'))
     # stop_selenium_server()
 
 def start_selenium_server():
@@ -55,4 +55,4 @@ if __name__ == '__main__':
     if action:
         action()
     else:
-        run_tests(sys.argv[1:])
+        sys.exit(run_tests(sys.argv[1:]))
