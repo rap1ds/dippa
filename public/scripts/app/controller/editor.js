@@ -42,6 +42,8 @@ define(['require'
                     exec: function(env, args, request) {
                         var datamanager = require('app/module/datamanager');
                         datamanager.save();
+
+                        _gaq.push(['_trackEvent', 'Keyboard shortcuts', 'Save']);
                     }
                 });
 

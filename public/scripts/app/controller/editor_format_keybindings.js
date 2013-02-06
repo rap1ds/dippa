@@ -1,7 +1,7 @@
 define(function() {
     "use strict";
 
-    function createHandler(startTag, endTag) {
+    function createHandler(startTag, endTag, gaName) {
         return function(editor) {
             var range = editor.getSelectionRange();
             var start = range.start;
@@ -21,6 +21,8 @@ define(function() {
                 editor.moveCursorTo(end.row, endColumn);
                 editor.insert(endTag);
             }
+
+            _gaq.push(['_trackEvent', 'Keyboard shortcuts', gaName]);
         }
     };
 
@@ -32,7 +34,7 @@ define(function() {
                 mac: 'Command-B',
                 sender: 'editor'
             },
-            exec: createHandler('\\textbf{', '}')
+            exec: createHandler('\\textbf{', '}', 'Bold')
         });
 
         editor.commands.addCommand({
@@ -42,7 +44,7 @@ define(function() {
                 mac: 'Command-I',
                 sender: 'editor'
             },
-            exec: createHandler('\\textit{', '}')
+            exec: createHandler('\\emph{', '}', 'Italic')
         });
 
         editor.commands.addCommand({
@@ -52,7 +54,7 @@ define(function() {
                 mac: 'Command-U',
                 sender: 'editor'
             },
-            exec: createHandler('\\underline{', '}')
+            exec: createHandler('\\underline{', '}', 'Underline')
         });
     }
 
