@@ -59,3 +59,34 @@ body, html {
   margin-left: 0.5em;
   margin-right: 0.5em;
 }
+
+q {
+    font-style: italic;
+    margin-left: 20px;
+    display: block;
+    font-size: 16px;
+    font-weight: 300;
+}
+
+q:before, q:after {
+    color: #7a7a7a;
+    font-family: Georgia;
+    font-size: 40px;
+    position: relative;
+    top: 10px;
+}
+
+q:before {
+    content: "\201C";
+    margin-left: -20px;
+    margin-right: 10px;
+}
+
+q:after {
+    content: "\201D";
+    margin-left: 10px;
+}
+
+.without-dash:before {
+    content: '';
+}

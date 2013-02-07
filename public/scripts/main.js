@@ -60,6 +60,8 @@ require(['require'
                 $('#info_header').show();
                 $('#info').show();
                 $('#screenshots').show();
+                $('#whos-using').show();
+                $('#what-said').show();
 
                 $('#step2').css('opacity', 0.25).find('p').hide();
                 $('#step3').css('opacity', 0.25).find('p').hide();
