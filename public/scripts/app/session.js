@@ -6,8 +6,14 @@ define(function() {
     var sessionId;
     var previewId;
 
-    function createSession(id) {
-        sessionId = id;
+    function createSession(id, prevId) {
+        if(sessionId === undefined) {
+            sessionId = id;
+        }
+
+        if(previewId === undefined) {
+            previewId = prevId;
+        }
     }
 
     return Object.freeze(Object.create(Object.prototype, {
@@ -16,7 +22,6 @@ define(function() {
             get: function() { return sessionId; }
         },
         previewId: {
-            set: function(id) { previewId = id; },
             get: function() { return previewId; }
         }
     }));

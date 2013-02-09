@@ -47,12 +47,18 @@ define(['jquery'
                 Editor.instance.onCursorChange(datamanager.onEditorCursorChange);
             },
 
-            load: function() {
+            load: function(id) {
+                debugger;
                 datamanager.load();
                 $.ajax({
-                    url: 'load/' + session.sessionId,
+                    url: 'load/' + id,
                     dataType: 'json',
                     success: function(content) {
+                        var documentOpts = content.document;
+                        var previewId = documentOpts.previewId;
+
+                        session.createSession(id, previewId);
+
                         var editor = Editor.instance;
                         var file = File.class;
 
@@ -63,8 +69,6 @@ define(['jquery'
                         document.setReferenceContent(content.referencesContent);
                         document.flush();
 
-                        var documentOpts = content.document;
-                        var previewId = documentOpts.previewId;
                         previewButton('#preview_button', 'preview/' + previewId);
 
                         datamanager.setActiveDocument('document');
@@ -88,16 +92,19 @@ define(['jquery'
             }
         });
 
+        function loadModules(id) {
+            debugger;
+            // Load other modules
+            require(['app/controller/window', 'app/controller/save-button'], function() {
+                exports.instance.load(id);
+            });
+        }
+
         var exports = {
             class: App,
-            instance: new App()
+            instance: new App(),
+            loadModules: loadModules
         };
 
-        // Load other modules
-        require(['app/controller/window', 'app/controller/save-button'], function() {
-            exports.instance.load();
-        });
-
         return exports;
-
     });

@@ -79,15 +79,15 @@ require(['require'
             }
 
             function loadDippa(route) {
-                session.createSession(route.match[1]);
-
                 $('#main-container').hide();
                 $('#outer-container').show();
                 $('.editor_buttons').fadeIn('slow');
 
                 $('#nav').fadeIn('slow');
 
-                require(['app/app']);
+                require(['app/app'], function(app) {
+                    app.loadModules(route.match[1]);
+                });
             }
 
             var homeRegexp = new RegExp(basepath.getPath() + '$');
