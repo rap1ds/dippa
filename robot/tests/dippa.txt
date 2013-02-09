@@ -202,7 +202,7 @@ PDF Preview
 
     # --- Error --- #
     Go To Dippa
-    Set Text To Editor  "Jee Jee"
+    Set Text To Editor  "This is a broken document"
     Save Without Waiting
     Preview
     Should Be Compiling
