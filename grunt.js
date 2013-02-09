@@ -131,7 +131,10 @@ module.exports = function(grunt) {
                 if (error) {
                     grunt.log.writeln(stdout);
                     grunt.log.error('Tests FAILED');
-                    failed = true;
+
+                    require('child_process').exec("open report.html", {cwd: cwd, timeout: 3000}, function (error, stdout, stderr) {
+                        failed = true;
+                    });
                 } else {
                     grunt.log.writeln(stdout);
                     grunt.log.ok('Tests passed');

@@ -245,7 +245,7 @@ app.get('/preview/:id', function(req, res, next) {
 
     Mongo.findByPreviewId(previewId).then(function(data) {
         if(!data) {
-            console.log('Could not find preview for previewId ' + id);
+            console.log('Could not find preview for previewId ' + previewId);
             res.sendfile('./views/index.html');
             return;
         }
