@@ -255,11 +255,17 @@ app.get('/preview/:id', function(req, res, next) {
         var pdfPath = path.resolve(repoDir, 'dippa.pdf');
 
         if(pdfCompiler.isCompiling(repoDir)) {
-            console.log('PDF IS COMPILING');
             res.sendfile('./views/compiling.html');
-        } else {
-            res.sendfile(pdfPath);
+            return;
         }
+
+        fs.exists(pdfPath, function(exists) {
+            if(!exists) {
+                res.sendfile('./views/compile_error.html');
+            } else {
+                res.sendfile(pdfPath);
+            }
+        });
     });
 });
 

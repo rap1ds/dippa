@@ -10,7 +10,7 @@ Test Teardown   Test Case Teardown
 Test Case Setup
     Remove Directory  ${WORKSPACE}  recursive
     Create Directory  ${WORKSPACE}
-    Set Selenium Timeout  25
+    Set Selenium Timeout  40
     Open Browser  ${MAIN_PAGE}  ${BROWSER}
     Title Should Be  Dippa editor
 
@@ -136,12 +136,14 @@ Should Page Be Reloadable
     Reload Page
     Sleep  2s
 
-Go To Demo
-    Go To  ${DEMO_URL}
+Go To Dippa
+    Go To  ${DIPPA_URL}
 
 Open Demo
     ${DEMO_URL} =  Create New Demo
     Set Suite Variable  ${DEMO_URL}
+    ${DIPPA_URL}  Set Variable  ${DEMO_URL}
+    Set Suite Variable  ${DIPPA_URL}
 
 Create Dippa
     Go To Main Page
@@ -154,6 +156,9 @@ Create Dippa
     Click Step Two Done
     Click Step Three Done
     Click Step Four Done
+    ${DIPPA_ID} =  Get Dippa Id
+    ${DIPPA_URL}  Set Variable  ${MAIN_PAGE}${DIPPA_ID}
+    Set Suite Variable  ${DIPPA_URL}
 
 Set Fixture Text To Editor
     ${SAMPLE_JS_CONTENT} =  Get Fixture File  sample_dippa_content.js.tex
@@ -174,7 +179,7 @@ Should Not Be Compiling
     Page Should Not Contain  Compiling PDF
 
 Should Show Compile Error
-    Page Should Contain Seems that an error happened during the PDF generation
+    Page Should Contain  Uh-oh, something went wrong
 
 PDF Preview
 
@@ -191,12 +196,12 @@ PDF Preview
     Should PDF Contain  ${PDF_FILE}  Testing PDF Preview
 
     # --- Second time preview, no need to compile --- #
-    Go To Demo
+    Go To Dippa
     Preview
     Should Not Be Compiling
 
     # --- Error --- #
-    Go To Demo
+    Go To Dippa
     Set Text To Editor  "Jee Jee"
     Save Without Waiting
     Preview
@@ -205,7 +210,12 @@ PDF Preview
     Should Not Be Compiling
     Should Show Compile Error
 
+    # --- Teardown --- #
+    Go To Dippa
+
 Save To Github
+    Set Fixture Text To Editor
+    Save
     Sleep  5s
     Run  git clone ${REPO_URL} ${WORKSPACE}/github_repository
     ${DIPPA_TEX}  Get File  ${WORKSPACE}/github_repository/dippa.tex

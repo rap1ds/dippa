@@ -5,7 +5,6 @@ var Command = commandline.Command;
 var processes = {};
 
 function compile(repoDir) {
-		debugger;
 		console.log('Compiling PDF', repoDir);
 		processes[repoDir] = true;
         var compilePromise = new Promise();

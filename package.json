@@ -22,5 +22,8 @@
     },
     "scripts": {
         "test": "node_modules/jasmine-node/bin/jasmine-node --forceexit spec/"
+    },
+    "engines": {
+        "node": "0.8.x"
     }
 }
