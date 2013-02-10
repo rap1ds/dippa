@@ -189,7 +189,7 @@ PDF Preview
     Save Without Waiting
     Preview
     Should Be Compiling
-    Sleep  5s
+    Sleep  10s
     Should Not Be Compiling
     Log Variables
     ${PDF_FILE}  Download Preview PDF File
@@ -217,6 +217,9 @@ Save To Github
     Set Fixture Text To Editor
     Save
     Sleep  5s
+
+    Log Variables
+
     Run  git clone ${REPO_URL} ${WORKSPACE}/github_repository
     ${DIPPA_TEX}  Get File  ${WORKSPACE}/github_repository/dippa.tex
     Should Contain  ${DIPPA_TEX}  Lorem ipsum dolor sit amet, consectetur adipiscing elit.

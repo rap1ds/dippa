@@ -126,26 +126,27 @@ module.exports = function(grunt) {
             cmd = cmd.join(' ');
 
             grunt.log.writeln('Executing command ' + cmd + ' in directory ' + cwd);
-            require('child_process').exec(cmd, {cwd: cwd, timeout: 120000}, function (error, stdout, stderr) {
+            require('child_process').exec(cmd, {cwd: cwd, timeout: 240000}, function (error, stdout, stderr) {
                 var failed = false;
                 if (error) {
                     grunt.log.writeln(stdout);
                     grunt.log.error('Tests FAILED');
 
-                    require('child_process').exec("open report.html", {cwd: cwd, timeout: 3000}, function (error, stdout, stderr) {
-                        failed = true;
-                    });
+                    failed = true;
                 } else {
                     grunt.log.writeln(stdout);
                     grunt.log.ok('Tests passed');
                 }
 
                 stopSelenium(function(stopSuccess) {
-                    if(!stopSuccess || failed) {
-                        done(false);
-                    }
+                    require('child_process').exec("open report.html", {cwd: cwd, timeout: 3000}, function (error, stdout, stderr) {
+                        if(!stopSuccess || failed) {
+                            done(false);
+                            return;
+                        }
 
-                    done(true);
+                        done(true);
+                    });
                 });
             });            
         })    
