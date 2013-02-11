@@ -25,6 +25,7 @@ var TEMPLATE_DIR = "./templates/";
 var API = {
 
     start: function(profile) {
+        log('Running on node version: ' + process.version);
         log('Staring the API again...');
 
         var started = new Promise();
