@@ -106,6 +106,7 @@ define(['require'
 
             setCursorPosition: function(pos) {
                 this.editor.moveCursorToPosition(pos);
+                this.editor.centerSelection();
             },
 
             getCursorPosition: function() {
