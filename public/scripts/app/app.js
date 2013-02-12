@@ -93,7 +93,6 @@ define(['jquery'
         });
 
         function loadModules(id) {
-            debugger;
             // Load other modules
             require(['app/controller/window', 'app/controller/save-button'], function() {
                 exports.instance.load(id);
