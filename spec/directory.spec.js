@@ -4,6 +4,7 @@ var fs = require('fs');
 var Promise = require("promised-io/promise").Promise;
 var CommandLine = require('../modules/commandline');
 var path = require('path');
+var pdfCompiler = require('../modules/pdf_compiler');
 
 // Helpers
 var CommonHelpers = require('./helpers').Common;
@@ -184,21 +185,25 @@ describe('Directory', function (){
         it('calls commandline command to compile pdf', function() {
             var repoDir = '/home/mikko/repository';
 
-            var promise = Directory.compile(repoDir);
+            var promise = pdfCompiler.compile(repoDir);
 
             expect(promise).toBePromise();
             var commands = CommandLine.runAll.argsForCall[0][0];
 
-            expect(commands[0].origCmd).toEqual('pdflatex --interaction=nonstopmode dippa');
+            expect(commands[0].origCmd).toEqual('rm dippa.pdf');
             expect(commands[0].cwd).toEqual('/home/mikko/repository');
-            expect(commands[1].origCmd).toEqual('bibtex dippa', '/home/mikko/repository');
+            expect(commands[1].origCmd).toEqual('pdflatex --interaction=nonstopmode --jobname=tmp dippa');
             expect(commands[1].cwd).toEqual('/home/mikko/repository');
-            expect(commands[2].origCmd).toEqual('pdflatex --interaction=nonstopmode dippa');
+            expect(commands[2].origCmd).toEqual('bibtex tmp', '/home/mikko/repository');
             expect(commands[2].cwd).toEqual('/home/mikko/repository');
-            expect(commands[3].origCmd).toEqual('bibtex dippa', '/home/mikko/repository');
+            expect(commands[3].origCmd).toEqual('pdflatex --interaction=nonstopmode --jobname=tmp dippa');
             expect(commands[3].cwd).toEqual('/home/mikko/repository');
-            expect(commands[4].origCmd).toEqual('pdflatex --interaction=nonstopmode dippa');
+            expect(commands[4].origCmd).toEqual('bibtex tmp', '/home/mikko/repository');
             expect(commands[4].cwd).toEqual('/home/mikko/repository');
+            expect(commands[5].origCmd).toEqual('pdflatex --interaction=nonstopmode --jobname=tmp dippa');
+            expect(commands[5].cwd).toEqual('/home/mikko/repository');
+            expect(commands[6].origCmd).toEqual('mv tmp.pdf dippa.pdf');
+            expect(commands[6].cwd).toEqual('/home/mikko/repository');
 
             waitsForPromise(promise);
 

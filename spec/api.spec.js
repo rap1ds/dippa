@@ -2,6 +2,8 @@ var API = require('../modules/api');
 var Directory = require('../modules/directory');
 var Mongo = require('../modules/mongo');
 var _ = require('underscore');
+var pdfCompiler = require('../modules/pdf_compiler');
+var shortId = require('shortid');
 
 // Helpers
 var CommonHelpers = require('./helpers').Common;
@@ -24,11 +26,12 @@ describe('API', function() {
     });
 
     describe('getLoad', function() {
-        var readDocFileSpy, readRefFileSpy;
+        var readDocFileSpy, readRefFileSpy, mongoSpy;
 
         beforeEach(function() {
             readDocFileSpy = spyOnPromise(Directory, 'readDocumentFile');
             readRefFileSpy = spyOnPromise(Directory, 'readReferenceFile');
+            mongoSpy = spyOnPromise(Mongo, 'findByShortId');
         });
 
         it('should call readDocumentFile and readReferenceFile', function() {
@@ -44,11 +47,13 @@ describe('API', function() {
         it('should return 500 if an error occures', function() {
             var refPromise = readRefFileSpy.andCallRealSuccess();
             var docPromise = readDocFileSpy.andCallRealError();
+            var mongoPromise = mongoSpy.andCallRealSuccess();
 
             API.getLoad(req, res, next);
 
             waitsForPromise(refPromise);
             waitsForPromise(docPromise);
+            waitsForPromise(mongoPromise);
 
             runs(function() {
                 expect(res.send).toHaveBeenCalledWith({msg: 'An error occured while reading content'}, 500);
@@ -71,10 +76,12 @@ describe('API', function() {
     });
 
     describe('postCreate', function() {
+
         beforeEach(function() {
             this.directoryCreated = spyOnPromise(Directory, 'create').andCallRealSuccess('/repo/dir');
-            this.directoryCompiled = spyOnPromise(Directory, 'compile').andCallRealSuccess('> console output ok');
+            this.compiled = spyOnPromise(pdfCompiler, 'compile').andCallRealSuccess('> console output ok');
             this.mongoCreatedNew = spyOnPromise(Mongo, 'createNew').andCallRealSuccess();
+            spyOn(shortId, 'generate').andReturn("12345");
         });
 
         it('should create new document directory, compile and save to mongo', function() {
@@ -86,19 +93,18 @@ describe('API', function() {
             API.postCreate(req, res, next);
 
             // Directory
-            var args = Directory.create.mostRecentCall.args[0];
-            var id = args.id;
-            expect(_.isString(id)).toBeTruthy();
-            expect(Directory.create).toHaveBeenCalledWith({id: id, owner: 'rap1ds', name: 'dippa', noGithub: false, template: 'aalto-university'});
+            expect(Directory.create).toHaveBeenCalledWith({id: "12345", owner: 'rap1ds', name: 'dippa', noGithub: false, template: 'aalto-university'});
 
             // Compile
-            expect(Directory.compile).toHaveBeenCalledWith('/repo/dir');
+            expect(pdfCompiler.compile).toHaveBeenCalledWith('/repo/dir');
 
             // Mongo
-            expect(Mongo.createNew).toHaveBeenCalledWith(id, 'rap1ds', 'dippa', 'my@email.com', false);
+            args = Directory.create.mostRecentCall.args[0];
+            var id = args.id;
+            expect(Mongo.createNew).toHaveBeenCalledWith("12345", 'rap1ds', 'dippa', undefined, false, "12345");
 
             waitsForPromise(this.directoryCreated);
-            waitsForPromise(this.directoryCompiled);
+            waitsForPromise(this.compiled);
             waitsForPromise(this.mongoCreatedNew);
 
             runs(function() {

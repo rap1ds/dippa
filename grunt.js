@@ -50,6 +50,7 @@ module.exports = function(grunt) {
         require('child_process').exec(cmd, {cwd: cwd}, function (error, stdout, stderr) {
             if (error) {
                 grunt.log.writeln(stdout);
+                grunt.log.writeln(error);
                 grunt.log.error('Test runner exited with errors');
                 done(false);
             } else {

@@ -1,9 +1,10 @@
 var Mongo = require('../modules/mongo');
 var _ = require('underscore');
 var DateUtils = require('../modules/dateutils');
+var mongoProfiles = require('../modules/mongo_profiles');
 
 // Initialize database for tests
-Mongo.init(Mongo.profiles.test);
+Mongo.init(mongoProfiles.test);
 
 describe('Mongo', function() {
     var fakeDippa, FakeDippa, fakePromiseReturningFunction, fakePromise;

@@ -32,9 +32,9 @@ function isCompiling(repoDir) {
 	return !!processes[repoDir];
 }
 
-module.exports = Object.freeze({
+module.exports = {
 	compile: compile,
 	isCompiling: isCompiling
-});
+};
 
 console.log('PDF compiler initialized');

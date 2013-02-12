@@ -69,6 +69,11 @@ var API = {
             log('About to listen port ' + this.port);
             app.listen(this.port);
 
+
+            if(API.testDippaId) {
+                createTestDippa(API.testDippaId);
+            }
+
             log('Listening port ' + this.port);
             log('Application successfully started');
             started.resolve();
@@ -104,6 +109,7 @@ var API = {
         app.use(express.static(path.resolve(__dirname, '../public')));
         app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 
+        API.testDippaId = "1234";
         API.port = 5555;
         API.mongoProfile = mongoProfiles.dev;
         API.directoryProfile = Directory.profiles.dev;
@@ -113,6 +119,7 @@ var API = {
         app.use(express.static(path.resolve(__dirname, '../public')));
         app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 
+        API.testDippaId = "1234";
         API.port = 8888;
         API.mongoProfile = mongoProfiles.test;
         API.directoryProfile = Directory.profiles.test;
@@ -122,6 +129,7 @@ var API = {
         app.use(express.static(path.resolve(__dirname, '../public')));
         app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 
+        API.testDippaId = "1234";
         API.port = 7777;
         API.mongoProfile = mongoProfiles.staging;
         API.directoryProfile = Directory.profiles.staging;
@@ -142,13 +150,16 @@ var API = {
     },
 
     getId: function(req, res, next) {
-        var id = req.params.id
-        Mongo.findByShortId(id).then(function(data) {
-            if(data) {
+        var id = req.params.id;
+
+        dippaExists(id).then(function(exists) {
+            if(exists) {
                 res.sendfile('./views/index.html');
             } else {
                 res.redirect('/');
             }
+        }, function() {
+            res.send(500);
         });
     },
 
@@ -214,17 +225,11 @@ var API = {
         var id = shortId.generate();
         var previewId = shortId.generate();
 
-        var directoryOptions = {id: id, name: name, owner: owner, noGithub: isDemo, template: template};
+        var done = createAndCompile(id, name, owner, isDemo, template, previewId);
 
-        var createdAndCompiled = p.seq([Directory.create, pdfCompiler.compile], directoryOptions);
-        var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo, previewId);
-
-        p.all(createdAndCompiled, mongoCreated).then(function() {
-            log('POST Created new Dippa', directoryOptions);
-            log('previewId: ' + previewId);
+        done.then(function() {
             res.send(id);
         }, function(error) {
-            log.error('POST Failed to create new Dippa', directoryOptions);
             res.send(error);
         });
     }
@@ -327,6 +332,64 @@ app.post('/save/:id', function(req, res){
 
     });
 });
+
+function createTestDippa(id) {
+    dippaExists(id).then(function(exists) {
+        if(exists) {
+            log('Test dippa creation canceled, dippa ' + id + ' exists');
+            return;
+        } else {
+            createAndCompile(id, "tester", "tester", true, 'aalto-thesis', id).then(function() {
+                log("Test dippa " + id + " created successfully");
+            }, function() {
+                log.error("Could not create test dippa, error while compiling");
+            });
+        }
+    }, function(error) {
+        log.error('Could not create test dippa');
+    });
+}
+
+/**
+    Give `id` and get back true or false if
+    dippa with given id exists or not.
+*/
+function dippaExists(id) {
+    var promise = new Promise();
+    Mongo.findByShortId(id).then(function(data) {
+        if(data) {
+            promise.resolve(true);
+        } else {
+            promise.resolve(false);
+        }
+    }, function(error) {
+        log.error("Error while resolving dippa existence", error);
+        promise.reject();
+    });
+
+    return promise;
+}
+
+function createAndCompile(id, name, owner, isDemo, template, previewId) {
+    var email; // email is not used atm.
+
+    var directoryOptions = {id: id, name: name, owner: owner, noGithub: isDemo, template: template};
+
+    log('Starting to create and compile repository with options: ' + JSON.stringify(directoryOptions));
+
+    var createdAndCompiled = p.seq([Directory.create, pdfCompiler.compile], directoryOptions);
+    var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo, previewId);
+
+    var done = p.all(createdAndCompiled, mongoCreated);
+    done.then(function() {
+        log('POST Created new Dippa', directoryOptions);
+        log('previewId: ' + previewId);
+    }, function(error) {
+        log.error('POST Failed to create new Dippa', directoryOptions);
+    });
+
+    return done;
+}
 
 function readdir(repoDir, successCallback, errorCallback) {
     var exclude = ['.git', 'dippa.tex', 'ref.bib', 'dippa.aux', 'dippa.bbl', 'dippa.blg', 'dippa.dvi', 'dippa.log', 'dippa.pdf'];
