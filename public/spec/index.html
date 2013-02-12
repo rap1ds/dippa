@@ -6,35 +6,37 @@
     <link rel="stylesheet" type="text/css" href="lib/jasmine-1.1.0/jasmine.css">
     <script type="text/javascript" src="lib/jasmine-1.1.0/jasmine.js"></script>
     <script type="text/javascript" src="lib/jasmine-1.1.0/jasmine-html.js"></script>
-
-    <!-- include library files here... -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-	<script src="../scripts/underscore.js"></script>
-    <script src="../src/ace-unmin.js" type="text/javascript" charset="utf-8"></script>
-    <script src="../src/mode-latex.js" type="text/javascript" charset="utf-8"></script>
-    <script src="../scripts/handlebars-1.0.0.beta.6.js"></script>
-    <script type="text/javascript" src="../scripts/spine/spine.js"></script>
-    <script src="../scripts/spine/ajax.js"></script>
-    <script src="../scripts/spine/manager.js"></script>
-    <script src="../scripts/spine/route.js"></script>
-
-    <!-- include source files here... -->
-    <script type="text/javascript" src="../scripts/namespace.js"></script>
-    <script type="text/javascript" src="../scripts/models.js"></script>
-    <script type="text/javascript" src="../scripts/controllers.js"></script>
-
-    <!-- include spec files here... -->
-    <script type="text/javascript" src="spec/SpecHelper.js"></script>
-    <script type="text/javascript" src="spec/ModelsSpec.js"></script>
-    <script type="text/javascript" src="spec/ControllersSpec.js"></script>
-	<script type="text/javascript" src="spec/RegexpSpec.js"></script>
-
 </head>
 <body>
 
 <script type="text/javascript">
-    jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-    jasmine.getEnv().execute();
+ 
+var require = {
+    baseUrl: "../scripts",
+    paths: {
+        'spec': '../spec/spec',
+        'text': '../spec/text'
+    }
+};
+ 
+</script>
+
+<script type="text/javascript" src="../scripts/require.js"></script>
+ 
+<script type="text/javascript">
+ 
+    require(
+        [
+            "jquery",
+            "text",
+            "spec/bibtex-parser.spec",
+        ],
+        function($){
+            jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+            jasmine.getEnv().execute();
+ 
+        });
+ 
 </script>
 
 </body>
