@@ -116,6 +116,12 @@ define(['require'
             }
         }
 
+        function getActiveDocument() {
+            // Be careful! Is this function really needed? Should we
+            // abstract this away?
+            return activeDocument;
+        }
+
         function setActiveDocument(value) {
             if(value !== 'document' && value !== 'references') {
                 throw 'Illegal active document value ' + value;
@@ -164,6 +170,7 @@ define(['require'
             load: load,
             save: save,
             setActiveDocument: setActiveDocument,
+            getActiveDocument: getActiveDocument,
             onEditorCursorChange: onEditorCursorChange
         });
 

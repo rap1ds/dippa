@@ -5,7 +5,8 @@ define(['require'
     , 'app/controller/outline'
     , 'app/controller/editor_format_keybindings'
     , 'app/controller/spellcheck-button'
-    , 'app/module/tex-analyzer'],
+    , 'app/module/tex-analyzer'
+    , 'app/module/bibtex-parser'],
 
     function(require, Spine, Outline, editorFormatKeybindinds) {
 
@@ -49,14 +50,29 @@ define(['require'
 
                 editorFormatKeybindinds(this.editor);
 
+                var session = this.session;
+
                 this.session.on('change', this.proxy(function() {
                     Spine.trigger('change');
                     this.setChanged(true);
+
+                    var datamanager = require('app/module/datamanager');
+
+                    // Ugly.
+                    if(datamanager.getActiveDocument() === "references") {
+                        debugger;
+                        var parser = require('app/module/bibtex-parser');
+                        Outline.update(parser(session.getValue()));
+                    }
                 }));
 
-                var session = this.session;
-
                 this.session.on('parsed', function(parsed) {
+                    var datamanager = require('app/module/datamanager');
+                    
+                    // Ugly.
+                    if(datamanager.getActiveDocument() === "references") {
+                        return;
+                    }
                     var texAnalyzer = require('app/module/tex-analyzer');
                     var outline = texAnalyzer.outline(parsed);
                     Outline.update(outline);
