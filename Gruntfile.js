@@ -16,40 +16,7 @@ module.exports = function(grunt) {
         jshint: {
             files: ['server.js', 'grunt.js', 'fixtures/**/*.js', 'modules/**/*.js', 'spec/**/*.js'],
             options: {
-                curly: true,
-                eqeqeq: true,
-                immed: true,
-                latedef: true,
-                newcap: true,
-                noarg: true,
-                sub: true,
-                undef: true,
-                boss: true,
-                eqnull: true,
-                laxcomma: true,
-                node: true,
-                globals: {
-                    jQuery: true,
-
-                    require: true,
-                    define: true,
-                    module: true,
-                    console: true,
-                    
-                    // Jasmine
-                    expect: true,
-                    it: true,
-                    xit: true,
-                    describe: true,
-                    xdescribe: true,
-                    jasmine: true,
-                    beforeEach: true,
-                    afterEach: true,
-                    runs: true,
-                    waitsFor: true,
-                    waits: true,
-                    spyOn: true
-                }
+                jshintrc: '.jshintrc'
             }
         }
     });
