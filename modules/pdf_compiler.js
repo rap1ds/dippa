@@ -10,16 +10,10 @@ function compile(repoDir) {
         var compilePromise = new Promise();
 
         var remove = new Command('rm dippa.pdf', repoDir);
+        var latexmk = new Command('latexmk -pdf -silent -e \'$pdflatex_silent_switch="-interaction=nonstopmode"\' -jobname=tmp dippa', repoDir);
+        var copy = new Command('cp tmp.pdf dippa.pdf', repoDir);
 
-        var pdflatex1 = new Command('pdflatex --interaction=nonstopmode --jobname=tmp dippa', repoDir);
-        var bibtex1 = new Command('bibtex tmp', repoDir);
-        var pdflatex2 = new Command('pdflatex --interaction=nonstopmode --jobname=tmp dippa', repoDir);
-        var bibtex2 = new Command('bibtex tmp', repoDir);
-        var pdflatex3 = new Command('pdflatex --interaction=nonstopmode --jobname=tmp dippa', repoDir);
-
-        var copy = new Command('mv tmp.pdf dippa.pdf', repoDir);
-
-        commandline.runAll([remove, pdflatex1, bibtex1, pdflatex2, bibtex2, pdflatex3, copy]).then(function(output) {
+        commandline.runAll([remove, latexmk, copy]).then(function(output) {
             console.log('Compiling done', repoDir);
             processes[repoDir] = false;
             compilePromise.resolve(output);
