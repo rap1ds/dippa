@@ -14,6 +14,7 @@ function compile(repoDir) {
         var copy = new Command('cp tmp.pdf dippa.pdf', repoDir);
 
         commandline.runAll([remove, latexmk, copy]).then(function(output) {
+            console.log(output);
             console.log('Compiling done', repoDir);
             processes[repoDir] = false;
             compilePromise.resolve(output);
