@@ -17,6 +17,9 @@ function compile(repoDir) {
             console.log('Compiling done', repoDir);
             processes[repoDir] = false;
             compilePromise.resolve(output);
+        }, function(e) {
+            console.log('Compile failed');
+            console.error(e);
         });
 
         return compilePromise;
