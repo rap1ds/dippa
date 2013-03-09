@@ -3,16 +3,33 @@ var p = require("promised-io/promise");;
 var when = p.when;
 var Promise = p.Promise;
 var log = require('../modules/log');
+var _ = require('underscore');
 
 function logOutput(output) {
     output = output || {};
     log('[' + output.type + ']' + ' ' + output.output);
 }
 
+function mergeQuotes(quoteMark) {
+    return function(previousValues, currentValue){
+        var previous = _.last(previousValues) || "";
+        var inQuote = previous.split(quoteMark).length % 2 === 0;
+
+        if(inQuote) {
+            return _.initial(previousValues).concat(previous + " " + currentValue);
+        } else {
+            return previousValues.concat(currentValue);
+        }
+    }
+}
+
 var CommandLine = {
 
     _splitCmd: function(cmd) {
         var cmdParts = cmd.split(' ');
+
+        cmdParts = cmdParts.reduce(mergeQuotes("'"), []);
+        cmdParts = cmdParts.reduce(mergeQuotes('"'), []);
 
         var command = cmdParts.shift();
 
