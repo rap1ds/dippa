@@ -4,16 +4,32 @@ var Command = commandline.Command;
 
 var processes = {};
 
+
+function ignoreLatexmkRunLog() {
+    var ignoreNext = false;
+    return function(output) {
+        if(ignoreNext) {
+            ignoreNext = false;
+            return false;
+        } else {
+            var isLatexMkLog = output.output === 'Latexmk: Run number 1 of rule \'pdflatex\'';
+            ignoreNext = isLatexMkLog;
+            return !isLatexMkLog;
+        }
+    };
+}
+
 function compile(repoDir) {
 		console.log('Compiling PDF', repoDir);
 		processes[repoDir] = true;
         var compilePromise = new Promise();
 
         var remove = new Command('rm dippa.pdf', repoDir);
-        var latexmk = new Command('latexmk -pdf -silent -e \'$pdflatex_silent_switch="-interaction=nonstopmode"\' -jobname=tmp dippa', repoDir);
+        var latexmk = new Command('latexmk -silent -pdf -r ../../../latexmkrc -jobname=tmp dippa', repoDir);
         var copy = new Command('cp tmp.pdf dippa.pdf', repoDir);
 
         commandline.runAll([remove, latexmk, copy]).then(function(output) {
+            output = output.filter(ignoreLatexmkRunLog());
             console.log(output);
             console.log('Compiling done', repoDir);
             processes[repoDir] = false;

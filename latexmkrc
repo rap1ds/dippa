@@ -1,0 +1,1 @@
+$pdflatex_silent_switch = '-interaction=nonstopmode';
