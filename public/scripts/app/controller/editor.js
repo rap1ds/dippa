@@ -6,7 +6,8 @@ define(['require'
     , 'app/controller/editor_format_keybindings'
     , 'app/controller/spellcheck-button'
     , 'app/module/tex-analyzer'
-    , 'app/module/bibtex-parser'],
+    , 'app/module/bibtex-parser'
+    , 'app/controller/find'],
 
     function(require, Spine, Outline, editorFormatKeybindinds) {
 
@@ -45,6 +46,19 @@ define(['require'
                         datamanager.save();
 
                         _gaq.push(['_trackEvent', 'Keyboard shortcuts', 'Save']);
+                    }
+                });
+
+                this.editor.commands.addCommand({
+                    name: 'find',
+                    bindKey: {
+                        win: 'Ctrl-F',
+                        mac: 'Command-F',
+                        sender: 'editor'
+                    },
+                    exec: function(env, args, request) {
+                        var find = require('app/controller/find');
+                        find.show();
                     }
                 });
 

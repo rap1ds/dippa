@@ -127,3 +127,7 @@ border-bottom-left-radius: 5px !important;
     margin-top: 5px;
     margin-right: 0px;
 }
+
+#find-container {
+    display: none;
+}
