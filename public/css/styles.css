@@ -117,7 +117,7 @@ border-bottom-left-radius: 5px !important;
 
 .nav-search-form {
     margin-top: 5px;
-    margin-left: 5px;
+    margin-left: 10px;
     margin-right: 5px;
     margin-bottom: 10px;
 }
@@ -130,4 +130,12 @@ border-bottom-left-radius: 5px !important;
 
 #find-container {
     display: none;
+}
+
+.icon-remove {
+    opacity: 0.5;
+}
+
+.icon-remove:hover {
+    opacity: 1;
 }
