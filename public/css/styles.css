@@ -90,3 +90,40 @@ q:after {
 .without-dash:before {
     content: '';
 }
+
+.nav-find-elements {
+    float: right; 
+    margin-right: 35px; 
+
+    background-image: none;
+    background-color: #f7f7f9;
+
+-webkit-border-bottom-right-radius: 5px !important;
+-webkit-border-bottom-left-radius: 5px !important;
+-moz-border-radius-bottomright: 5px !important;
+-moz-border-radius-bottomleft: 5px !important;
+border-bottom-right-radius: 5px !important;
+border-bottom-left-radius: 5px !important;
+}
+
+.nav-find-input {
+    margin-top: 5px;
+    width: 188px;
+}
+
+.nav-find-btn {
+
+}
+
+.nav-search-form {
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 10px;
+}
+
+#close-find {
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-right: 0px;
+}
