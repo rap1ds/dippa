@@ -5,6 +5,7 @@ define(['jquery', 'app/controller/editor'], function($) {
     var findButton = $('#find-button', container);
     var closeButton = $('#close-find', container);
     var findInput = $('#find-input', container);
+    var findForm = $('#find-form', container);
 
     function show(editor) {
         container.show();
@@ -25,8 +26,12 @@ define(['jquery', 'app/controller/editor'], function($) {
 
     function find() {
         var editor = require('app/controller/editor').instance.editor;
-        console.log('FIND', findInput.val());
         editor.find(findInput.val());
+    }
+
+    function submit(e) {
+        find();
+        e.preventDefault();
     }
 
     // Bind listeners
@@ -34,6 +39,7 @@ define(['jquery', 'app/controller/editor'], function($) {
         closeButton.click(close);
         findButton.click(find);
         findInput.keydown(keydown);
+        findForm.submit(submit);
     });
 
     return Object.freeze({
