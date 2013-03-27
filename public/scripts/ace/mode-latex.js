@@ -988,8 +988,10 @@ oop.inherits(Mode, TextMode);
             var worker = new WorkerClient(["ace"], "ace/mode/latex_worker", "LatexWorker");
             worker.attachToDocument(session.getDocument());
 
+            var startSpellcheck = _.debounce(spellcheck, 2000);
+
             worker.on("parsed", function (e) {
-                spellcheck(e.data);
+           		startSpellcheck(e.data);
                 session._emit("parsed", e.data);
             }.bind(this));
 
