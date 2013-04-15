@@ -9,7 +9,7 @@ define(['jquery', 'app/controller/editor'], function($) {
 
     function show(editor) {
         container.show();
-        findInput.focus();
+        findInput.select();
     }
 
     function close() {
