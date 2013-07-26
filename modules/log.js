@@ -28,13 +28,17 @@ var stringify = function(args) {
     }).join(', ');
 };
 
+function addDate(str) {
+    return [(new Date()).toISOString(), str].join(' ');
+}
+
 log = function () {
-    var msg = stringify(arguments);
+    var msg = addDate(stringify(arguments));
     log.profiles[profile].log(msg);
 };
 
 log.error = function () {
-    var msg = stringify(arguments);
+    var msg = addDate(stringify(arguments));
     log.profiles[profile].error(msg);
 };
 
@@ -65,7 +69,6 @@ log.profiles = {
 
 log.init = function() {
     profile = config.profile;
-    console.log("Initialized logging with profile " + profile);
     log("Initialized logging with profile " + profile);
 };
 

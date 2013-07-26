@@ -1,6 +1,7 @@
 var Promise = require("promised-io/promise").Promise;
 var commandline = require('../modules/commandline');
 var Command = commandline.Command;
+var log = require('../modules/log')
 
 var processes = {};
 
@@ -20,7 +21,7 @@ function ignoreLatexmkRunLog() {
 }
 
 function compile(repoDir) {
-		console.log('Compiling PDF', repoDir);
+		log('Compiling PDF', repoDir);
 		processes[repoDir] = true;
         var compilePromise = new Promise();
 
@@ -30,13 +31,13 @@ function compile(repoDir) {
 
         commandline.runAll([remove, latexmk, copy]).then(function(output) {
             output = output.filter(ignoreLatexmkRunLog());
-            console.log(output);
-            console.log('Compiling done', repoDir);
+            log(output);
+            log('Compiling done', repoDir);
             processes[repoDir] = false;
             compilePromise.resolve(output);
         }, function(e) {
-            console.log('Compile failed');
-            console.error(e);
+            log.error('Compile failed');
+            log.error(e);
         });
 
         return compilePromise;
@@ -51,4 +52,4 @@ module.exports = {
 	isCompiling: isCompiling
 };
 
-console.log('PDF compiler initialized');
+log('PDF compiler initialized');
