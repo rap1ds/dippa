@@ -1,0 +1,13 @@
+# Dippa editor creates a lot of logs and thus they have to be rotated.
+# `logrotate` is a neat UNIX utility to do the work.
+#
+# Here's an example logrotate configuration.
+# Save it to `/etc/logrotate.d/dippa`
+#
+
+/path/to/logfile.log {
+        size 50M
+        create 755 user user
+        rotate 4
+        missingok
+}
