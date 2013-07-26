@@ -57,6 +57,11 @@ var CommandLine = {
             var string = data.toString('utf-8');
             output.stderr(string);
         });
+
+        spawnOperation.on('error', function(e) {
+            log.error(['An error occured while running command', cmd, 'with args', args]);
+            log.error(e);
+        });
     },
 
     runAll: function(commands) {
