@@ -1,6 +1,7 @@
-var CommandLine = require('../modules/commandline')
+var CommandLine = require('../modules/commandline');
 
 describe('CommandLine', function() {
+    "use strict";
 
     describe('command', function() {
         it('should be defined', function() {
@@ -163,5 +164,5 @@ describe('CommandLine', function() {
                 ]);
             });
         });
-    })
+    });
 });

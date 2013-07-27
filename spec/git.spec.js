@@ -2,6 +2,7 @@ var commandLine = require('../modules/commandline');
 var git = require('../modules/git');
 
 describe('git.js', function() {
+    "use strict";
 
     describe('git commands', function() {
         it('add()', function(){

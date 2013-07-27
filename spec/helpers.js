@@ -5,9 +5,11 @@ var _ = require('underscore');
 var Integration = {
 
     testRequest: function(opts, confs, callback) {
+        "use strict";
+
         var promiseResult;
 
-        var promise = Promise();
+        var promise = new Promise();
         opts = opts || {};
         opts.port = confs.port;
         opts.headers = opts.headers || {
@@ -57,6 +59,7 @@ var Integration = {
 
 var Common = {
     waitsForPromise: function(promise) {
+        "use strict";
 
         promise.then(function resolved() {
             promise.resolved = true;
@@ -72,6 +75,8 @@ var Common = {
     },
 
     spyOnPromise: function(Klass, method) {
+        "use strict";
+        
             if(!method) {
                 throw "Please give the method to spy as a String";
             }

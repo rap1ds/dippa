@@ -10,19 +10,23 @@ Directory.init(Directory.profiles.test);
 var confs = {port: 8888};
 
 var testRequest = function(opts, callback) {
+    "use strict";
     return IntegrationHelpers.testRequest(opts, confs, callback);
 };
 
 var apiStarted = false;
 started.then(function() {
+    "use strict";
     apiStarted = true;
 });
 
 waitsFor(function() {
+    "use strict";
     return apiStarted;
 });
 
 describe('Integration test', function() {
+    "use strict";
 
     beforeEach(function() {
         var dbFixturesLoaded,

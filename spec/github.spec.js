@@ -1,6 +1,7 @@
 var Github = require('../public/scripts/github.js');
 
 describe('Github', function() {
+    "use strict";
 
     describe('parseRepositoryUrl', function() {
 

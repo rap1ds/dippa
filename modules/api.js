@@ -22,6 +22,64 @@ var pdfCompiler = require('../modules/pdf_compiler');
 var REPOSITORY_DIR = "./public/repositories/";
 var TEMPLATE_DIR = "./templates/";
 
+/**
+    Give `id` and get back true or false if
+    dippa with given id exists or not.
+*/
+function dippaExists(id) {
+    var promise = new Promise();
+    Mongo.findByShortId(id).then(function(data) {
+        if(data) {
+            promise.resolve(true);
+        } else {
+            promise.resolve(false);
+        }
+    }, function(error) {
+        log.error("Error while resolving dippa existence", error);
+        promise.reject();
+    });
+
+    return promise;
+}
+
+function createAndCompile(id, name, owner, isDemo, template, previewId) {
+    var email; // email is not used atm.
+
+    var directoryOptions = {id: id, name: name, owner: owner, noGithub: isDemo, template: template};
+
+    log('Starting to create and compile repository with options: ' + JSON.stringify(directoryOptions));
+
+    var createdAndCompiled = p.seq([Directory.create, pdfCompiler.compile], directoryOptions);
+    var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo, previewId);
+
+    var done = p.all(createdAndCompiled, mongoCreated);
+    done.then(function() {
+        log('POST Created new Dippa', directoryOptions);
+        log('previewId: ' + previewId);
+    }, function(error) {
+        log.error('POST Failed to create new Dippa', directoryOptions);
+    });
+
+    return done;
+}
+
+function createTestDippa(id) {
+    dippaExists(id).then(function(exists) {
+        if(exists) {
+            log('Test dippa creation canceled, dippa ' + id + ' exists');
+            return;
+        } else {
+            createAndCompile(id, "tester", "tester", true, 'aalto-thesis', id).then(function() {
+                log("Test dippa " + id + " created successfully");
+            }, function() {
+                log.error("Could not create test dippa, error while compiling");
+            });
+        }
+    }, function(error) {
+        log.error('Could not create test dippa');
+    });
+}
+
 var API = {
 
     start: function(profile) {
@@ -335,64 +393,6 @@ app.post('/save/:id', function(req, res){
     });
 });
 
-function createTestDippa(id) {
-    dippaExists(id).then(function(exists) {
-        if(exists) {
-            log('Test dippa creation canceled, dippa ' + id + ' exists');
-            return;
-        } else {
-            createAndCompile(id, "tester", "tester", true, 'aalto-thesis', id).then(function() {
-                log("Test dippa " + id + " created successfully");
-            }, function() {
-                log.error("Could not create test dippa, error while compiling");
-            });
-        }
-    }, function(error) {
-        log.error('Could not create test dippa');
-    });
-}
-
-/**
-    Give `id` and get back true or false if
-    dippa with given id exists or not.
-*/
-function dippaExists(id) {
-    var promise = new Promise();
-    Mongo.findByShortId(id).then(function(data) {
-        if(data) {
-            promise.resolve(true);
-        } else {
-            promise.resolve(false);
-        }
-    }, function(error) {
-        log.error("Error while resolving dippa existence", error);
-        promise.reject();
-    });
-
-    return promise;
-}
-
-function createAndCompile(id, name, owner, isDemo, template, previewId) {
-    var email; // email is not used atm.
-
-    var directoryOptions = {id: id, name: name, owner: owner, noGithub: isDemo, template: template};
-
-    log('Starting to create and compile repository with options: ' + JSON.stringify(directoryOptions));
-
-    var createdAndCompiled = p.seq([Directory.create, pdfCompiler.compile], directoryOptions);
-    var mongoCreated = Mongo.createNew(id, owner, name, email, isDemo, previewId);
-
-    var done = p.all(createdAndCompiled, mongoCreated);
-    done.then(function() {
-        log('POST Created new Dippa', directoryOptions);
-        log('previewId: ' + previewId);
-    }, function(error) {
-        log.error('POST Failed to create new Dippa', directoryOptions);
-    });
-
-    return done;
-}
-
 function readdir(repoDir, successCallback, errorCallback) {
     var exclude = ['.git', 'dippa.tex', 'ref.bib', 'dippa.aux', 'dippa.bbl', 'dippa.blg', 'dippa.dvi', 'dippa.log', 'dippa.pdf'];
 
@@ -432,7 +432,7 @@ app.post('/upload/:id', function(req, res, next) {
         var fs = require('fs'),
             util = require('util');
 
-        var is = fs.createReadStream(file.path)
+        var is = fs.createReadStream(file.path);
         var os = fs.createWriteStream(repoDir + file.name);
 
         util.pump(is, os, function() {

@@ -29,10 +29,32 @@ module.exports = function(grunt) {
                 sub: true,
                 undef: true,
                 boss: true,
-                eqnull: true
+                eqnull: true,
+                laxcomma: true,
+                node: true,
+                es5: true
             },
             globals: {
-                jQuery: true
+                jQuery: true,
+
+                require: true,
+                define: true,
+                module: true,
+                console: true,
+                
+                // Jasmine
+                expect: true,
+                it: true,
+                xit: true,
+                describe: true,
+                xdescribe: true,
+                jasmine: true,
+                beforeEach: true,
+                afterEach: true,
+                runs: true,
+                waitsFor: true,
+                waits: true,
+                spyOn: true
             }
         }
     });
@@ -149,8 +171,8 @@ module.exports = function(grunt) {
                         done(true);
                     });
                 });
-            });            
-        })    
+            });
+        });
     });
 
     grunt.registerTask('backup-repositories', 'Backup repositories', function(dest) {
@@ -164,7 +186,7 @@ module.exports = function(grunt) {
             return "backup_repositories_" + timestamp + ".tar.gz";
         }
 
-        var dest = path.resolve(dest);
+        dest = path.resolve(dest);
         var cwd = path.resolve();
         var repositoryPath = path.resolve(REPOSITORY_PATH);
         var relativeRepositoryPath = path.relative(cwd, repositoryPath);
@@ -233,10 +255,10 @@ module.exports = function(grunt) {
                 }
                 grunt.log.writeln(newRepo.html_url);
                 done();
-            })
+            });
         });
     });
 
     // Default task.
-    grunt.registerTask('default', 'test');
+    grunt.registerTask('default', ['lint', 'test']);
 };

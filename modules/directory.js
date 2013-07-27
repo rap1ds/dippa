@@ -11,7 +11,21 @@ var log = require('../modules/log');
 
 var REPOSITORY_DIR = "./public/repositories/";
 
+function readContent(directory) {
+    "use strict";
+
+    var promise = new Promise();
+
+    var files = fs.readdir(directory, function(err, files) {
+        promise.resolve(files);
+    });
+
+    return promise;
+}
+
 function ensureEmptyRepository(workingDir, allowedFiles) {
+    "use strict";
+
     allowedFiles = allowedFiles || [];
     workingDir = path.resolve(workingDir);
 
@@ -24,16 +38,6 @@ function ensureEmptyRepository(workingDir, allowedFiles) {
         log('Is empty repository? ' + isEmpty + ', files: ' + JSON.stringify(files) + ', allowed: ' + JSON.stringify(allowedFiles));
         promise.resolve(isEmpty);
     });
-    return promise;
-}
-
-function readContent(directory) {
-    var promise = new Promise();
-
-    var files = fs.readdir(directory, function(err, files) {
-        promise.resolve(files);
-    });
-
     return promise;
 }
 
@@ -55,6 +59,8 @@ var Directory = {
     },
 
     init: function(profile) {
+        "use strict";
+
         _.bindAll(this);
 
         profile = profile || this.profiles.dev;
@@ -64,6 +70,8 @@ var Directory = {
     },
 
     loadFixtures: function() {
+        "use strict";
+
         var promise = new Promise();
 
         // Double check
@@ -86,6 +94,8 @@ var Directory = {
     },
 
     create: function(opts) {
+        "use strict";
+
         var id = opts.id;
         var name = opts.name;
         var owner = opts.owner;
@@ -130,12 +140,16 @@ var Directory = {
     },
 
     resolveTemplatePath: function(template) {
+        "use strict";
+
         template = this.templatesAvailable.indexOf(template) !== -1 ? template : this.templatesAvailable[0];
         template = path.resolve(this.profile.templateDir, template);
         return template;
     },
 
     templateCommands: function(templatePath, repoDir) {
+        "use strict";
+
         var promise = new Promise();
 
         var commands = [];
@@ -153,6 +167,8 @@ var Directory = {
     },
 
     readFile: function(id, filename) {
+        "use strict";
+
         var promise = new Promise();
 
         fs.readFile(REPOSITORY_DIR + '/' + id + '/' + filename, 'UTF-8', function(err, data) {
@@ -167,6 +183,8 @@ var Directory = {
     },
 
     deleteFile: function(id, filename) {
+        "use strict";
+
         var promise = new Promise();
 
         fs.unlink(REPOSITORY_DIR + '/' + id + '/' + filename, function(err) {
@@ -181,10 +199,14 @@ var Directory = {
     },
 
     readDocumentFile: function(id) {
+        "use strict";
+
         return this.readFile(id, 'dippa.tex');
     },
 
     readReferenceFile: function(id) {
+        "use strict";
+        
         return this.readFile(id, 'ref.bib');
     }
 };

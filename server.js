@@ -10,6 +10,7 @@ API.start();
 
 // The best way to trigger this? Timer?
 _.delay(function removeOldDemos() {
+    "use strict";
     var commandsToRun = [];
 
     var REPOSITORY_DIR = "./public/repositories/";

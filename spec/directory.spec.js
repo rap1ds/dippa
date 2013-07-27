@@ -12,6 +12,7 @@ var waitsForPromise = CommonHelpers.waitsForPromise;
 var spyOnPromise = CommonHelpers.spyOnPromise;
 
 describe('Directory', function (){
+    "use strict";
 
     beforeEach(function() {
         this.addMatchers({
@@ -85,7 +86,7 @@ describe('Directory', function (){
         it('should call fs.readFile with repodir and filename', function() {
             Directory.readFile('1234', 'filename.txt');
 
-            var args = fs.readFile.mostRecentCall.args
+            var args = fs.readFile.mostRecentCall.args;
 
             expect(fs.readFile).toHaveBeenCalled();
             expect(args[0]).toEqual('./public/repositories_test//1234/filename.txt');
@@ -122,7 +123,7 @@ describe('Directory', function (){
         it('should call fs.unlink with repodir and filename', function() {
             Directory.deleteFile('1234', 'filename.txt');
 
-            var args = fs.unlink.mostRecentCall.args
+            var args = fs.unlink.mostRecentCall.args;
 
             expect(fs.unlink).toHaveBeenCalled();
             expect(args[0]).toEqual('./public/repositories_test//1234/filename.txt');
@@ -202,7 +203,7 @@ describe('Directory', function (){
             runs(function() {
                 expect(promise.resolved).toBeTruthy();
                 expect(promise.result[0]).toEqual(["> commandline output"]);
-            })
+            });
         });
     });
 

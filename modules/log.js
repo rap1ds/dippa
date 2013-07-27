@@ -7,6 +7,8 @@ var log;
 var profile = 'development';
 
 var stringify = function(args) {
+    "use strict";
+
     return _.toArray(args).map(function(arg) {
         if(_.isArray(arg)) {
 
@@ -29,20 +31,28 @@ var stringify = function(args) {
 };
 
 function addDate(str) {
+    "use strict";
+
     return [(new Date()).toISOString(), str].join(' ');
 }
 
 log = function () {
+    "use strict";
+
     var msg = addDate(stringify(arguments));
     log.profiles[profile].log(msg);
 };
 
 log.error = function () {
+    "use strict";
+
     var msg = addDate(stringify(arguments));
     log.profiles[profile].error(msg);
 };
 
 function sendToLoggly(msg) {
+    "use strict";
+
     if(!config.loggly.token) {
         throw "No config.loggly.token";
     }
@@ -58,7 +68,7 @@ var logglyLogger = {
 var consoleLogger = {
     log: console.log,
     error: console.error
-}
+};
 
 log.profiles = {
     development: consoleLogger,
@@ -68,6 +78,8 @@ log.profiles = {
 };
 
 log.init = function() {
+    "use strict";
+    
     profile = config.profile;
     log("Initialized logging with profile " + profile);
 };

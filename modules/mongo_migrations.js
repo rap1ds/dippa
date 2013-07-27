@@ -6,12 +6,14 @@
 var mongoProfiles = require('./mongo_profiles');
 var mongoose = require('mongoose');
 var _ = require('underscore');
-var log = require('../modules/log')
+var log = require('../modules/log');
 var shortId = require('shortid');
 
 var migrations = [
 
 	function addPreviewId(mongoose) {
+		"use strict";
+
 		var Dippa = mongoose.model('Dippa');
 
 		log("Running migration 'add preview id'");
@@ -29,9 +31,11 @@ var migrations = [
 			});
 		});
 	}
-]
+];
 
 module.exports = function(mongoose) {
+	"use strict";
+	
 	migrations.forEach(function(migration) {
 		migration(mongoose);
 	});

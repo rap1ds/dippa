@@ -1,16 +1,20 @@
 var spawn = require('child_process').spawn;
-var p = require("promised-io/promise");;
+var p = require("promised-io/promise");
 var when = p.when;
 var Promise = p.Promise;
 var log = require('../modules/log');
 var _ = require('underscore');
 
 function logOutput(output) {
+    "use strict";
+
     output = output || {};
     log('[' + output.type + ']' + ' ' + output.output);
 }
 
 function mergeQuotes(quoteMark) {
+    "use strict";
+
     return function(previousValues, currentValue){
         var previous = _.last(previousValues) || "";
         var inQuote = previous.split(quoteMark).length % 2 === 0;
@@ -20,12 +24,14 @@ function mergeQuotes(quoteMark) {
         } else {
             return previousValues.concat(currentValue);
         }
-    }
+    };
 }
 
 var CommandLine = {
 
     _splitCmd: function(cmd) {
+        "use strict";
+
         var cmdParts = cmd.split(' ');
 
         cmdParts = cmdParts.reduce(mergeQuotes("'"), []);
@@ -41,6 +47,8 @@ var CommandLine = {
     },
 
     _run: function(promise, cmd, args, workingDir) {
+        "use strict";
+
         var spawnOperation = spawn(cmd, args, {cwd: workingDir});
 
         var output = new CommandLine.Output();
@@ -65,6 +73,8 @@ var CommandLine = {
     },
 
     runAll: function(commands) {
+        "use strict";
+
         var promise = new Promise();
         var allOutputs = [];
 
@@ -87,15 +97,17 @@ var CommandLine = {
 
         return promise;
     }
-}
+};
 
 CommandLine.Output = function() {
+    "use strict";
+
     this.allOutputs = [];
-    this.stdoutBuffer;
-    this.stderrBuffer;
-}
+};
 
 CommandLine.Output.prototype.stdout = function(output) {
+    "use strict";
+
     // Add to buffer
     var buf = this.stdoutBuffer || "";
     this.stdoutBuffer = buf + output;
@@ -103,9 +115,11 @@ CommandLine.Output.prototype.stdout = function(output) {
     // Flush buffer
     this.flushStderr(true);
     this.flushStdout();
-}
+};
 
 CommandLine.Output.prototype.flushStdout = function(forceEmpty) {
+    "use strict";
+
     if(!this.stdoutBuffer) {
         return;
     }
@@ -126,9 +140,11 @@ CommandLine.Output.prototype.flushStdout = function(forceEmpty) {
     } else {
         this.stdoutBuffer = lines.shift();
     }
-}
+};
 
 CommandLine.Output.prototype.stderr = function(output) {
+    "use strict";
+
     // Add to buffer
     var buf = this.stderrBuffer || "";
     this.stderrBuffer = buf + output;
@@ -136,9 +152,11 @@ CommandLine.Output.prototype.stderr = function(output) {
     // Flush buffer
     this.flushStdout(true);
     this.flushStderr();
-}
+};
 
 CommandLine.Output.prototype.flushStderr = function(forceEmpty) {
+    "use strict";
+
     if(!this.stderrBuffer) {
         return;
     }
@@ -157,16 +175,20 @@ CommandLine.Output.prototype.flushStderr = function(forceEmpty) {
         var lastLine = lines.shift();
         this.allOutputs.push({type: "stderr", output: lastLine});
     }
-}
+};
 
 CommandLine.Output.prototype.getOutput = function() {
+    "use strict";
+
     this.flushStdout(true);
     this.flushStderr(true);
 
     return this.allOutputs;
-}
+};
 
 CommandLine.Command = function(cmd, workingDir) {
+    "use strict";
+
     this.origCmd = cmd;
     var splitted = CommandLine._splitCmd(cmd);
     this.cmd = splitted.cmd;
@@ -175,11 +197,13 @@ CommandLine.Command = function(cmd, workingDir) {
     this.promise = new Promise();
     this.stdout = [];
     this.stderr = [];
-}
+};
 
 CommandLine.Command.prototype.run = function() {
+    "use strict";
+    
     log("Running commend: " + this.origCmd + " in a working dir: " + this.cwd);
     CommandLine._run(this.promise, this.cmd, this.args, this.cwd);
-}
+};
 
 module.exports = CommandLine;

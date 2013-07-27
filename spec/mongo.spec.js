@@ -7,6 +7,8 @@ var mongoProfiles = require('../modules/mongo_profiles');
 Mongo.init(mongoProfiles.test);
 
 describe('Mongo', function() {
+    "use strict";
+    
     var fakeDippa, FakeDippa, fakePromiseReturningFunction, fakePromise;
     var now = new Date('2012-03-29T08:03:48.223Z');
     var Dippa = Mongo.Dippa;
@@ -81,7 +83,7 @@ describe('Mongo', function() {
 
         afterEach(function() {
             Mongo.Dippa = Dippa;
-        })
+        });
     });
 
     describe('integration tests', function() {
@@ -169,4 +171,4 @@ describe('Mongo', function() {
             });
         });
     });
-})
+});

@@ -10,6 +10,8 @@ var mongoose = require('mongoose')
 var Mongo = {
 
     init: function(profile) {
+        "use strict";
+
         profile = profile || this.mongoProfiles.dev;
 
         mongoose.connect(profile.db);
@@ -34,6 +36,8 @@ var Mongo = {
     },
 
     loadFixtures: function() {
+        "use strict";
+
         var promise = p.Promise();
 
         this.Dippa.remove({}, function() {
@@ -43,7 +47,7 @@ var Mongo = {
                 var newDippaAdded = p.Promise();
                 var dippa = new this.Dippa();
 
-                for(key in dippaHash) {
+                for(var key in dippaHash) {
                     dippa[key] = dippaHash[key];
                 }
 
@@ -71,6 +75,8 @@ var Mongo = {
     },
 
     createNew: function(shortId, owner, name, email, isDemo, previewId) {
+        "use strict";
+
         isDemo = isDemo || false;
         var newDippa = new this.Dippa();
         newDippa.shortId = shortId;
@@ -84,13 +90,15 @@ var Mongo = {
         var promise = p.Promise();
 
         newDippa.save(function(error) {
-            Mongo.resolvePromise(error, undefined, promise)
+            Mongo.resolvePromise(error, undefined, promise);
         });
 
         return promise;
     },
 
     findAll: function() {
+        "use strict";
+
         var promise = p.Promise();
         this.Dippa.find({}, function(error, data) {
             Mongo.resolvePromise(error, data, promise);
@@ -99,6 +107,8 @@ var Mongo = {
     },
 
     findOldDemos: function() {
+        "use strict";
+
         var promise = p.Promise();
         var olderThan = 1000 * 60 * 60 * 24 * 7; // 7 days
         var tooOld = new Date(DateUtils.now().getTime() - olderThan);
@@ -113,6 +123,8 @@ var Mongo = {
     },
 
     removeOldDemos: function() {
+        "use strict";
+
         var promise = p.Promise();
         var olderThan = 1000 * 60 * 60 * 24 * 7; // 7 days
         var tooOld = new Date(DateUtils.now().getTime() - olderThan);
@@ -126,36 +138,44 @@ var Mongo = {
     },
 
     findByShortId: function(shortId) {
+        "use strict";
+
         var promise = p.Promise();
         this.Dippa.findOne({shortId: shortId}, function(error, data) {
-            Mongo.resolvePromise(error, data, promise)
+            Mongo.resolvePromise(error, data, promise);
         });
         return promise;
     },
 
     findByPreviewId: function(previewId) {
+        "use strict";
+
         var promise = p.Promise();
         this.Dippa.findOne({previewId: previewId}, function(error, data) {
-            Mongo.resolvePromise(error, data, promise)
+            Mongo.resolvePromise(error, data, promise);
         });
         return promise;
     },    
 
     findByEmail: function(email) {
+        "use strict";
+
         var promise = p.Promise();
         this.Dippa.find({email: email}, function(error, data) {
-            Mongo.resolvePromise(error, data, promise)
+            Mongo.resolvePromise(error, data, promise);
         });
         return promise;
     },
 
     resolvePromise: function(error, data, promise) {
+        "use strict";
+        
         if(error) {
             promise.reject(error);
         } else {
             promise.resolve(data);
         }
     }
-}
+};
 
 module.exports = Mongo;

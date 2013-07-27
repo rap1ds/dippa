@@ -1,4 +1,3 @@
-var API = require('../modules/api');
 var Directory = require('../modules/directory');
 var Mongo = require('../modules/mongo');
 var _ = require('underscore');
@@ -9,8 +8,11 @@ var shortId = require('shortid');
 var CommonHelpers = require('./helpers').Common;
 var waitsForPromise = CommonHelpers.waitsForPromise;
 var spyOnPromise = CommonHelpers.spyOnPromise;
+var API = require('../modules/api');
 
 describe('API', function() {
+    "use strict";
+
     var req, res, next;
 
     beforeEach(function() {
@@ -99,7 +101,7 @@ describe('API', function() {
             expect(pdfCompiler.compile).toHaveBeenCalledWith('/repo/dir');
 
             // Mongo
-            args = Directory.create.mostRecentCall.args[0];
+            var args = Directory.create.mostRecentCall.args[0];
             var id = args.id;
             expect(Mongo.createNew).toHaveBeenCalledWith("12345", 'rap1ds', 'dippa', undefined, false, "12345");
 

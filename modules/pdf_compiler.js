@@ -1,12 +1,13 @@
 var Promise = require("promised-io/promise").Promise;
 var commandline = require('../modules/commandline');
 var Command = commandline.Command;
-var log = require('../modules/log')
+var log = require('../modules/log');
 
 var processes = {};
 
 
 function ignoreLatexmkRunLog() {
+    "use strict";
     var ignoreNext = false;
     return function(output) {
         if(ignoreNext) {
@@ -21,6 +22,7 @@ function ignoreLatexmkRunLog() {
 }
 
 function compile(repoDir) {
+    "use strict";
 		log('Compiling PDF', repoDir);
 		processes[repoDir] = true;
         var compilePromise = new Promise();
@@ -44,6 +46,7 @@ function compile(repoDir) {
 }
 
 function isCompiling(repoDir) {
+    "use strict";
 	return !!processes[repoDir];
 }
 
