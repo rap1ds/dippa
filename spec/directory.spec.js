@@ -179,7 +179,7 @@ describe('Directory', function (){
 
     describe('compile', function() {
         beforeEach(function() {
-            this.runAllPromise = spyOnPromise(CommandLine, 'runAll').andCallRealSuccess("> commandline output");
+            this.runAllPromise = spyOnPromise(CommandLine, 'runAll').andCallRealSuccess(["> commandline output"]);
         });
 
         it('calls commandline command to compile pdf', function() {
@@ -192,24 +192,16 @@ describe('Directory', function (){
 
             expect(commands[0].origCmd).toEqual('rm dippa.pdf');
             expect(commands[0].cwd).toEqual('/home/mikko/repository');
-            expect(commands[1].origCmd).toEqual('pdflatex --interaction=nonstopmode --jobname=tmp dippa');
+            expect(commands[1].origCmd).toEqual('latexmk -silent -pdf -r ../../../latexmkrc -jobname=tmp dippa');
             expect(commands[1].cwd).toEqual('/home/mikko/repository');
-            expect(commands[2].origCmd).toEqual('bibtex tmp', '/home/mikko/repository');
+            expect(commands[2].origCmd).toEqual('cp tmp.pdf dippa.pdf', '/home/mikko/repository');
             expect(commands[2].cwd).toEqual('/home/mikko/repository');
-            expect(commands[3].origCmd).toEqual('pdflatex --interaction=nonstopmode --jobname=tmp dippa');
-            expect(commands[3].cwd).toEqual('/home/mikko/repository');
-            expect(commands[4].origCmd).toEqual('bibtex tmp', '/home/mikko/repository');
-            expect(commands[4].cwd).toEqual('/home/mikko/repository');
-            expect(commands[5].origCmd).toEqual('pdflatex --interaction=nonstopmode --jobname=tmp dippa');
-            expect(commands[5].cwd).toEqual('/home/mikko/repository');
-            expect(commands[6].origCmd).toEqual('mv tmp.pdf dippa.pdf');
-            expect(commands[6].cwd).toEqual('/home/mikko/repository');
-
+            
             waitsForPromise(promise);
 
             runs(function() {
                 expect(promise.resolved).toBeTruthy();
-                expect(promise.result[0]).toEqual("> commandline output");
+                expect(promise.result[0]).toEqual(["> commandline output"]);
             })
         });
     });

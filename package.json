@@ -18,7 +18,8 @@
     },
     "devDependencies": {
         "public": "git://github.com/mikelehen/jasmine-node.git",
-        "github": "0.1.x"
+        "github": "0.1.x",
+        "grunt": "0.3.x"
     },
     "scripts": {
         "test": "node_modules/jasmine-node/bin/jasmine-node --forceexit spec/"
