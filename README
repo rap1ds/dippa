@@ -16,3 +16,9 @@ sudo aptitude install texlive
 curl http://npmjs.org/install.sh | sudo sh
 
 npm install -d
+
+## Run Robot tests
+
+- Install Robot `easy_install robotframework`
+- Verify Robot installation `pybot --version`
+- Install SeleniumLibrary [https://code.google.com/p/robotframework-seleniumlibrary/downloads/detail?name=robotframework-seleniumlibrary-2.9.1.tar.gz&can=2&q=]
