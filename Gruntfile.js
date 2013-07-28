@@ -124,10 +124,10 @@ module.exports = function(grunt) {
             done(false);
         }
 
-        startSelenium(function(startSuccess) {
-            if(!startSuccess) {
-                done(false);
-            }
+        // startSelenium(function(startSuccess) {
+            // if(!startSuccess) {
+            //     done(false);
+            // }
 
             var cwd = path.resolve('./robot');
 
@@ -156,6 +156,7 @@ module.exports = function(grunt) {
                     grunt.log.ok('Tests passed');
                 }
 
+                /*
                 stopSelenium(function(stopSuccess) {
                     require('child_process').exec("open report.html", {cwd: cwd, timeout: 3000}, function (error, stdout, stderr) {
                         if(!stopSuccess || failed) {
@@ -166,8 +167,9 @@ module.exports = function(grunt) {
                         done(true);
                     });
                 });
+                */
             });
-        });
+        // });
     });
 
     grunt.registerTask('backup-repositories', 'Backup repositories', function(dest) {

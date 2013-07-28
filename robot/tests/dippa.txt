@@ -11,7 +11,7 @@ Test Case Setup
     Remove Directory  ${WORKSPACE}  recursive
     Create Directory  ${WORKSPACE}
     Set Selenium Timeout  40
-    Open Browser  ${MAIN_PAGE}  ${BROWSER}
+    Open Browser  ${MAIN_PAGE}  ${BROWSER}  main browser  http://localhost:4444
     Title Should Be  Dippa editor
 
 Test Case Teardown

@@ -1,7 +1,7 @@
 *** Settings ***
 
 Documentation  Common variables
-Library        SeleniumLibrary
+Library        Selenium2Library
 
 
 *** Variables ***
