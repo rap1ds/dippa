@@ -17,7 +17,7 @@
     "requirejs": "2.0.x"
   },
   "devDependencies": {
-    "public": "git://github.com/mikelehen/jasmine-node.git",
+    "jasmine-node": "~1.10.2",
     "github": "0.1.x",
     "grunt": "~0.4.1",
     "grunt-contrib-jshint": "~0.6.1"
