@@ -15,6 +15,7 @@ define(['jquery'
     , 'bootstrap-buttons'
     , 'bootstrap-transition'
     , 'bootstrap-dropdown'
+    , 'bootstrap-modal'
     , 'app/controller/outline'
     , 'jquery.fileupload'
     ],
@@ -48,7 +49,6 @@ define(['jquery'
             },
 
             load: function(id) {
-                debugger;
                 datamanager.load();
                 $.ajax({
                     url: 'load/' + id,
@@ -76,6 +76,14 @@ define(['jquery'
 
                         var saveButton = require('app/controller/save-button');
                         saveButton.setChanged(false);
+
+                        if(content.document.isDemo) {
+                            var modalDialog = $('#myModal');
+                            modalDialog.modal('show');
+                            $('#modal-close').click(function() {
+                                modalDialog.modal('hide');
+                            });
+                        }
 
                         $('#fileupload').fileupload({
                             autoUpload: true,
