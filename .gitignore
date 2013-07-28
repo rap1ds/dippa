@@ -10,3 +10,4 @@ robot/report.html
 robot/selenium_log.txt
 robot/selenium-screenshot*
 robot/workspace
+robot/*.log

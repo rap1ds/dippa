@@ -27,11 +27,13 @@ function compile(repoDir) {
 		processes[repoDir] = true;
         var compilePromise = new Promise();
 
-        var remove = new Command('rm dippa.pdf', repoDir);
+        var removeLastSuccessful = new Command('rm dippa_last_successful.pdf', repoDir);
+        var copyLastSuccessful = new Command('mv dippa.pdf dippa_last_successful.pdf', repoDir);
+        var removeTemp = new Command('rm tmp.pdf', repoDir);
         var latexmk = new Command('latexmk -silent -pdf -r ../../../latexmkrc -jobname=tmp dippa', repoDir);
         var copy = new Command('cp tmp.pdf dippa.pdf', repoDir);
 
-        commandline.runAll([remove, latexmk, copy]).then(function(output) {
+        commandline.runAll([removeLastSuccessful, copyLastSuccessful, removeTemp, latexmk, copy]).then(function(output) {
             var outputFiltered = output.filter(ignoreLatexmkRunLog());
             outputFiltered.forEach(function(outputItem) {
                 log(['[latex compile]', outputItem.output].join(' '));

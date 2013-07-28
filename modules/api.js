@@ -208,7 +208,7 @@ var API = {
     },
 
     getId: function(req, res, next) {
-        log('GET /' + req.params.id);
+        log('GET ' + req.url);
 
         var id = req.params.id;
 
@@ -306,7 +306,10 @@ app.configure(function(){
     app.disable('view cache');
 });
 
-app.get('/preview/:id', function(req, res, next) {
+app.get('/preview/:id/', function(req, res, next) {
+    log('[route] /preview/:id/')
+    log('GET ' + req.url);
+
     var previewId = req.params.id;
 
     Mongo.findByPreviewId(previewId).then(function(data) {
@@ -332,6 +335,33 @@ app.get('/preview/:id', function(req, res, next) {
                 res.sendfile(pdfPath);
             }
         });
+    });
+});
+
+app.get('/preview/:id', function(req, res, next) {
+    log('[route] /preview/:id')
+    log('GET ' + req.url);
+    res.redirect(301, req.url + '/');
+});
+
+app.get('/preview/:id/last_successful', function(req, res, next) {
+    log('[route] /preview/:id/last_successful')
+    log('GET ' + req.url);
+
+    var previewId = req.params.id;
+
+    Mongo.findByPreviewId(previewId).then(function(data) {
+        if(!data) {
+            log('Could not find preview for previewId ' + previewId);
+            res.sendfile('./views/index.html');
+            return;
+        }
+
+        var shortId = data.shortId;
+        var repoDir = path.resolve(REPOSITORY_DIR, shortId);
+        var lastSuccessfulPdfPath = path.resolve(repoDir, 'dippa_last_successful.pdf');
+    
+        res.sendfile(lastSuccessfulPdfPath);
     });
 });
 
