@@ -191,12 +191,16 @@ describe('Directory', function (){
             expect(promise).toBePromise();
             var commands = CommandLine.runAll.argsForCall[0][0];
 
-            expect(commands[0].origCmd).toEqual('rm dippa.pdf');
+            expect(commands[0].origCmd).toEqual('rm dippa_last_successful.pdf');
             expect(commands[0].cwd).toEqual('/home/mikko/repository');
-            expect(commands[1].origCmd).toEqual('latexmk -silent -pdf -r ../../../latexmkrc -jobname=tmp dippa');
+            expect(commands[1].origCmd).toEqual('mv dippa.pdf dippa_last_successful.pdf');
             expect(commands[1].cwd).toEqual('/home/mikko/repository');
-            expect(commands[2].origCmd).toEqual('cp tmp.pdf dippa.pdf', '/home/mikko/repository');
+            expect(commands[2].origCmd).toEqual('rm tmp.pdf');
             expect(commands[2].cwd).toEqual('/home/mikko/repository');
+            expect(commands[3].origCmd).toEqual('latexmk -silent -pdf -r ../../../latexmkrc -jobname=tmp dippa');
+            expect(commands[3].cwd).toEqual('/home/mikko/repository');
+            expect(commands[4].origCmd).toEqual('cp tmp.pdf dippa.pdf', '/home/mikko/repository');
+            expect(commands[4].cwd).toEqual('/home/mikko/repository');
             
             waitsForPromise(promise);
 

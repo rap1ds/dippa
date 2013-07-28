@@ -307,7 +307,7 @@ app.configure(function(){
 });
 
 app.get('/preview/:id/', function(req, res, next) {
-    log('[route] /preview/:id/')
+    log('[route] /preview/:id/');
     log('GET ' + req.url);
 
     var previewId = req.params.id;
@@ -339,13 +339,13 @@ app.get('/preview/:id/', function(req, res, next) {
 });
 
 app.get('/preview/:id', function(req, res, next) {
-    log('[route] /preview/:id')
+    log('[route] /preview/:id');
     log('GET ' + req.url);
     res.redirect(301, req.url + '/');
 });
 
 app.get('/preview/:id/last_successful', function(req, res, next) {
-    log('[route] /preview/:id/last_successful')
+    log('[route] /preview/:id/last_successful');
     log('GET ' + req.url);
 
     var previewId = req.params.id;
