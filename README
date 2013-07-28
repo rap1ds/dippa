@@ -22,3 +22,16 @@ npm install -d
 - Install Robot `easy_install robotframework`
 - Verify Robot installation `pybot --version`
 - Install SeleniumLibrary [https://code.google.com/p/robotframework-seleniumlibrary/downloads/detail?name=robotframework-seleniumlibrary-2.9.1.tar.gz&can=2&q=]
+
+## SSH Access to Github
+
+Add this to ~/.ssh/config
+
+```
+Host dippa.github.com
+    HostName github.com
+    User git
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/id_rsa_dippa
+```
+

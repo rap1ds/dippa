@@ -32,11 +32,13 @@ function compile(repoDir) {
         var copy = new Command('cp tmp.pdf dippa.pdf', repoDir);
 
         commandline.runAll([remove, latexmk, copy]).then(function(output) {
-            output = output.filter(ignoreLatexmkRunLog());
-            log(output);
+            var outputFiltered = output.filter(ignoreLatexmkRunLog());
+            outputFiltered.forEach(function(outputItem) {
+                log(['[latex compile]', outputItem.output].join(' '));
+            });
             log('Compiling done', repoDir);
             processes[repoDir] = false;
-            compilePromise.resolve(output);
+            compilePromise.resolve(outputFiltered);
         }, function(e) {
             log.error('Compile failed');
             log.error(e);
