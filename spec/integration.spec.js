@@ -54,7 +54,12 @@ describe('Integration test', function() {
     it('GET /load/:id', function() {
         testRequest({method: 'GET', path: '/load/123456A'}, function(result) {
             expect(result.statusCode).toEqual(200);
-            var body = JSON.parse(result.body);
+            var body;
+            try {
+                body = JSON.parse(result.body);
+            } catch(e) {
+                console.error("Error while parsing JSON", e, result.body);
+            }
             expect(body.documentContent).toEqual('\\documentclass[a4paper]{article}\n\\end{document}');
             expect(body.referencesContent).toEqual('@article{koski2012,\nAuthor = {Mikko Koski},\nJournal = {Imaginary computer magazine},\nPages = {50-60},\nTitle = {How to use Dippa editor?},\nYear = {2012}}');
         });

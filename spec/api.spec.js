@@ -72,7 +72,7 @@ describe('API', function() {
             waitsForPromise(docPromise);
 
             runs(function() {
-                expect(res.send).toHaveBeenCalledWith({documentContent: "this is the latex doc", referencesContent: "these are the references"});
+                expect(res.send).toHaveBeenCalledWith(JSON.stringify({documentContent: "this is the latex doc", referencesContent: "these are the references"}));
             });
         });
     });

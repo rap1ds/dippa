@@ -255,7 +255,7 @@ var API = {
             response.documentContent = results[0];
             response.referencesContent = results[1];
             response.document = results[2];
-            res.send(response);
+            res.send(JSON.stringify(response));
         }, function error() {
             res.send({msg: 'An error occured while reading content'}, 500);
             log.error('GET Failed to load', id);

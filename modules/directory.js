@@ -61,7 +61,15 @@ var Directory = {
     init: function(profile) {
         "use strict";
 
-        _.bindAll(this);
+        _.bindAll(this,
+            'loadFixtures',
+            'create',
+            'resolveTemplatePath',
+            'templateCommands',
+            'readFile',
+            'deleteFile',
+            'readDocumentFile',
+            'readReferenceFile');
 
         profile = profile || this.profiles.dev;
         this.profile = profile;
@@ -206,7 +214,7 @@ var Directory = {
 
     readReferenceFile: function(id) {
         "use strict";
-        
+
         return this.readFile(id, 'ref.bib');
     }
 };
