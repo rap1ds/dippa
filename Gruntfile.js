@@ -2,23 +2,19 @@
 module.exports = function(grunt) {
     "use strict";
 
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+
     var path = require('path');
 
     var REPOSITORY_PATH = 'public/repositories';
 
     // Project configuration.
     grunt.initConfig({
-        lint: {
-            files: ['server.js', 'grunt.js', 'fixtures/**/*.js', 'modules/**/*.js', 'spec/**/*.js']
-        },
         test: {
             specs: 'spec/'
         },
-        watch: {
-            files: '<config:lint.files>',
-            tasks: 'lint test'
-        },
         jshint: {
+            files: ['server.js', 'grunt.js', 'fixtures/**/*.js', 'modules/**/*.js', 'spec/**/*.js'],
             options: {
                 curly: true,
                 eqeqeq: true,
@@ -32,29 +28,28 @@ module.exports = function(grunt) {
                 eqnull: true,
                 laxcomma: true,
                 node: true,
-                es5: true
-            },
-            globals: {
-                jQuery: true,
+                globals: {
+                    jQuery: true,
 
-                require: true,
-                define: true,
-                module: true,
-                console: true,
-                
-                // Jasmine
-                expect: true,
-                it: true,
-                xit: true,
-                describe: true,
-                xdescribe: true,
-                jasmine: true,
-                beforeEach: true,
-                afterEach: true,
-                runs: true,
-                waitsFor: true,
-                waits: true,
-                spyOn: true
+                    require: true,
+                    define: true,
+                    module: true,
+                    console: true,
+                    
+                    // Jasmine
+                    expect: true,
+                    it: true,
+                    xit: true,
+                    describe: true,
+                    xdescribe: true,
+                    jasmine: true,
+                    beforeEach: true,
+                    afterEach: true,
+                    runs: true,
+                    waitsFor: true,
+                    waits: true,
+                    spyOn: true
+                }
             }
         }
     });
@@ -260,5 +255,5 @@ module.exports = function(grunt) {
     });
 
     // Default task.
-    grunt.registerTask('default', ['lint', 'test']);
+    grunt.registerTask('default', ['jshint', 'test']);
 };
