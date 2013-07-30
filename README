@@ -35,4 +35,3 @@ Host dippa.github.com
     PreferredAuthentications publickey
     IdentityFile ~/.ssh/id_rsa_dippa
 ```
-
