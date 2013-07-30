@@ -2,6 +2,7 @@ var Promise = require("promised-io/promise").Promise;
 var commandline = require('../modules/commandline');
 var Command = commandline.Command;
 var log = require('../modules/log');
+var fs = require('fs');
 
 var processes = {};
 
@@ -27,8 +28,12 @@ function compile(repoDir) {
 		processes[repoDir] = true;
         var compilePromise = new Promise();
 
-        var removeLastSuccessful = new Command('rm dippa_last_successful.pdf', repoDir);
-        var copyLastSuccessful = new Command('mv dippa.pdf dippa_last_successful.pdf', repoDir);
+        if(fs.exists('dippa.pdf')) {
+            log('Last compilation was unsuccessful');
+            log('Not updating the last successful file');
+            var removeLastSuccessful = new Command('rm dippa_last_successful.pdf', repoDir);
+            var copyLastSuccessful = new Command('mv dippa.pdf dippa_last_successful.pdf', repoDir);
+        }
         var removeTemp = new Command('rm tmp.pdf', repoDir);
         var latexmk = new Command('latexmk -silent -pdf -r ../../../latexmkrc -jobname=tmp dippa', repoDir);
         var copy = new Command('cp tmp.pdf dippa.pdf', repoDir);
