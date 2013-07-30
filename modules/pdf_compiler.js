@@ -27,18 +27,28 @@ function compile(repoDir) {
 		log('Compiling PDF', repoDir);
 		processes[repoDir] = true;
         var compilePromise = new Promise();
+        var commandsToRun = [];
 
-        if(fs.exists('dippa.pdf')) {
-            log('Last compilation was unsuccessful');
-            log('Not updating the last successful file');
+        if(fs.existsSync(repoDir + '/dippa.pdf')) {
+            log('Last compilation was successful');
+            log('Updating the last successful file');
             var removeLastSuccessful = new Command('rm dippa_last_successful.pdf', repoDir);
             var copyLastSuccessful = new Command('mv dippa.pdf dippa_last_successful.pdf', repoDir);
+
+            commandsToRun.push(removeLastSuccessful);
+            commandsToRun.push(copyLastSuccessful);
+        } else {
+            log('Last compilation was unsuccessful ' + repoDir + '/dippa.pdf');
         }
         var removeTemp = new Command('rm tmp.pdf', repoDir);
         var latexmk = new Command('latexmk -silent -pdf -r ../../../latexmkrc -jobname=tmp dippa', repoDir);
         var copy = new Command('cp tmp.pdf dippa.pdf', repoDir);
 
-        commandline.runAll([removeLastSuccessful, copyLastSuccessful, removeTemp, latexmk, copy]).then(function(output) {
+        commandsToRun.push(removeTemp);
+        commandsToRun.push(latexmk);
+        commandsToRun.push(copy);
+
+        commandline.runAll(commandsToRun).then(function(output) {
             var outputFiltered = output.filter(ignoreLatexmkRunLog());
             outputFiltered.forEach(function(outputItem) {
                 log(['[latex compile]', outputItem.output].join(' '));
