@@ -206,8 +206,12 @@ module.exports = function(grunt) {
 
                 var backupFilePackage = path.resolve(backupFilename);
                 dest = path.join(dest, backupFilename);
+                
                 grunt.log.writeln('Copying package "' + backupFilePackage + '" to destination "' + dest + '"');
                 grunt.file.copy(backupFilePackage, dest);
+
+                grunt.log.writeln('Deleting local copy "' + backupFilePackage + '"');
+                grunt.file.delete(backupFilePackage);
 
                 grunt.log.writeln('Succesfully copied ' + backupFilename + ' files to ' + dest);
                 grunt.log.ok('Backup was successful');
