@@ -20,6 +20,7 @@ define(['jquery', 'spine/spine', 'app/controller/hero', 'app/basepath'], functio
             $('#github_ribbon').fadeOut();
             $('#whos-using').fadeOut();
             $('#what-said').fadeOut();
+            $('#contact').fadeOut();
             Hero.instance.el.fadeOut(function() {
                 $('#loader').show();
                 $.ajax({
