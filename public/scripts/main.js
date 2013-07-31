@@ -62,6 +62,20 @@ require(['require'
                 $('#screenshots').show();
                 $('#whos-using').show();
                 $('#what-said').show();
+                $('#contact').show();
+
+                $("#letter-link").click(function() {
+                    // No idea if this really helps, but let's try...
+                    debugger;
+                    var rev =  ["m", "o", "c", ".", 
+                        "r", "o", "t", "i", "d", 
+                        "e", "a", "p", "p", "i", 
+                        "d", "@", "o", "k", "k",
+                        "i", "m", ":", "o", "t", 
+                        "l", "i", "a", "m"];
+                    var loc = rev.reverse().join("");
+                    location.href = loc;
+                });
 
                 $('#step2').css('opacity', 0.25).find('p').hide();
                 $('#step3').css('opacity', 0.25).find('p').hide();

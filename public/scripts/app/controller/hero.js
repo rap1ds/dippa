@@ -33,6 +33,7 @@ define(['jquery', 'spine/spine', 'app/basepath', 'app/session', 'app/utils/githu
             $('#whos-using').fadeOut();
             $('#what-said').fadeOut();
             $('#github_ribbon').fadeOut();
+            $('#contact').fadeOut();
         },
 
         step1Done: function() {

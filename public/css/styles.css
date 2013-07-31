@@ -139,3 +139,20 @@ border-bottom-left-radius: 5px !important;
 .icon-remove:hover {
     opacity: 1;
 }
+
+.codedirection { 
+    unicode-bidi: bidi-override;
+    direction: rtl;
+}
+
+.contact-icon {
+    margin-right: 0.5em;
+}
+
+.contact-row {
+    margin: 0 0 9px;
+}
+
+.contact-link:hover {
+    text-decoration: none;
+}
