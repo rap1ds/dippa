@@ -5,16 +5,16 @@ var colorize = require('colorize');
 var cconsole = colorize.console;
 
 // Keywords
-require('./keywords/assert-keywords');
-require('./keywords/dippaeditor-keywords');
-require('./keywords/fs-keywords');
-require('./keywords/misc-keywords');
-require('./keywords/screenshot-keywords');
-require('./keywords/string-keywords');
-require('./keywords/webdriver-common-keywords');
-require('./keywords/webdriver-debug-keywords');
+key(require('./keywords/assert-keywords'));
+key(require('./keywords/dippaeditor-keywords'));
+key(require('./keywords/fs-keywords'));
+key(require('./keywords/misc-keywords'));
+key(require('./keywords/screenshot-keywords'));
+key(require('./keywords/string-keywords'));
+key(require('./keywords/webdriver-common-keywords'));
+key(require('./keywords/webdriver-debug-keywords'));
+key(require("./suite"));
 
-key.suite(require("./suite"));
 key.injector(key.webdriver);
 
 var startTime = Date.now();
