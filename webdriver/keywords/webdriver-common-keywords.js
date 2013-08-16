@@ -153,6 +153,10 @@ module.exports = {
         driver.quit().then(next);
     },
 
+    "Get Current Location": function(next, driver) {
+        getHref(driver).then(next);
+    },
+
     "Wait For Hash Change": function(next, driver) {
         debug("Wait For Hash Change");
 
