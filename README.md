@@ -1,37 +1,14 @@
-**Outdated :(**
+# Dippa editor
 
-Install
+Dippa editor is a web-based LaTeX editor. The service is running at <http://dippaeditor.com>.
 
-sudo aptitude install mongodb
+With Dippa editor, you can create professional looking academic white papers. Dippa editor uses LaTeX for laying out your document, but don't worry, using LaTeX has never been this easy! With the web-based editor you can skip all the installing steps of LaTeX!
 
-https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager
+# Demo
 
-sudo apt-get install python-software-properties
-sudo add-apt-repository ppa:chris-lea/node.js
-sudo apt-get update
-sudo apt-get install nodejs
+Go to <http://dippaeditor.com> and create a demo document!
 
-sudo aptitude install texlive
+# Contributors
 
-curl http://npmjs.org/install.sh | sudo sh
-
-npm install -d
-
-## Run Robot tests
-
-- Install Robot `easy_install robotframework`
-- Verify Robot installation `pybot --version`
-- Install SeleniumLibrary [https://code.google.com/p/robotframework-seleniumlibrary/downloads/detail?name=robotframework-seleniumlibrary-2.9.1.tar.gz&can=2&q=]
-- Install poppler (pdftotext) `brew install poppler`
-
-## SSH Access to Github
-
-Add this to ~/.ssh/config
-
-```
-Host dippa.github.com
-    HostName github.com
-    User git
-    PreferredAuthentications publickey
-    IdentityFile ~/.ssh/id_rsa_dippa
-```
+218 Mikko Koski [@rap1ds](https://github.com/rap1ds)  
+1 Joonas Rouhiainen [@joonasrouhiainen](https://github.com/joonasrouhiainen)  
