@@ -24,7 +24,6 @@
     "node-lipsum": "~1.0.1",
     "zombie": "1.4.x",
     "expect.js": "0.2.x",
-    "xlsx": "0.0.x",
     "keyword": "git://github.com/rap1ds/keyword.git",
     "rimraf": "~2.2.2",
     "mkdirp": "~0.3.5",
