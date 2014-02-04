@@ -1,0 +1,231 @@
+{
+    "Initialize": [
+        "Set Window Size", [1280, 800],
+        "Delete Screenshots"
+    ],
+
+    "Test Create Demo": [
+        "Go To Home",
+        "Take Screenshot", ["home"],
+        "Test Create Demo Dippa"
+    ],
+
+    "Test Basic Functions": [
+        "Go To Sample Document",
+        "Test Edit",
+        "Test Save",
+        "Test PDF Preview"
+    ],
+
+    "Go To Sample Document": [
+        "Info", ["Going to sample document"],
+        "Go To Page", ["http://localhost:5555/1234"],
+        "Wait For Editor Initialized",
+        "Take Screenshot", ["sample_document"],
+        "Close Demo Warning"
+    ],
+
+    "Go To Home": [
+        "Info", ["Going home"],
+        "Go To Page", ["http://localhost:5555/"]
+    ],
+
+    "Go To Preview": [
+        "Info", ["Going to preview"],
+        "Get Preview URL", "=> $previewUrl",
+        "Go To Page", ["$previewUrl"]
+    ],
+
+    "Test Create Demo Dippa": [
+        "Info", ["Test Create Demo Dippa"],
+        "Click Demo Button",
+        "Wait For Dippa Loaded",
+        "Should Be Dippa Id URL",
+        "Should Show Demo Warning",
+        "Close Demo Warning",
+        "Should Not Show Demo Warning"
+    ],
+
+    "Prepend Line To": [
+        "Go To Line", ["$1"],
+        "Insert", ["$2"]
+    ],
+
+    "Should Show Demo Warning": [
+        "Take Screenshot", ["should_show_demo_warning"],
+        "Should Be Visible", ["#myModal", "Demo warning dialog should be visible"]
+    ],
+
+    "Should Not Show Demo Warning": [
+        "Take Screenshot", ["should_not_show_demo_warning"],
+        "Should Not Be Visible", ["#myModal", "Demo warning dialog should NOT be visible"]
+    ],
+
+    "Should Be Visible": [
+        "Is Visible?", ["$1"], "=> $isVisible",
+        "Should Be True", ["$isVisible", "$2"]
+    ],
+
+    "Should Not Be Visible": [
+        "Is Visible?", ["$1"], "=> $isVisible",
+        "Should Be False", ["$isVisible", "$2"]
+    ],
+
+    "Close Demo Warning": [
+        "Click", ["#modal-close"],
+        "Take Screenshot", ["demo_warning_closed"]
+    ],
+
+    "Wait For Dippa Loaded": [
+        "Info", ["Waiting For Dippa Loaded"],
+        "Wait For Hash Change",
+        "Wait For Editor Initialized",
+        "Info", ["Dippa Loaded"]
+    ],
+
+    "Click Demo Button": [
+        "Info", ["Clicking Demo Button"],
+        "Press Button", ["demo_button"]
+    ],
+
+    "Click Save Button": [
+        "Info", ["Clicking Save Button"],
+        "Press Button", ["save_button"]
+    ],
+
+    "Should Be Dippa Id URL": [
+        "Get Id From URL", "=> $id",
+        "Should Be Valid Id", ["$id"],
+        "Info", ["Is in Dippa Id URL"]
+    ],
+
+    "Set File To Editor": [
+        "Read File", ["$1"], "=> $file",
+        "Set Editor Value", ["$file"]
+    ],
+
+    "Should Equal Editor Value": [
+        "Get Editor Value", "=> $editorValue",
+        "Info", ["$editorValue"],
+        "Should Equal", ["$1", "$editorValue", "Editor value equals to expected value"]
+    ],
+
+    "Test Edit": [
+        "Info", ["Test Edit"],
+        
+        "Generate Random Text", "=> $text",
+        "Set Editor Value", ["$text"],
+        "Should Equal Editor Value", ["$text"],
+        
+        "Set File To Editor", ["./fixtures/demo.tex"],
+        "Should Equal Editor Value", ["This is DEMO TEX"]
+    ],
+
+    "Wait For Saved": [
+        "Info", ["Waiting for saving to be completed..."],
+        "Wait For Element Content To Be", ["#save_button", "Save"],
+        "Info", ["Waiting completed."]
+    ],
+
+    "Should Be True": [
+        "Should Equal", ["$1", true, "$2"]
+    ],
+
+    "Should Be False": [
+        "Should Equal", ["$1", false, "$2"]
+    ],
+
+    "Expect Element Not To Have Class": [
+        "Has Element Class?", ["$1", "$2"], "=> $hasClass",
+        "Info", ["Can save?"],
+        "Should Be False", ["$hasClass", "Element should not have class"],
+        "Info", ["Yes, can save."]
+    ],
+
+    "Expect Save Button To Be Enabled": [
+        "Expect Element Not To Have Class", ["#save_button", "disabled"]
+    ],
+
+    "Ensure Can Save": [
+        "Expect Save Button To Be Enabled"
+    ],
+
+    "Save Without Waiting": [
+        "Info", ["Saving Dippa"],
+        "Ensure Can Save",
+        "Click Save Button"
+    ],
+
+    "Save": [
+        "Save Without Waiting",
+        "Wait For Saved"
+    ],
+
+    "Preview": [
+        "Take Screenshot", ["before_preview_click"],
+        "Click", ["#preview_button"],
+        "Take Screenshot", ["after_preview_click"]
+    ],
+
+    "Should Be Compiling": [
+        "Take Screenshot", ["should_be_compiling"],
+        "Is Element Present?", ["#info_compiling_pdf"], "=> $isCompileInfoPresent",
+        "Should Be True", ["$isCompileInfoPresent", "Info text about PDF Compiling is present"]
+    ],
+
+    "Should Show Compiling Error": [
+        "Take Screenshot", ["should_show_compiling_error"],
+        "Is Element Present?", ["#info_compiling_pdf_error"], "=> $isCompileErrorPresent",
+        "Should Be True", ["$isCompileErrorPresent", "Info text about PDF Compilation error is present"]
+    ],
+
+    "Test Save": [
+        "Info", ["Test saving"],
+        "Generate Random Text", "=> $text",
+        "Set Editor Value", ["$text"],
+        "Save",
+        "Get Editor Value", "=> $savedValue",
+        "Reload Page",
+        "Wait For Editor Initialized",
+        "Close Demo Warning",
+        "Get Editor Value", "=> $valueAfterReload",
+        "Should Equal", ["$savedValue", "$valueAfterReload", "Value equals before reload value"]
+    ],
+
+    "Should Open PDF": [
+        "Should Open about:blank"
+    ],
+
+    "Test PDF Preview": [
+        "Info", ["Testing PDF Preview"],
+        "Test PDF Compiling",
+        "Test Broken Document Compiling"
+    ],
+
+    "Get Preview URL": [
+        "Get Preview ID", "=> $previewId",
+        "Join", ["http://localhost:5555/", "preview/", "$previewId"], "=> $return"
+    ],
+
+    "Test PDF Compiling": [
+        "Set File To Editor", ["./fixtures/sample_document.tex"],
+        "Generate Random Text", "=> $text",
+        "Prepend Line To", [38, "$text"],
+        "Save Without Waiting",
+        "Take Screenshot", ["save_without_waiting"],
+        "Go To Preview",
+        "Should Be Compiling",
+        "Go To Sample Document",
+        "Sleep", [1000]
+    ],
+
+    "Test Broken Document Compiling": [
+        "Generate Random Text", "=> $text",
+        "Set Editor Value", ["$text"],
+        "Take Screenshot", ["before_saving_broken_doc"],
+        "Save",
+        "Go To Preview",
+        "Should Show Compiling Error",
+        "Go To Sample Document"
+    ]
+}

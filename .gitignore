@@ -11,3 +11,4 @@ robot/selenium_log.txt
 robot/selenium-screenshot*
 robot/workspace
 robot/*.log
+webdriver/screenshots

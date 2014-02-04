@@ -1,0 +1,59 @@
+{
+	"Test Basic Functions": [
+		"Go To Home",
+		"Test Create Demo Dippa",
+		"Test Edit And Save"
+	],
+
+	"Go To Home": [
+		"Go To Page", ["http://localhost:5555/"]
+	],
+
+	"Click Demo Button": [
+		"Click Button", ["#demo_button"]
+	],
+
+	"Click Save Button": [
+		"Click Button", ["#save_button"]
+	],
+
+	"Set File Content To Editor": [
+		"Read File", ["$1"], "=> $filecontent",
+		"Set Editor Value", ["$filecontent"]
+	],
+
+	"Test Create Demo Dippa": [
+    	"Click Demo Button",
+    	"Wait For Dippa Loaded",
+    	"Should Be Dippa Id URL"
+	],
+
+	"Wait For Dippa Loaded": [
+		"Wait For Hash Change",
+		"Wait For Editor Initialized"
+	],
+
+	"Click Demo Button": [
+		"Press Button", ["#demo_button"]
+	],
+
+	"Should Be Dippa Id URL": [
+		"Get Id From URL", "=> $id",
+		"Should Be Valid Id", ["$id"]
+	],
+
+	"Set File To Editor": [
+		"Read File", ["$1"], "=> $file",
+		"Set Editor Value", ["$file"]
+	],
+
+	"Should Equal Editor Value": [
+		"Get Editor Value", "=> $editorValue",
+		"Should Equal", ["$1", "$editorValue"]
+	],
+
+	"Test Edit And Save": [
+		"Set File To Editor", ["./demo.tex"],
+		"Should Equal Editor Value", ["This is DEMO TEX"]
+	]
+}
